@@ -11,9 +11,25 @@ public class CombineBlockProvider extends BlockProvider {
 	private final List<BlockProvider> providers;
 	private final AABB aabb;
 	
-	private CombineBlockProvider(Builder builder) {
-		this.providers = List.copyOf(builder.providers);
-		this.aabb = builder.aabb;
+	public CombineBlockProvider(BlockProvider ... providers) {
+		this.providers = List.of(providers);
+		this.aabb = calculateAABB(this.providers);
+	}
+	
+	private static AABB calculateAABB(List<BlockProvider> providers) {
+		AABB aabb = null;
+		for (BlockProvider provider : providers) {
+			Optional<AABB> providerAABB = provider.getAABB();
+			if (providerAABB.isEmpty()) {
+				continue;
+			}
+			if (aabb == null) {
+				aabb = providerAABB.get();
+			} else {
+				aabb = aabb.union(providerAABB.get());
+			}
+		}
+		return aabb;
 	}
 	
 	@Override
@@ -63,37 +79,6 @@ public class CombineBlockProvider extends BlockProvider {
 	@Override
 	public Optional<AABB> getAABB() {
 		return Optional.of(aabb);
-	}
-	
-	
-	////////////////////////////////////////////////////////////////
-	// Builder
-	////////////////////////////////////////////////////////////////
-	
-	public static class Builder {
-		
-		private final List<BlockProvider> providers = new ArrayList<>();
-		private AABB aabb;
-		
-		public Builder add(BlockProvider provider) {
-			this.providers.add(provider);
-			if(aabb == null) {
-				aabb = provider.getAABB().orElse(null);
-			} else {
-				provider.getAABB().ifPresent(next -> aabb = aabb.union(next));
-			}
-			return this;
-		}
-		
-		public CombineBlockProvider build() {
-			if(providers.isEmpty()) {
-				throw new IllegalStateException("No providers added");
-			}
-			if(aabb == null) {
-				throw new IllegalStateException("No AABB calculated");
-			}
-			return new CombineBlockProvider(this);
-		}
 	}
 	
 }

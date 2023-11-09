@@ -25,15 +25,15 @@ public class MainScene {
 		BlockProvider cuboidProvider = new ShapeBlockProvider(boxShape, BlockTypes.DIRT);
 		BlockProvider surfaceProvider = new ShapeBlockProvider(new DifferenceShape(surface, transSphere), BlockTypes.SANDSTONE);
 		
-		return new CombineBlockProvider.Builder()
-			.add(cuboidProvider)
-			.add(surfaceProvider)
-			.add(sphereProvider)
-			.build();
+		return new CombineBlockProvider(cuboidProvider, surfaceProvider, sphereProvider);
 	}
 	
 	public static BlockProvider getProvider() {
 		return provider;
+	}
+	
+	private MainScene() {
+		throw new IllegalStateException("Utility class");
 	}
 	
 }
