@@ -22,17 +22,17 @@ public class TranslateProvider extends BlockProvider {
 	
 	@Override
 	public Optional<Blocks> getBlocks(AABB area) {
-		return provider.getBlocks(area.move(offset.neg()));
+		return provider.getBlocks(area.offset(offset.neg()));
 	}
 	
 	@Override
-	public boolean intersects(AABB aabb) {
-		return provider.intersects(aabb.move(offset.neg()));
+	public boolean intersects(AABB area) {
+		return provider.intersects(area.offset(offset.neg()));
 	}
 	
 	@Override
-	public AABB getAABB() {
-		return provider.getAABB().move(offset.neg());
+	public Optional<AABB> getAABB() {
+		return provider.getAABB().map(a -> a.offset(offset.neg()));
 	}
 	
 }

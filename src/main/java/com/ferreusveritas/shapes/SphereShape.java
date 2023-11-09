@@ -1,23 +1,25 @@
-package com.ferreusveritas.shapeproviders;
+package com.ferreusveritas.shapes;
 
 import com.ferreusveritas.api.AABB;
 import com.ferreusveritas.api.VecI;
 
-public class SphereShapeProvider implements ShapeProvider {
+import java.util.Optional;
+
+public class SphereShape implements Shape {
 	
 	private final VecI center;
 	private final int radius;
 	private final AABB aabb;
 	
-	public SphereShapeProvider(VecI center, int radius) {
+	public SphereShape(VecI center, int radius) {
 		this.center = center;
 		this.radius = radius;
 		this.aabb = new AABB(center, center).grow(radius).orElseThrow();
 	}
 	
 	@Override
-	public AABB getAABB() {
-		return aabb;
+	public Optional<AABB> getAABB() {
+		return Optional.of(aabb);
 	}
 	
 	@Override

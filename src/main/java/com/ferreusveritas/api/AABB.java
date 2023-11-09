@@ -12,6 +12,7 @@ public record AABB(
 	VecI min,
 	VecI max
 ) {
+	public static final AABB NONE = new AABB(VecI.ZERO, VecI.ZERO);
 	public static final AABB INFINITE = new AABB(VecI.MIN, VecI.MAX);
 	
 	public AABB(int x1, int y1, int z1, int x2, int y2, int z2) {
@@ -23,7 +24,7 @@ public record AABB(
 	 * @param pos The amount to move
 	 * @return A new AABB moved by the specified amount.
 	 */
-	public AABB move(VecI pos) {
+	public AABB offset(VecI pos) {
 		return new AABB(min.add(pos), max.add(pos));
 	}
 

@@ -48,12 +48,12 @@ public class CombineBlockProvider extends BlockProvider {
 	}
 	
 	@Override
-	public boolean intersects(AABB aabb) {
-		if(!this.aabb.intersects(aabb)) {
+	public boolean intersects(AABB area) {
+		if(!this.aabb.intersects(area)) {
 			return false;
 		}
 		for (BlockProvider provider : providers) {
-			if (provider.intersects(aabb)) {
+			if (provider.intersects(area)) {
 				return true;
 			}
 		}
@@ -61,9 +61,10 @@ public class CombineBlockProvider extends BlockProvider {
 	}
 	
 	@Override
-	public AABB getAABB() {
-		return aabb;
+	public Optional<AABB> getAABB() {
+		return Optional.of(aabb);
 	}
+	
 	
 	////////////////////////////////////////////////////////////////
 	// Builder
@@ -77,9 +78,9 @@ public class CombineBlockProvider extends BlockProvider {
 		public Builder add(BlockProvider provider) {
 			this.providers.add(provider);
 			if(aabb == null) {
-				aabb = provider.getAABB();
+				aabb = provider.getAABB().orElse(null);
 			} else {
-				aabb = aabb.union(provider.getAABB());
+				provider.getAABB().ifPresent(next -> aabb = aabb.union(next));
 			}
 			return this;
 		}

@@ -18,13 +18,12 @@ public class SolidBlockProvider extends BlockProvider {
 	}
 	
 	@Override
-	public boolean intersects(AABB aabb) {
+	public boolean intersects(AABB area) {
 		return true;
 	}
 	
 	@Override
-	public AABB getAABB() {
-		return AABB.INFINITE;
+	public Optional<AABB> getAABB() {
+		return Optional.of(AABB.INFINITE);
 	}
-	
 }

@@ -1,19 +1,21 @@
-package com.ferreusveritas.shapeproviders;
+package com.ferreusveritas.shapes;
 
 import com.ferreusveritas.api.AABB;
 import com.ferreusveritas.api.VecI;
 
-public class BoxShapeProvider implements ShapeProvider {
+import java.util.Optional;
+
+public class BoxShape implements Shape {
 	
 	private final AABB aabb;
 	
-	public BoxShapeProvider(AABB aabb) {
+	public BoxShape(AABB aabb) {
 		this.aabb = aabb;
 	}
 	
 	@Override
-	public AABB getAABB() {
-		return aabb;
+	public Optional<AABB> getAABB() {
+		return Optional.of(aabb);
 	}
 	
 	@Override

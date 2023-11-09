@@ -21,17 +21,17 @@ public abstract class BlockProvider {
 	
 	/**
 	 * Check if the given area intersects with this block provider.
-	 * @param aabb The area to check.
+	 * @param area The area to check.
 	 * @return True if the area intersects with this block provider, false otherwise.
 	 */
-	public boolean intersects(AABB aabb) {
-		return getAABB().intersects(aabb);
+	public boolean intersects(AABB area) {
+		return getAABB().map(a -> a.intersects(area)).orElse(false);
 	}
 	
 	/**
 	 * Get the AABB for this block provider.
 	 * @return The AABB for this block provider.
 	 */
-	public abstract AABB getAABB();
+	public abstract Optional<AABB> getAABB();
 	
 }

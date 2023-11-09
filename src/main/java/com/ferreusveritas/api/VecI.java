@@ -94,4 +94,28 @@ public record VecI(
 		return tag;
 	}
 	
+	public VecI down() {
+		return add(DOWN);
+	}
+	
+	public VecI up() {
+		return add(UP);
+	}
+	
+	public VecI north() {
+		return add(NORTH);
+	}
+	
+	public VecI south() {
+		return add(SOUTH);
+	}
+	
+	public VecI west() {
+		return add(WEST);
+	}
+	
+	public VecI east() {
+		return add(EAST);
+	}
+	
 }

@@ -26,7 +26,7 @@ class AABBTest {
 	@Test
 	void testAABBMove() {
 		AABB aabb = new AABB(0, 0, 0, 10, 10, 10);
-		AABB moved = aabb.move(new VecI(1, 3, 5));
+		AABB moved = aabb.offset(new VecI(1, 3, 5));
 
 		assertEquals(new VecI(1, 3, 5), moved.min());
 		assertEquals(new VecI(11, 13, 15), moved.max());

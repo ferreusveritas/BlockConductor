@@ -1,13 +1,15 @@
-package com.ferreusveritas.shapeproviders;
+package com.ferreusveritas.shapes;
 
 import com.ferreusveritas.api.AABB;
 import com.ferreusveritas.api.VecI;
 
-public class SurfaceProvider implements ShapeProvider {
+import java.util.Optional;
+
+public class SurfaceShape implements Shape {
 	
 	private final AABB aabb;
 	
-	public SurfaceProvider(VecI dir, int offset) {
+	public SurfaceShape(VecI dir, int offset) {
 		this.aabb = createAABB(dir.mul(offset), dir);
 	}
 	
@@ -34,8 +36,8 @@ public class SurfaceProvider implements ShapeProvider {
 	}
 	
 	@Override
-	public AABB getAABB() {
-		return aabb;
+	public Optional<AABB> getAABB() {
+		return Optional.of(aabb);
 	}
 	
 	@Override
