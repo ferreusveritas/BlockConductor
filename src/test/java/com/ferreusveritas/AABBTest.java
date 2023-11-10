@@ -1,7 +1,7 @@
 package com.ferreusveritas;
 
-import com.ferreusveritas.api.AABB;
-import com.ferreusveritas.api.VecI;
+import com.ferreusveritas.math.AABB;
+import com.ferreusveritas.math.VecI;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

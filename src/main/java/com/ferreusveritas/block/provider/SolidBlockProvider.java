@@ -1,6 +1,9 @@
-package com.ferreusveritas.blockproviders;
+package com.ferreusveritas.block.provider;
 
 import com.ferreusveritas.api.*;
+import com.ferreusveritas.block.Block;
+import com.ferreusveritas.block.Blocks;
+import com.ferreusveritas.math.AABB;
 
 import java.util.Optional;
 
@@ -13,8 +16,8 @@ public class SolidBlockProvider extends BlockProvider {
 	}
 
 	@Override
-	public Optional<Blocks> getBlocks(AABB area) {
-		return Optional.of(new Blocks(area, block));
+	public Optional<Blocks> getBlocks(Request request) {
+		return Optional.of(new Blocks(request.area(), block));
 	}
 	
 	@Override

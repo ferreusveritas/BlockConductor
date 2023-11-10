@@ -1,7 +1,7 @@
 package com.ferreusveritas.shapes;
 
-import com.ferreusveritas.api.AABB;
-import com.ferreusveritas.api.VecI;
+import com.ferreusveritas.math.AABB;
+import com.ferreusveritas.math.VecI;
 
 import java.util.List;
 import java.util.Optional;

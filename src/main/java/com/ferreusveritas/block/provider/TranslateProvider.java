@@ -1,8 +1,9 @@
-package com.ferreusveritas.blockproviders;
+package com.ferreusveritas.block.provider;
 
-import com.ferreusveritas.api.AABB;
-import com.ferreusveritas.api.Blocks;
-import com.ferreusveritas.api.VecI;
+import com.ferreusveritas.math.AABB;
+import com.ferreusveritas.block.Blocks;
+import com.ferreusveritas.api.Request;
+import com.ferreusveritas.math.VecI;
 
 import java.util.Optional;
 
@@ -21,8 +22,8 @@ public class TranslateProvider extends BlockProvider {
 	}
 	
 	@Override
-	public Optional<Blocks> getBlocks(AABB area) {
-		return provider.getBlocks(area.offset(offset.neg()));
+	public Optional<Blocks> getBlocks(Request request) {
+		return provider.getBlocks(request.withArea(request.area().offset(offset.neg())));
 	}
 	
 	@Override

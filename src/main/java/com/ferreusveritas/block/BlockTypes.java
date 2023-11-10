@@ -1,4 +1,6 @@
-package com.ferreusveritas.api;
+package com.ferreusveritas.block;
+
+import com.ferreusveritas.block.Block;
 
 public class BlockTypes {
 	public static final Block NONE = new Block("", "");

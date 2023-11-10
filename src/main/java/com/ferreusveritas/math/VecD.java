@@ -1,4 +1,4 @@
-package com.ferreusveritas.api;
+package com.ferreusveritas.math;
 
 public record VecD(
 	double x,
@@ -6,8 +6,32 @@ public record VecD(
 	double z
 ) {
 	
+	public static final VecD ZERO = new VecD(0, 0, 0);
+	public static final VecD DOWN = ZERO.withY(-1);
+	public static final VecD UP = ZERO.withY(1);
+	public static final VecD NORTH = ZERO.withZ(-1);
+	public static final VecD SOUTH = ZERO.withZ(1);
+	public static final VecD WEST = ZERO.withX(-1);
+	public static final VecD EAST = ZERO.withX(1);
+	
 	public VecD(VecI vec) {
 		this(vec.x() + 0.5, vec.y() + 0.5, vec.z() + 0.5);
+	}
+	
+	public VecI toVecI() {
+		return new VecI(this);
+	}
+	
+	public VecD withX(double x) {
+		return new VecD(x, y, z);
+	}
+	
+	public VecD withY(double y) {
+		return new VecD(x, y, z);
+	}
+	
+	public VecD withZ(double z) {
+		return new VecD(x, y, z);
 	}
 	
 	public VecD neg() {

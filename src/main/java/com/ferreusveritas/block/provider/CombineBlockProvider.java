@@ -1,8 +1,12 @@
-package com.ferreusveritas.blockproviders;
+package com.ferreusveritas.block.provider;
 
 import com.ferreusveritas.api.*;
+import com.ferreusveritas.block.Block;
+import com.ferreusveritas.block.BlockTypes;
+import com.ferreusveritas.block.Blocks;
+import com.ferreusveritas.math.AABB;
+import com.ferreusveritas.math.VecI;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,42 +17,28 @@ public class CombineBlockProvider extends BlockProvider {
 	
 	public CombineBlockProvider(BlockProvider ... providers) {
 		this.providers = List.of(providers);
-		this.aabb = calculateAABB(this.providers);
-	}
-	
-	private static AABB calculateAABB(List<BlockProvider> providers) {
-		AABB aabb = null;
-		for (BlockProvider provider : providers) {
-			Optional<AABB> providerAABB = provider.getAABB();
-			if (providerAABB.isEmpty()) {
-				continue;
-			}
-			if (aabb == null) {
-				aabb = providerAABB.get();
-			} else {
-				aabb = aabb.union(providerAABB.get());
-			}
-		}
-		return aabb;
+		this.aabb = unionProviders(this.providers);
 	}
 	
 	@Override
-	public Optional<Blocks> getBlocks(AABB area) {
+	public Optional<Blocks> getBlocks(Request request) {
+		AABB area = request.area();
 		if (!this.aabb.intersects(area)) {
 			return Optional.empty();
 		}
 		Blocks blocks = new Blocks(area);
 		for (BlockProvider provider : providers) {
-			processProvider(provider, area, blocks);
+			processProvider(provider, request, blocks);
 		}
 		return Optional.of(blocks);
 	}
 	
-	private void processProvider(BlockProvider provider, AABB area, Blocks blocks) {
+	private void processProvider(BlockProvider provider, Request request, Blocks blocks) {
+		AABB area = request.area();
 		if(!provider.intersects(area)) {
 			return;
 		}
-		Optional<Blocks> blocksOptional = provider.getBlocks(area);
+		Optional<Blocks> blocksOptional = provider.getBlocks(request);
 		if (blocksOptional.isEmpty()) {
 			return;
 		}

@@ -1,10 +1,13 @@
 package com.ferreusveritas.shapes;
 
-import com.ferreusveritas.api.AABB;
-import com.ferreusveritas.api.VecI;
+import com.ferreusveritas.math.AABB;
+import com.ferreusveritas.math.VecI;
 
 import java.util.Optional;
 
+/**
+ * Offset a shape by a specified amount.
+ */
 public class TranslateShape implements Shape {
 	
 	private final Shape shape;

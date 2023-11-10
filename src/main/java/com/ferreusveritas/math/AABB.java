@@ -1,4 +1,4 @@
-package com.ferreusveritas.api;
+package com.ferreusveritas.math;
 
 import net.querz.nbt.tag.CompoundTag;
 
@@ -68,6 +68,7 @@ public record AABB(
 	 */
 	public boolean intersects(AABB aabb) {
 		return
+			aabb != null &&
 			min.x() <= aabb.max.x() && max.x() >= aabb.min.x() &&
 			min.y() <= aabb.max.y() && max.y() >= aabb.min.y() &&
 			min.z() <= aabb.max.z() && max.z() >= aabb.min.z();
@@ -105,6 +106,10 @@ public record AABB(
 		return new AABB(min.min(aabb.min), max.max(aabb.max));
 	}
 	
+	/**
+	 * Iterates over all positions in this AABB.
+	 * @param func A function that accepts the absolute position and the relative position respectively.
+	 */
 	public void forEach(BiConsumer<VecI, VecI> func) {
 		VecI size = size();
 		int maxX = size.x();
@@ -125,6 +130,12 @@ public record AABB(
 		tag.put("min", min().toNBT());
 		tag.put("max", max().toNBT());
 		return tag;
+	}
+	
+	public AABB fromChunk(VecI chunkPos) {
+		VecI blockPos = chunkPos.mul(16);
+		VecI chunkSize = new VecI(16, 16, 16);
+		return new AABB(blockPos, blockPos.add(chunkSize));
 	}
 	
 }

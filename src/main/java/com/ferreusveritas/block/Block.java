@@ -1,4 +1,4 @@
-package com.ferreusveritas.api;
+package com.ferreusveritas.block;
 
 /**
  * A block is a 3D object that can be placed in the world.
@@ -15,4 +15,5 @@ public record Block(
 	public String toString() {
 		return name + "|" + state;
 	}
+	
 }

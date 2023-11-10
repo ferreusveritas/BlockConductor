@@ -5,12 +5,7 @@ import com.ferreusveritas.math.VecI;
 
 import java.util.Optional;
 
-/**
- * A shape that represents all blocks in the world.
- */
-public class UbiqueShape implements Shape {
-
-	public UbiqueShape(Shape shape) {}
+public class CheckerShape implements Shape {
 	
 	@Override
 	public Optional<AABB> getAABB() {
@@ -19,7 +14,7 @@ public class UbiqueShape implements Shape {
 	
 	@Override
 	public boolean isInside(VecI pos) {
-		return true;
+		return (pos.x() + pos.y() + pos.z()) % 2 == 0;
 	}
 	
 }

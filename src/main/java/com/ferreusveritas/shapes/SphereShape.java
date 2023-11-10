@@ -1,20 +1,20 @@
 package com.ferreusveritas.shapes;
 
-import com.ferreusveritas.api.AABB;
-import com.ferreusveritas.api.VecI;
+import com.ferreusveritas.math.AABB;
+import com.ferreusveritas.math.VecI;
 
 import java.util.Optional;
 
 public class SphereShape implements Shape {
 	
 	private final VecI center;
-	private final int radius;
+	private final double radius;
 	private final AABB aabb;
 	
-	public SphereShape(VecI center, int radius) {
+	public SphereShape(VecI center, double radius) {
 		this.center = center;
 		this.radius = radius;
-		this.aabb = new AABB(center, center).grow(radius).orElseThrow();
+		this.aabb = new AABB(center, center).grow((int)Math.ceil(radius)).orElseThrow();
 	}
 	
 	@Override

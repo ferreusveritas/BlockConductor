@@ -1,5 +1,7 @@
-package com.ferreusveritas.api;
+package com.ferreusveritas.block;
 
+import com.ferreusveritas.math.AABB;
+import com.ferreusveritas.math.VecI;
 import com.ferreusveritas.api.hashlist.HashList;
 import com.ferreusveritas.support.Nbtable;
 import net.querz.nbt.tag.CompoundTag;
@@ -42,8 +44,7 @@ public record Blocks(
 	}
 
 	private int calcIndex(VecI pos) {
-		//Indices for the Blocks and Data arrays are ordered YZX - that is, the X coordinate varies the fastest.
-		return pos.x() + pos.z() * size.x() + pos.y() * size.x() * size.z();
+		return pos.calcIndex(size);
 	}
 
 	private boolean isValid(VecI pos) {

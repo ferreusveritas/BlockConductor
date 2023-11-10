@@ -1,11 +1,11 @@
 package com.ferreusveritas.scene;
 
-import com.ferreusveritas.api.AABB;
-import com.ferreusveritas.api.BlockTypes;
-import com.ferreusveritas.api.VecI;
-import com.ferreusveritas.blockproviders.BlockProvider;
-import com.ferreusveritas.blockproviders.CombineBlockProvider;
-import com.ferreusveritas.blockproviders.ShapeBlockProvider;
+import com.ferreusveritas.math.AABB;
+import com.ferreusveritas.block.BlockTypes;
+import com.ferreusveritas.math.VecI;
+import com.ferreusveritas.block.provider.BlockProvider;
+import com.ferreusveritas.block.provider.CombineBlockProvider;
+import com.ferreusveritas.block.provider.ShapeBlockProvider;
 import com.ferreusveritas.shapes.*;
 
 public class MainScene {
