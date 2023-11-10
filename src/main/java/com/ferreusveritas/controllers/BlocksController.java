@@ -3,7 +3,6 @@ package com.ferreusveritas.controllers;
 import com.ferreusveritas.api.*;
 import com.ferreusveritas.block.Blocks;
 import com.ferreusveritas.block.provider.BlockProvider;
-import com.ferreusveritas.blockproviders.*;
 import com.ferreusveritas.scene.MainScene;
 import com.ferreusveritas.support.NbtHelper;
 import org.springframework.http.MediaType;
