@@ -1,7 +1,7 @@
 package com.ferreusveritas.shapes;
 
-import com.ferreusveritas.math.AABB;
-import com.ferreusveritas.math.VecI;
+import com.ferreusveritas.math.AABBI;
+import com.ferreusveritas.math.Vec3I;
 
 import java.util.BitSet;
 import java.util.Optional;
@@ -13,20 +13,20 @@ import java.util.Optional;
 public class CacheShape implements Shape {
 	
 	private final Shape shape;
-	private final AABB aabb;
+	private final AABBI aabb;
 	private final BitSet cache;
 	
-	public CacheShape(Shape shape, AABB aabb) {
+	public CacheShape(Shape shape, AABBI aabb) {
 		this.shape = shape;
 		this.aabb = determineAAABB(shape, aabb);
 		this.cache = buildCache(this.aabb);
 	}
 	
-	private AABB determineAAABB(Shape shape, AABB aabb) {
+	private AABBI determineAAABB(Shape shape, AABBI aabb) {
 		return shape.getAABB().flatMap(a -> a.intersect(aabb)).or(shape::getAABB).orElse(null);
 	}
 	
-	private BitSet buildCache(AABB aabb) {
+	private BitSet buildCache(AABBI aabb) {
 		if(aabb == null) {
 			throw new IllegalArgumentException("CacheShape must have a valid AABB");
 		}
@@ -35,7 +35,7 @@ public class CacheShape implements Shape {
 		for (int y = aabb.min().y(); y <= aabb.max().y(); y++) {
 			for (int z = aabb.min().z(); z <= aabb.max().z(); z++) {
 				for (int x = aabb.min().x(); x <= aabb.max().x(); x++) {
-					bitSet.set(index++, shape.isInside(new VecI(x, y, z)));
+					bitSet.set(index++, shape.isInside(new Vec3I(x, y, z)));
 				}
 			}
 		}
@@ -43,12 +43,12 @@ public class CacheShape implements Shape {
 	}
 	
 	@Override
-	public Optional<AABB> getAABB() {
+	public Optional<AABBI> getAABB() {
 		return shape.getAABB().flatMap(a -> a.intersect(this.aabb));
 	}
 	
 	@Override
-	public boolean isInside(VecI pos) {
+	public boolean isInside(Vec3I pos) {
 		return cache.get(pos.calcIndex(aabb.size()));
 	}
 	

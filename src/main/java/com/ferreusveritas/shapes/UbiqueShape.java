@@ -1,7 +1,7 @@
 package com.ferreusveritas.shapes;
 
-import com.ferreusveritas.math.AABB;
-import com.ferreusveritas.math.VecI;
+import com.ferreusveritas.math.AABBI;
+import com.ferreusveritas.math.Vec3I;
 
 import java.util.Optional;
 
@@ -13,12 +13,12 @@ public class UbiqueShape implements Shape {
 	public UbiqueShape(Shape shape) {}
 	
 	@Override
-	public Optional<AABB> getAABB() {
-		return Optional.of(AABB.INFINITE);
+	public Optional<AABBI> getAABB() {
+		return Optional.of(AABBI.INFINITE);
 	}
 	
 	@Override
-	public boolean isInside(VecI pos) {
+	public boolean isInside(Vec3I pos) {
 		return true;
 	}
 	

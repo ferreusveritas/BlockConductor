@@ -3,7 +3,7 @@ package com.ferreusveritas.block.provider;
 import com.ferreusveritas.api.*;
 import com.ferreusveritas.block.Block;
 import com.ferreusveritas.block.Blocks;
-import com.ferreusveritas.math.AABB;
+import com.ferreusveritas.math.AABBI;
 
 import java.util.Optional;
 
@@ -21,12 +21,12 @@ public class SolidBlockProvider extends BlockProvider {
 	}
 	
 	@Override
-	public boolean intersects(AABB area) {
+	public boolean intersects(AABBI area) {
 		return true;
 	}
 	
 	@Override
-	public Optional<AABB> getAABB() {
-		return Optional.of(AABB.INFINITE);
+	public Optional<AABBI> getAABB() {
+		return Optional.of(AABBI.INFINITE);
 	}
 }

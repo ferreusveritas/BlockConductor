@@ -1,7 +1,7 @@
 package com.ferreusveritas.shapes;
 
-import com.ferreusveritas.math.AABB;
-import com.ferreusveritas.math.VecI;
+import com.ferreusveritas.math.AABBI;
+import com.ferreusveritas.math.Vec3I;
 
 import java.util.Optional;
 
@@ -17,20 +17,20 @@ public class CavitateShape implements Shape {
 	}
 	
 	@Override
-	public Optional<AABB> getAABB() {
+	public Optional<AABBI> getAABB() {
 		return shape.getAABB();
 	}
 	
 	@Override
-	public boolean isInside(VecI pos) {
+	public boolean isInside(Vec3I pos) {
 		return shape.isInside(pos) &&
 			!(
-				shape.isInside(pos.add(VecI.DOWN))
-				&& shape.isInside(pos.add(VecI.UP))
-				&& shape.isInside(pos.add(VecI.NORTH))
-				&& shape.isInside(pos.add(VecI.SOUTH))
-				&& shape.isInside(pos.add(VecI.EAST))
-				&& shape.isInside(pos.add(VecI.WEST))
+				shape.isInside(pos.add(Vec3I.DOWN))
+				&& shape.isInside(pos.add(Vec3I.UP))
+				&& shape.isInside(pos.add(Vec3I.NORTH))
+				&& shape.isInside(pos.add(Vec3I.SOUTH))
+				&& shape.isInside(pos.add(Vec3I.EAST))
+				&& shape.isInside(pos.add(Vec3I.WEST))
 			);
 	}
 }

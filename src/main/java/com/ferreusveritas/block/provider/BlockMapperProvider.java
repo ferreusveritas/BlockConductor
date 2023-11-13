@@ -1,6 +1,6 @@
 package com.ferreusveritas.block.provider;
 
-import com.ferreusveritas.math.AABB;
+import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.block.Block;
 import com.ferreusveritas.block.Blocks;
 import com.ferreusveritas.api.Request;
@@ -20,8 +20,8 @@ public class BlockMapperProvider extends BlockProvider {
 	
 	@Override
 	public Optional<Blocks> getBlocks(Request request) {
-		AABB area = request.area();
-		AABB bounds = intersect(area).orElse(null);
+		AABBI area = request.area();
+		AABBI bounds = intersect(area).orElse(null);
 		if(bounds == null) {
 			return Optional.empty();
 		}
@@ -39,7 +39,7 @@ public class BlockMapperProvider extends BlockProvider {
 	}
 	
 	@Override
-	public Optional<AABB> getAABB() {
+	public Optional<AABBI> getAABB() {
 		return provider.getAABB();
 	}
 }

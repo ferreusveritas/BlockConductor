@@ -1,7 +1,7 @@
 package com.ferreusveritas.shapes;
 
-import com.ferreusveritas.math.AABB;
-import com.ferreusveritas.math.VecI;
+import com.ferreusveritas.math.AABBI;
+import com.ferreusveritas.math.Vec3I;
 
 import java.util.Optional;
 
@@ -19,12 +19,12 @@ public class DifferenceShape implements Shape {
 	}
 	
 	@Override
-	public Optional<AABB> getAABB() {
+	public Optional<AABBI> getAABB() {
 		return shape1.getAABB();
 	}
 	
 	@Override
-	public boolean isInside(VecI pos) {
+	public boolean isInside(Vec3I pos) {
 		return shape1.isInside(pos) && !shape2.isInside(pos);
 	}
 	

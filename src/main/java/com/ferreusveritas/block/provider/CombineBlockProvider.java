@@ -4,8 +4,8 @@ import com.ferreusveritas.api.*;
 import com.ferreusveritas.block.Block;
 import com.ferreusveritas.block.BlockTypes;
 import com.ferreusveritas.block.Blocks;
-import com.ferreusveritas.math.AABB;
-import com.ferreusveritas.math.VecI;
+import com.ferreusveritas.math.AABBI;
+import com.ferreusveritas.math.Vec3I;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,7 +13,7 @@ import java.util.Optional;
 public class CombineBlockProvider extends BlockProvider {
 
 	private final List<BlockProvider> providers;
-	private final AABB aabb;
+	private final AABBI aabb;
 	
 	public CombineBlockProvider(BlockProvider ... providers) {
 		this.providers = List.of(providers);
@@ -22,7 +22,7 @@ public class CombineBlockProvider extends BlockProvider {
 	
 	@Override
 	public Optional<Blocks> getBlocks(Request request) {
-		AABB area = request.area();
+		AABBI area = request.area();
 		if (!this.aabb.intersects(area)) {
 			return Optional.empty();
 		}
@@ -34,7 +34,7 @@ public class CombineBlockProvider extends BlockProvider {
 	}
 	
 	private void processProvider(BlockProvider provider, Request request, Blocks blocks) {
-		AABB area = request.area();
+		AABBI area = request.area();
 		if(!provider.intersects(area)) {
 			return;
 		}
@@ -46,7 +46,7 @@ public class CombineBlockProvider extends BlockProvider {
 		area.forEach((abs, rel) -> processBlock(blocksLayer, rel, blocks));
 	}
 	
-	private void processBlock(Blocks blocksLayer, VecI pos, Blocks blocks) {
+	private void processBlock(Blocks blocksLayer, Vec3I pos, Blocks blocks) {
 		Block block = blocksLayer.get(pos);
 		if (block != BlockTypes.NONE) {
 			blocks.set(pos, block);
@@ -54,7 +54,7 @@ public class CombineBlockProvider extends BlockProvider {
 	}
 	
 	@Override
-	public boolean intersects(AABB area) {
+	public boolean intersects(AABBI area) {
 		if(!this.aabb.intersects(area)) {
 			return false;
 		}
@@ -67,7 +67,7 @@ public class CombineBlockProvider extends BlockProvider {
 	}
 	
 	@Override
-	public Optional<AABB> getAABB() {
+	public Optional<AABBI> getAABB() {
 		return Optional.of(aabb);
 	}
 	

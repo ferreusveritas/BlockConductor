@@ -1,7 +1,7 @@
 package com.ferreusveritas.block;
 
-import com.ferreusveritas.math.AABB;
-import com.ferreusveritas.math.VecI;
+import com.ferreusveritas.math.AABBI;
+import com.ferreusveritas.math.Vec3I;
 import com.ferreusveritas.api.hashlist.HashList;
 import com.ferreusveritas.support.Nbtable;
 import net.querz.nbt.tag.CompoundTag;
@@ -22,18 +22,18 @@ import java.util.Objects;
  * @param blockData An array of block ids.
  */
 public record Blocks(
-	AABB aabb,
-	VecI size,
+	AABBI aabb,
+	Vec3I size,
 	HashList<Block> blockMap,
 	short[] blockData
 ) implements Nbtable {
 
-	public Blocks(AABB aabb) {
+	public Blocks(AABBI aabb) {
 		this(aabb, aabb.size(), new HashList<>(), new short[aabb.size().vol()]);
 		setDefaultBlocks();
 	}
 
-	public Blocks(AABB aabb, Block block) {
+	public Blocks(AABBI aabb, Block block) {
 		this(aabb);
 		fill(block);
 	}
@@ -43,28 +43,28 @@ public record Blocks(
 		this.blockMap.add(BlockTypes.AIR);
 	}
 
-	private int calcIndex(VecI pos) {
+	private int calcIndex(Vec3I pos) {
 		return pos.calcIndex(size);
 	}
 
-	private boolean isValid(VecI pos) {
+	private boolean isValid(Vec3I pos) {
 		return pos.x() >= 0 && pos.x() < size.x() && pos.y() >= 0 && pos.y() < size.y() && pos.z() >= 0 && pos.z() < size.z();
 	}
 
-	public void set(VecI pos, Block block) {
+	public void set(Vec3I pos, Block block) {
 		if(isValid(pos)) {
 			blockData[calcIndex(pos)] = (short) blockMap.add(block);
 		}
 	}
 
-	public Block get(VecI pos) {
+	public Block get(Vec3I pos) {
 		if(isValid(pos)) {
 			return blockMap.get(blockData[calcIndex(pos)]).orElse(BlockTypes.NONE);
 		}
 		return BlockTypes.NONE;
 	}
 	
-	public int getIndex(VecI pos) {
+	public int getIndex(Vec3I pos) {
 		if(isValid(pos)) {
 			return blockData[calcIndex(pos)];
 		}
@@ -80,7 +80,7 @@ public record Blocks(
 			builder.append("Layer ").append(y).append("\n");
 			for(int z = 0; z < size.z(); z++) {
 				for(int x = 0; x < size.x(); x++) {
-					builder.append(getIndex(new VecI(x, y, z))).append(" ");
+					builder.append(getIndex(new Vec3I(x, y, z))).append(" ");
 				}
 				builder.append("\n");
 			}

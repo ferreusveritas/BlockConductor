@@ -1,10 +1,10 @@
 package com.ferreusveritas.api;
 
-import com.ferreusveritas.math.AABB;
+import com.ferreusveritas.math.AABBI;
 
-public record Request(String context, AABB area) {
+public record Request(String context, AABBI area) {
 	
-	public Request withArea(AABB area) {
+	public Request withArea(AABBI area) {
 		return new Request(context, area);
 	}
 	

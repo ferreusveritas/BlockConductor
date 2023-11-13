@@ -1,23 +1,23 @@
 package com.ferreusveritas.block.provider;
 
-import com.ferreusveritas.math.AABB;
+import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.block.Blocks;
 import com.ferreusveritas.api.Request;
-import com.ferreusveritas.math.VecI;
+import com.ferreusveritas.math.Vec3I;
 
 import java.util.Optional;
 
 public class TranslateProvider extends BlockProvider {
 	
 	private final BlockProvider provider;
-	private final VecI offset;
+	private final Vec3I offset;
 	
-	public TranslateProvider(BlockProvider provider, VecI offset) {
+	public TranslateProvider(BlockProvider provider, Vec3I offset) {
 		this.provider = provider;
 		this.offset = offset;
 	}
 	
-	public VecI getOffset() {
+	public Vec3I getOffset() {
 		return offset;
 	}
 	
@@ -27,12 +27,12 @@ public class TranslateProvider extends BlockProvider {
 	}
 	
 	@Override
-	public boolean intersects(AABB area) {
+	public boolean intersects(AABBI area) {
 		return provider.intersects(area.offset(offset.neg()));
 	}
 	
 	@Override
-	public Optional<AABB> getAABB() {
+	public Optional<AABBI> getAABB() {
 		return provider.getAABB().map(a -> a.offset(offset.neg()));
 	}
 	

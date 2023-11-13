@@ -2,46 +2,50 @@ package com.ferreusveritas.math;
 
 import net.querz.nbt.tag.CompoundTag;
 
-public record VecI(
+public record Vec3I(
 	int x,
 	int y,
 	int z
 ) {
 	
-	public static final VecI ZERO = new VecI(0, 0, 0);
-	public static final VecI MIN = new VecI(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
-	public static final VecI MAX = new VecI(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
-	public static final VecI DOWN = ZERO.withY(-1);
-	public static final VecI UP = ZERO.withY(1);
-	public static final VecI NORTH = ZERO.withZ(-1);
-	public static final VecI SOUTH = ZERO.withZ(1);
-	public static final VecI WEST = ZERO.withX(-1);
-	public static final VecI EAST = ZERO.withX(1);
+	public static final Vec3I ZERO = new Vec3I(0, 0, 0);
+	public static final Vec3I MIN = new Vec3I(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
+	public static final Vec3I MAX = new Vec3I(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
+	public static final Vec3I DOWN = ZERO.withY(-1);
+	public static final Vec3I UP = ZERO.withY(1);
+	public static final Vec3I NORTH = ZERO.withZ(-1);
+	public static final Vec3I SOUTH = ZERO.withZ(1);
+	public static final Vec3I WEST = ZERO.withX(-1);
+	public static final Vec3I EAST = ZERO.withX(1);
 	
-	public VecI(VecD vec) {
+	public Vec3I(Vec3D vec) {
 		this((int)Math.floor(vec.x()), (int)Math.floor(vec.y()), (int)Math.floor(vec.z()));
 	}
 	
-	public VecI withX(int x) {
-		return new VecI(x, y, z);
+	public Vec3D toVecD() {
+		return new Vec3D(x + 0.5, y + 0.5, z + 0.5);
 	}
 	
-	public VecI withY(int y) {
-		return new VecI(x, y, z);
+	public Vec3I withX(int x) {
+		return new Vec3I(x, y, z);
 	}
 	
-	public VecI withZ(int z) {
-		return new VecI(x, y, z);
+	public Vec3I withY(int y) {
+		return new Vec3I(x, y, z);
 	}
 	
-	public VecI add(VecI pos) {
+	public Vec3I withZ(int z) {
+		return new Vec3I(x, y, z);
+	}
+	
+	public Vec3I add(Vec3I pos) {
 		int x = (this.x != Integer.MIN_VALUE && this.x != Integer.MAX_VALUE) ? this.x + pos.x : this.x;
 		int y = (this.y != Integer.MIN_VALUE && this.y != Integer.MAX_VALUE) ? this.y + pos.y : this.y;
 		int z = (this.z != Integer.MIN_VALUE && this.z != Integer.MAX_VALUE) ? this.z + pos.z : this.z;
-		return new VecI(x, y, z);
+		return new Vec3I(x, y, z);
 	}
 
-	public VecI sub(VecI pos) {
+	public Vec3I sub(Vec3I pos) {
 		return add(pos.neg());
 	}
 
@@ -49,16 +53,16 @@ public record VecI(
 		return x * y * z;
 	}
 
-	public VecI neg() {
-		return new VecI(-x, -y, -z);
+	public Vec3I neg() {
+		return new Vec3I(-x, -y, -z);
 	}
 	
-	public VecI mul(int scale) {
-		return new VecI(x * scale, y * scale, z * scale);
+	public Vec3I mul(int scale) {
+		return new Vec3I(x * scale, y * scale, z * scale);
 	}
 	
-	public VecI mul(double scale) {
-		return new VecD(this).mul(scale).toVecI();
+	public Vec3I mul(double scale) {
+		return new Vec3D(this).mul(scale).toVecI();
 	}
 	
 	/**
@@ -66,8 +70,8 @@ public record VecI(
 	 * @param pos The other vector
 	 * @return A new vector with the maximum X, Y and Z components of the two vectors.
 	 */
-	public VecI max(VecI pos) {
-		return new VecI(Math.max(x, pos.x), Math.max(y, pos.y), Math.max(z, pos.z));
+	public Vec3I max(Vec3I pos) {
+		return new Vec3I(Math.max(x, pos.x), Math.max(y, pos.y), Math.max(z, pos.z));
 	}
 
 	/**
@@ -75,15 +79,15 @@ public record VecI(
 	 * @param pos The other vector
 	 * @return A new vector with the minimum X, Y and Z components of the two vectors.
 	 */
-	public VecI min(VecI pos) {
-		return new VecI(Math.min(x, pos.x), Math.min(y, pos.y), Math.min(z, pos.z));
+	public Vec3I min(Vec3I pos) {
+		return new Vec3I(Math.min(x, pos.x), Math.min(y, pos.y), Math.min(z, pos.z));
 	}
 	
-	public double distanceTo(VecI center) {
+	public double distanceTo(Vec3I center) {
 		return Math.sqrt(distanceSqTo(center));
 	}
 
-	public double distanceSqTo(VecI center) {
+	public double distanceSqTo(Vec3I center) {
 		double dx = x - center.x;
 		double dy = y - center.y;
 		double dz = z - center.z;
@@ -98,7 +102,7 @@ public record VecI(
 		return Math.sqrt(lenSq());
 	}
 	
-	public int dot(VecI pos) {
+	public int dot(Vec3I pos) {
 		return x * pos.x + y * pos.y + z * pos.z;
 	}
 	
@@ -110,64 +114,64 @@ public record VecI(
 		return tag;
 	}
 	
-	public VecI down() {
+	public Vec3I down() {
 		return add(DOWN);
 	}
 	
-	public VecI down(int count) {
+	public Vec3I down(int count) {
 		return add(DOWN.mul(count));
 	}
 	
-	public VecI up() {
+	public Vec3I up() {
 		return add(UP);
 	}
 	
-	public VecI up(int count) {
+	public Vec3I up(int count) {
 		return add(UP.mul(count));
 	}
 	
-	public VecI north() {
+	public Vec3I north() {
 		return add(NORTH);
 	}
 	
-	public VecI north(int count) {
+	public Vec3I north(int count) {
 		return add(NORTH.mul(count));
 	}
 	
-	public VecI south() {
+	public Vec3I south() {
 		return add(SOUTH);
 	}
 	
-	public VecI south(int count) {
+	public Vec3I south(int count) {
 		return add(SOUTH.mul(count));
 	}
 	
-	public VecI west() {
+	public Vec3I west() {
 		return add(WEST);
 	}
 	
-	public VecI west(int count) {
+	public Vec3I west(int count) {
 		return add(WEST.mul(count));
 	}
 	
-	public VecI east() {
+	public Vec3I east() {
 		return add(EAST);
 	}
 	
-	public VecI east(int count) {
+	public Vec3I east(int count) {
 		return add(EAST.mul(count));
 	}
 	
-	public int calcIndex(VecI size) {
+	public int calcIndex(Vec3I size) {
 		//Indices for the Blocks and Data arrays are ordered YZX - that is, the X coordinate varies the fastest.
 		return x + z * size.x() + y * size.x() * size.z();
 	}
 	
-	public static VecI unfoldIndex(int index, VecI size) {
+	public static Vec3I unfoldIndex(int index, Vec3I size) {
 		int x = index % size.x;
 		int y = index / (size.x * size.y);
 		int z = (index / size.x) % size.y;
-		return new VecI(x, y, z);
+		return new Vec3I(x, y, z);
 	}
 	
 }

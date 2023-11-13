@@ -1,7 +1,7 @@
 package com.ferreusveritas.shapes;
 
-import com.ferreusveritas.math.AABB;
-import com.ferreusveritas.math.VecI;
+import com.ferreusveritas.math.AABBI;
+import com.ferreusveritas.math.Vec3I;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,14 +21,14 @@ public class UnionShape implements Shape {
 	}
 	
 	@Override
-	public Optional<AABB> getAABB() {
-		AABB aabb = null;
+	public Optional<AABBI> getAABB() {
+		AABBI aabb = null;
 		for (Shape shape : shapes) {
 			if (aabb == null) {
 				aabb = shape.getAABB().orElse(null);
 				continue;
 			}
-			AABB next = shape.getAABB().orElse(null);
+			AABBI next = shape.getAABB().orElse(null);
 			if(next != null) {
 				aabb = aabb.union(next);
 			}
@@ -37,7 +37,7 @@ public class UnionShape implements Shape {
 	}
 	
 	@Override
-	public boolean isInside(VecI pos) {
+	public boolean isInside(Vec3I pos) {
 		for (Shape shape : shapes) {
 			if (shape.isInside(pos)) {
 				return true;

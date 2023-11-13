@@ -3,8 +3,8 @@ package com.ferreusveritas.block.provider;
 import com.ferreusveritas.api.*;
 import com.ferreusveritas.block.Block;
 import com.ferreusveritas.block.Blocks;
-import com.ferreusveritas.math.AABB;
-import com.ferreusveritas.math.VecI;
+import com.ferreusveritas.math.AABBI;
+import com.ferreusveritas.math.Vec3I;
 import com.ferreusveritas.shapes.Shape;
 
 import java.util.Optional;
@@ -25,8 +25,8 @@ public class ShapeBlockProvider extends BlockProvider {
 	
 	@Override
 	public Optional<Blocks> getBlocks(Request request) {
-		AABB area = request.area();
-		AABB bounds = intersect(area).orElse(null);
+		AABBI area = request.area();
+		AABBI bounds = intersect(area).orElse(null);
 		if(bounds == null) {
 			return Optional.empty();
 		}
@@ -35,14 +35,14 @@ public class ShapeBlockProvider extends BlockProvider {
 		return Optional.of(blocks);
 	}
 	
-	private void processBlock(Blocks blocks, VecI absPos, VecI relPos) {
+	private void processBlock(Blocks blocks, Vec3I absPos, Vec3I relPos) {
 		if(shapeProvider.isInside(absPos)) {
 			blocks.set(relPos, block);
 		}
 	}
 	
 	@Override
-	public Optional<AABB> getAABB() {
+	public Optional<AABBI> getAABB() {
 		return shapeProvider.getAABB();
 	}
 	

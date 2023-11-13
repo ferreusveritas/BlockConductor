@@ -1,6 +1,6 @@
 package com.ferreusveritas.block.provider;
 
-import com.ferreusveritas.math.AABB;
+import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.block.Blocks;
 import com.ferreusveritas.api.Request;
 
@@ -21,7 +21,7 @@ public abstract class BlockProvider {
 	 * @param area The area to check.
 	 * @return True if the area intersects with this block provider, false otherwise.
 	 */
-	public boolean intersects(AABB area) {
+	public boolean intersects(AABBI area) {
 		return getAABB().map(a -> a.intersects(area)).orElse(false);
 	}
 	
@@ -29,14 +29,14 @@ public abstract class BlockProvider {
 	 * Get the AABB for this block provider.
 	 * @return The AABB for this block provider.
 	 */
-	public abstract Optional<AABB> getAABB();
+	public abstract Optional<AABBI> getAABB();
 	
 	/**
 	 * Get the AABB for this block provider, intersected with the given area.
 	 * @param area The area to intersect with.
 	 * @return The AABB for this block provider, intersected with the given area.
 	 */
-	protected Optional<AABB> intersect(AABB area) {
+	protected Optional<AABBI> intersect(AABBI area) {
 		return getAABB().flatMap(a -> a.intersect(area));
 	}
 	
@@ -45,10 +45,10 @@ public abstract class BlockProvider {
 	 * @param providers The block providers to union.
 	 * @return The AABB for the given block providers.
 	 */
-	protected AABB unionProviders(Collection<BlockProvider> providers) {
-		AABB aabb = null;
+	protected AABBI unionProviders(Collection<BlockProvider> providers) {
+		AABBI aabb = null;
 		for (BlockProvider provider : providers) {
-			Optional<AABB> providerAABB = provider.getAABB();
+			Optional<AABBI> providerAABB = provider.getAABB();
 			if (providerAABB.isEmpty()) {
 				continue;
 			}

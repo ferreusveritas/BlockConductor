@@ -1,7 +1,7 @@
 package com.ferreusveritas.shapes;
 
-import com.ferreusveritas.math.AABB;
-import com.ferreusveritas.math.VecI;
+import com.ferreusveritas.math.AABBI;
+import com.ferreusveritas.math.Vec3I;
 
 import java.util.Optional;
 
@@ -19,12 +19,12 @@ public class LayerShape implements Shape {
 	}
 	
 	@Override
-	public Optional<AABB> getAABB() {
-		return Optional.of(new AABB(Integer.MIN_VALUE, minY, Integer.MIN_VALUE, Integer.MAX_VALUE, maxY, Integer.MAX_VALUE));
+	public Optional<AABBI> getAABB() {
+		return Optional.of(new AABBI(Integer.MIN_VALUE, minY, Integer.MIN_VALUE, Integer.MAX_VALUE, maxY, Integer.MAX_VALUE));
 	}
 	
 	@Override
-	public boolean isInside(VecI pos) {
+	public boolean isInside(Vec3I pos) {
 		return pos.y() >= minY && pos.y() <= maxY;
 	}
 	

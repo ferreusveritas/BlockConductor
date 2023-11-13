@@ -1,6 +1,6 @@
 package com.ferreusveritas.block.provider;
 
-import com.ferreusveritas.math.AABB;
+import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.block.Blocks;
 import com.ferreusveritas.api.Request;
 
@@ -11,7 +11,7 @@ import java.util.Optional;
 public class RoutingBlockProvider extends BlockProvider {
 	
 	private final Map<String, BlockProvider> providers;
-	private final AABB aabb;
+	private final AABBI aabb;
 	
 	public RoutingBlockProvider(Map<String, BlockProvider> providers) {
 		this.providers = new HashMap<>(providers);
@@ -28,7 +28,7 @@ public class RoutingBlockProvider extends BlockProvider {
 	}
 	
 	@Override
-	public Optional<AABB> getAABB() {
-		return Optional.of(AABB.INFINITE);
+	public Optional<AABBI> getAABB() {
+		return Optional.of(AABBI.INFINITE);
 	}
 }

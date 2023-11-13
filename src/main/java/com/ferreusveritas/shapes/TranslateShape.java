@@ -1,7 +1,7 @@
 package com.ferreusveritas.shapes;
 
-import com.ferreusveritas.math.AABB;
-import com.ferreusveritas.math.VecI;
+import com.ferreusveritas.math.AABBI;
+import com.ferreusveritas.math.Vec3I;
 
 import java.util.Optional;
 
@@ -11,20 +11,20 @@ import java.util.Optional;
 public class TranslateShape implements Shape {
 	
 	private final Shape shape;
-	private final VecI offset;
+	private final Vec3I offset;
 	
-	public TranslateShape(Shape shape, VecI offset) {
+	public TranslateShape(Shape shape, Vec3I offset) {
 		this.shape = shape;
 		this.offset = offset;
 	}
 	
 	@Override
-	public Optional<AABB> getAABB() {
+	public Optional<AABBI> getAABB() {
 		return shape.getAABB().map(aabb -> aabb.offset(offset));
 	}
 	
 	@Override
-	public boolean isInside(VecI pos) {
+	public boolean isInside(Vec3I pos) {
 		return shape.isInside(pos.sub(offset));
 	}
 	
