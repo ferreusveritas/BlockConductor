@@ -1,5 +1,7 @@
 package com.ferreusveritas.math;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public record Vec3D(
 	double x,
 	double y,
@@ -145,6 +147,7 @@ public record Vec3D(
 		return new Vec3D(x + amount, y, z);
 	}
 	
+	@JsonIgnore
 	public boolean isZero() {
 		return x == 0 && y == 0 && z == 0;
 	}

@@ -11,65 +11,32 @@ public class QSP {
 	private static final int MAX_DEPTH = 4;
 	private final QSPNode root;
 	private final AABBD aabb;
-	private final SimpleMeshModel model;
 	
-	private QSP(QSPNode root, AABBD aabb, SimpleMeshModel model) {
+	private QSP(QSPNode root, SimpleMeshModel model) {
 		this.root = root;
-		this.aabb = aabb;
-		this.model = model;
+		this.aabb = model.getAABB();
 	}
 	
 	public static QSP load(SimpleMeshModel model) {
-		AABBD aabb = model.getAABB();
-		QSPNode node = subdivide(model.getFaces(), aabb.toRect(), 0);
-		return new QSP(node, aabb, model);
+		QSPNode node = subdivide(model.getFaces(), model.getAABB().toRect(), 0);
+		return new QSP(node, model);
 	}
 	
 	public boolean pointIsInside(Vec3D pos) {
-		return pointIsInsideSlow(pos);
-	}
-	
-	public boolean pointIsInsideSlow(Vec3D pos) {
 		if(!aabb.isInside(pos)) {
 			return false;
 		}
 		int count = 0;
-		for(SimpleFace face : model.getFaces()) {
-			Line3D line = new Line3D(pos, pos.withY(aabb.max().y() + 1.0));
-			Vec3D a = face.getVertex(0);
-			Vec3D b = face.getVertex(1);
-			Vec3D c = face.getVertex(2);
-			Vec3D[] tri = new Vec3D[] {a, b, c};
-			if(Collision.lineInTriangle(line, tri)) {
-				count++;
-			}
-		}
-		return count % 2 == 1;
-	}
-	
-	public boolean pointIsInsideFast(Vec3D pos) {
-		if(!aabb.isInside(pos)) {
-			return false;
-		}
-		List<SimpleFace> faces = getFaces(pos);
+		List<SimpleFace> list = root.getFaces(pos);
+		Vec3D[] tri = new Vec3D[3];
 		Line3D line = new Line3D(pos, pos.withY(aabb.max().y() + 1.0));
-		int count = 0;
-		for(SimpleFace face : faces) {
-			Vec3D a = face.getVertex(0);
-			Vec3D b = face.getVertex(1);
-			Vec3D c = face.getVertex(2);
-			Vec3D[] tri = new Vec3D[] {a, b, c};
+		for(SimpleFace face : list) {
+			face.getVertices(tri);
 			if(Collision.lineInTriangle(line, tri)) {
 				count++;
 			}
 		}
 		return count % 2 == 1;
-	}
-	
-	public List<SimpleFace> getFaces(Vec3D pos) {
-		List<SimpleFace> faces = new ArrayList<>();
-		root.getFaces(pos, faces);
-		return faces;
 	}
 	
 	private static QSPNode subdivide(List<SimpleFace> faces, RectD rect, int depth) {
@@ -79,10 +46,9 @@ public class QSP {
 		RectD[] rects = rect.subdivide();
 		byte[] sortBits = sortFaces(faces, rects);
 		int[] counts = countFaces(sortBits);
-		List<SimpleFace> thisFaces = thisFaces(faces, sortBits, counts);
 		QSPNode[] nodes = childNodes(faces, rects, depth, sortBits, counts);
 		
-		return new QSPNode(rect, thisFaces, nodes);
+		return new QSPNode(rect, List.of(), nodes);
 	}
 	
 	private static byte[] sortFaces(List<SimpleFace> faces, RectD[] rects) {
@@ -103,33 +69,14 @@ public class QSP {
 	}
 	
 	private static int[] countFaces(byte[] sortBits) {
-		int[] counts = new int[5];
+		int[] counts = new int[4];
 		for (byte bit : sortBits) {
-			if (bit == 0b1111) {
-				counts[4]++;
-			} else {
-				counts[0] += (bit & 1);
-				counts[1] += (bit & 2) >> 1;
-				counts[2] += (bit & 4) >> 2;
-				counts[3] += (bit & 8) >> 3;
-			}
+			counts[0] += (bit & 1);
+			counts[1] += (bit & 2) >> 1;
+			counts[2] += (bit & 4) >> 2;
+			counts[3] += (bit & 8) >> 3;
 		}
 		return counts;
-	}
-	
-	private static List<SimpleFace> thisFaces(List<SimpleFace> faces, byte[] sortBits, int[] counts) {
-		List<SimpleFace> thisFaces;
-		int count = counts[4];
-		if(count == 0) {
-			return List.of();
-		}
-		thisFaces = new ArrayList<>(count);
-		for(int i = 0; i < sortBits.length; i++) {
-			if(sortBits[i] == 0b1111) {
-				thisFaces.add(faces.get(i));
-			}
-		}
-		return thisFaces;
 	}
 	
 	private static QSPNode[] childNodes(List<SimpleFace> faces, RectD[] rects, int depth, byte[] sortBits, int[] counts) {
@@ -148,7 +95,7 @@ public class QSP {
 		}
 		List<SimpleFace> childList = new ArrayList<>(count);
 		for(int j = 0; j < sortBits.length; j++) {
-			if((sortBits[j] | quadrant) != 0) {
+			if((sortBits[j] & (1 << quadrant)) != 0) {
 				childList.add(faces.get(j));
 			}
 		}
@@ -177,15 +124,18 @@ public class QSP {
 			return children[index];
 		}
 		
-		public void getFaces(Vec3D pos, List<SimpleFace> facesToAddTo) {
-			facesToAddTo.addAll(faces);
+		public List<SimpleFace> getFaces(Vec3D pos) {
+			if(!faces.isEmpty()) {
+				return faces;
+			}
 			if(children == null) {
-				return;
+				return List.of();
 			}
 			QSPNode child = getChild(pos);
 			if(child != null) {
-				child.getFaces(pos, facesToAddTo);
+				return child.getFaces(pos);
 			}
+			return List.of();
 		}
 		
 	}

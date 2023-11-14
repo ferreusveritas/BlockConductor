@@ -7,6 +7,9 @@ public class FullMeshModel {
 	private final List<FullFace> faces;
 	
 	public FullMeshModel(List<FullFace> faces) {
+		if(faces.isEmpty()) {
+			throw new IllegalArgumentException("Model must have at least one face");
+		}
 		this.faces = faces;
 	}
 	

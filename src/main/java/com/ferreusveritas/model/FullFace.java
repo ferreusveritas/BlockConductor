@@ -28,7 +28,7 @@ public class FullFace {
 	}
 	
 	public SimpleFace toSimpleFace() {
-		return new SimpleFace(vertices, normals[0]);
+		return new SimpleFace(vertices);
 	}
 	
 }

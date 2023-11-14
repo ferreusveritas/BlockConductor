@@ -9,12 +9,10 @@ import java.util.Optional;
 
 public class ModelShape implements Shape {
 	
-	private final SimpleMeshModel model;
 	private final QSP qsp;
 	private final AABBI aabb;
 	
 	public ModelShape(SimpleMeshModel model) {
-		this.model = model;
 		this.aabb = model.getAABB().toAABBI();
 		this.qsp = model.calculateQSP();
 	}
@@ -28,4 +26,5 @@ public class ModelShape implements Shape {
 	public boolean isInside(Vec3I pos) {
 		return qsp.pointIsInside(pos.toVecD());
 	}
+	
 }

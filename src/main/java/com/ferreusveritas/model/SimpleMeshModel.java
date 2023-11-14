@@ -11,8 +11,11 @@ public class SimpleMeshModel {
 	private final AABBD aabb;
 	
 	public SimpleMeshModel(List<SimpleFace> faces) {
+		if(faces.isEmpty()) {
+			throw new IllegalArgumentException("Model must have at least one face");
+		}
 		this.faces = faces;
-		this.aabb = calculateAABB().orElse(null);
+		this.aabb = calculateAABB().orElseThrow(() -> new IllegalArgumentException("SimpleMeshModel AABB is null"));
 	}
 	
 	public SimpleFace getFace(int index) {
