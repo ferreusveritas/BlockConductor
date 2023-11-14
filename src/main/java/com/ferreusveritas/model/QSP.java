@@ -95,7 +95,8 @@ public class QSP {
 		}
 		List<SimpleFace> childList = new ArrayList<>(count);
 		for(int j = 0; j < sortBits.length; j++) {
-			if((sortBits[j] & (1 << quadrant)) != 0) {
+			int bit = sortBits[j];
+			if((bit & (1 << quadrant)) != 0) {
 				childList.add(faces.get(j));
 			}
 		}
