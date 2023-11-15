@@ -9,7 +9,9 @@ public record Matrix4X4(
 	double m20, double m21, double m22, double m23,
 	double m30, double m31, double m32, double m33
 ) {
-
+	
+	public static final Matrix4X4 IDENTITY = new Matrix4X4();
+	
 	// Identity Matrix
 	public Matrix4X4() {
 		this(
@@ -71,7 +73,7 @@ public record Matrix4X4(
 		);
 	}
 	
-	public Matrix4X4 mul(Matrix4X4 m) {
+	public Matrix4X4 transform(Matrix4X4 m) {
 		return new Matrix4X4(
 			m00 * m.m00 + m01 * m.m10 + m02 * m.m20 + m03 * m.m30,
 			m00 * m.m01 + m01 * m.m11 + m02 * m.m21 + m03 * m.m31,
@@ -91,7 +93,7 @@ public record Matrix4X4(
 			m30 * m.m03 + m31 * m.m13 + m32 * m.m23 + m33 * m.m33);
 	}
 	
-	public Vec3D mul(Vec3D vec) {
+	public Vec3D transform(Vec3D vec) {
 		return new Vec3D(
 			m00 * vec.x() + m01 * vec.y() + m02 * vec.z() + m03,
 			m10 * vec.x() + m11 * vec.y() + m12 * vec.z() + m13,
