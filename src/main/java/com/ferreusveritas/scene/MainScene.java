@@ -10,6 +10,7 @@ import com.ferreusveritas.math.Vec3D;
 import com.ferreusveritas.math.Vec3I;
 import com.ferreusveritas.model.FullMeshModel;
 import com.ferreusveritas.model.ModelLoader;
+import com.ferreusveritas.model.QSP;
 import com.ferreusveritas.model.SimpleMeshModel;
 import com.ferreusveritas.shapes.*;
 
@@ -59,8 +60,9 @@ public class MainScene {
 	private static BlockProvider modelTest() {
 		FullMeshModel model = ModelLoader.loadResource("/dragon_skull.obj").orElseThrow();
 		SimpleMeshModel simpleModel = model.toSimpleMeshModel();
-		Shape modelShape = new ModelShape(simpleModel, Matrix4X4.IDENTITY.scale(new Vec3D(4, 4, 4)));
-		Shape transModelShape = new TranslateShape(modelShape, new Vec3I(8, 56, 8));
+		QSP qsp = simpleModel.calculateQSP();
+		Shape modelShape = new ModelShape(qsp, Matrix4X4.IDENTITY.scale(new Vec3D(3, 3, 3)));
+		Shape transModelShape = new TranslateShape(modelShape, new Vec3I(16, 56, 8));
 		return new ShapeBlockProvider(transModelShape, BlockTypes.STONE);
 	}
 	

@@ -15,14 +15,14 @@ public class ModelShape implements Shape {
 	private final AABBD aabb;
 	private final Matrix4X4 transform;
 	
-	public ModelShape(SimpleMeshModel model, Matrix4X4 transform) {
-		this.aabb = model.getAABB();
-		this.qsp = model.calculateQSP();
+	public ModelShape(QSP qsp, Matrix4X4 transform) {
+		this.aabb = qsp.getAABB();
+		this.qsp = qsp;
 		this.transform = transform;
 	}
 	
-	public ModelShape(SimpleMeshModel model) {
-		this(model, Matrix4X4.IDENTITY);
+	public ModelShape(QSP qsp) {
+		this(qsp, Matrix4X4.IDENTITY);
 	}
 	
 	@Override

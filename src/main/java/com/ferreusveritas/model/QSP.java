@@ -46,6 +46,10 @@ public class QSP {
 		return count % 2 == 1;
 	}
 	
+	public AABBD getAABB() {
+		return aabb;
+	}
+	
 	private static QSPNode subdivide(List<SimpleFace> faces, RectD rect, int depth) {
 		if(faces.size() < MIN_FACES || depth == MAX_DEPTH) {
 			return new QSPNode(rect, faces, null);
