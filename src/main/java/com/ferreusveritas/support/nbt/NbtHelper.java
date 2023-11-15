@@ -1,4 +1,4 @@
-package com.ferreusveritas.support;
+package com.ferreusveritas.support.nbt;
 
 import net.querz.nbt.io.NBTSerializer;
 import net.querz.nbt.io.NamedTag;
@@ -20,7 +20,7 @@ public class NbtHelper {
 		try {
 			bytes = serializer.toBytes(file);
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			throw new NbtException("Failed to serialize NBT", e);
 		}
 		return bytes;
 	}

@@ -7,7 +7,7 @@ public record Vec3D(
 	double y,
 	double z
 ) {
-	
+	public static final double EPSILON = 0.0000000001;
 	public static final Vec3D ZERO = new Vec3D(0, 0, 0);
 	public static final Vec3D DOWN = ZERO.withY(-1);
 	public static final Vec3D UP = ZERO.withY(1);
@@ -150,6 +150,24 @@ public record Vec3D(
 	@JsonIgnore
 	public boolean isZero() {
 		return x == 0 && y == 0 && z == 0;
+	}
+	
+	public boolean equals(Object o) {
+		if (this == o){
+			return true;
+		}
+		if (o == null) {
+			return false;
+		}
+		return o instanceof Vec3D pos && equalsEpsilon(pos);
+	}
+	
+	public boolean equalsEpsilon(Vec3D pos, double epsilon) {
+		return Math.abs(x - pos.x) < epsilon && Math.abs(y - pos.y) < epsilon && Math.abs(z - pos.z) < epsilon;
+	}
+	
+	public boolean equalsEpsilon(Vec3D pos) {
+		return equalsEpsilon(pos, EPSILON);
 	}
 	
 }

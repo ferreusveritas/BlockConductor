@@ -5,6 +5,13 @@ import com.ferreusveritas.math.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Quadtree Space Partitioner
+ * <p>
+ * Quadtrees are a great way to partition a 2D space into smaller and smaller
+ * quadrants.  This is a Quadtree Space Partitioner that is used to determine
+ * if a point is inside a 3D model.
+ **/
 public class QSP {
 	
 	private static final int MIN_FACES = 3;

@@ -1,7 +1,5 @@
 package com.ferreusveritas.block;
 
-import com.ferreusveritas.block.Block;
-
 public class BlockTypes {
 	public static final Block NONE = new Block("", "");
 	public static final Block AIR = new Block("minecraft:air", "");

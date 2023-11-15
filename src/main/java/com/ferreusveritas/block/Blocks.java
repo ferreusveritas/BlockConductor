@@ -3,7 +3,7 @@ package com.ferreusveritas.block;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
 import com.ferreusveritas.api.hashlist.HashList;
-import com.ferreusveritas.support.Nbtable;
+import com.ferreusveritas.support.nbt.Nbtable;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.ListTag;
 import net.querz.nbt.tag.ShortTag;

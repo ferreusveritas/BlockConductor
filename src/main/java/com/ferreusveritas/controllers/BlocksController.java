@@ -4,7 +4,7 @@ import com.ferreusveritas.api.*;
 import com.ferreusveritas.block.Blocks;
 import com.ferreusveritas.block.provider.BlockProvider;
 import com.ferreusveritas.scene.MainScene;
-import com.ferreusveritas.support.NbtHelper;
+import com.ferreusveritas.support.nbt.NbtHelper;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
