@@ -1,5 +1,10 @@
 package com.ferreusveritas.math;
 
+import com.ferreusveritas.model.SimpleFace;
+import com.ferreusveritas.model.SimpleMeshModel;
+
+import java.util.List;
+
 public record AABBD(
 	Vec3D min,
 	Vec3D max
@@ -62,6 +67,19 @@ public record AABBD(
 			min.z() < other.max.z() && max.z() > other.min.z();
 	}
 	
+	public static AABBD union(AABBD a, AABBD b) {
+		if(a != null && b != null) {
+			return a.union(b);
+		}
+		if(a != null) {
+			return a;
+		}
+		if(b != null) {
+			return b;
+		}
+		return null;
+	}
+	
 	public AABBD union(AABBD other) {
 		return new AABBD(
 			new Vec3D(
@@ -90,6 +108,24 @@ public record AABBD(
 				Math.min(max.z(), other.max.z())
 			)
 		);
+	}
+	
+	public SimpleMeshModel toMeshModel() {
+		Vec3D p1 = new Vec3D(min.x(), max.y(), min.z());
+		Vec3D p2 = new Vec3D(max.x(), max.y(), min.z());
+		Vec3D p3 = new Vec3D(max.x(), max.y(), max.z());
+		Vec3D p4 = new Vec3D(min.x(), max.y(), max.z());
+		Vec3D p5 = new Vec3D(min.x(), min.y(), min.z());
+		Vec3D p6 = new Vec3D(max.x(), min.y(), min.z());
+		Vec3D p7 = new Vec3D(max.x(), min.y(), max.z());
+		Vec3D p8 = new Vec3D(min.x(), min.y(), max.z());
+		
+		SimpleFace t1 = new SimpleFace(new Vec3D[]{ p1, p2, p3 });
+		SimpleFace t2 = new SimpleFace(new Vec3D[]{ p1, p3, p4 });
+		SimpleFace b1 = new SimpleFace(new Vec3D[]{ p5, p7, p6 });
+		SimpleFace b2 = new SimpleFace(new Vec3D[]{ p5, p8, p7 });
+		
+		return new SimpleMeshModel(List.of(t1, t2, b1, b2));
 	}
 	
 }

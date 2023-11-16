@@ -1,5 +1,7 @@
 package com.ferreusveritas.math;
 
+import java.util.Optional;
+
 /**
  * A 4x4 Matrix
  */
@@ -11,6 +13,12 @@ public record Matrix4X4(
 ) {
 	
 	public static final Matrix4X4 IDENTITY = new Matrix4X4();
+	public static final Matrix4X4 ZERO = new Matrix4X4(
+		0, 0, 0, 0,
+		0, 0, 0, 0,
+		0 ,0, 0, 0,
+		0, 0, 0, 0
+	);
 	
 	// Identity Matrix
 	public Matrix4X4() {
@@ -73,7 +81,7 @@ public record Matrix4X4(
 		);
 	}
 	
-	public Matrix4X4 transform(Matrix4X4 m) {
+	public Matrix4X4 mul(Matrix4X4 m) {
 		return new Matrix4X4(
 			m00 * m.m00 + m01 * m.m10 + m02 * m.m20 + m03 * m.m30,
 			m00 * m.m01 + m01 * m.m11 + m02 * m.m21 + m03 * m.m31,
@@ -91,6 +99,44 @@ public record Matrix4X4(
 			m30 * m.m01 + m31 * m.m11 + m32 * m.m21 + m33 * m.m31,
 			m30 * m.m02 + m31 * m.m12 + m32 * m.m22 + m33 * m.m32,
 			m30 * m.m03 + m31 * m.m13 + m32 * m.m23 + m33 * m.m33);
+	}
+	
+	public Matrix4X4 invert() {
+		double det = determinant();
+		if(det == 0) {
+			return ZERO;
+		}
+		double invdet = 1 / det;
+		return new Matrix4X4(
+			(m11 * m22 * m33 - m11 * m23 * m32 - m21 * m12 * m33 + m21 * m13 * m32 + m31 * m12 * m23 - m31 * m13 * m22) * invdet,
+			(-m01 * m22 * m33 + m01 * m23 * m32 + m21 * m02 * m33 - m21 * m03 * m32 - m31 * m02 * m23 + m31 * m03 * m22) * invdet,
+			(m01 * m12 * m33 - m01 * m13 * m32 - m11 * m02 * m33 + m11 * m03 * m32 + m31 * m02 * m13 - m31 * m03 * m12) * invdet,
+			(-m01 * m12 * m23 + m01 * m13 * m22 + m11 * m02 * m23 - m11 * m03 * m22 - m21 * m02 * m13 + m21 * m03 * m12) * invdet,
+			(-m10 * m22 * m33 + m10 * m23 * m32 + m20 * m12 * m33 - m20 * m13 * m32 - m30 * m12 * m23 + m30 * m13 * m22) * invdet,
+			(m00 * m22 * m33 - m00 * m23 * m32 - m20 * m02 * m33 + m20 * m03 * m32 + m30 * m02 * m23 - m30 * m03 * m22) * invdet,
+			(-m00 * m12 * m33 + m00 * m13 * m32 + m10 * m02 * m33 - m10 * m03 * m32 - m30 * m02 * m13 + m30 * m03 * m12) * invdet,
+			(m00 * m12 * m23 - m00 * m13 * m22 - m10 * m02 * m23 + m10 * m03 * m22 + m20 * m02 * m13 - m20 * m03 * m12) * invdet,
+			(m10 * m21 * m33 - m10 * m23 * m31 - m20 * m11 * m33 + m20 * m13 * m31 + m30 * m11 * m23 - m30 * m13 * m21) * invdet,
+			(-m00 * m21 * m33 + m00 * m23 * m31 + m20 * m01 * m33 - m20 * m03 * m31 - m30 * m01 * m23 + m30 * m03 * m21) * invdet,
+			(m00 * m11 * m33 - m00 * m13 * m31 - m10 * m01 * m33 + m10 * m03 * m31 + m30 * m01 * m13 - m30 * m03 * m11) * invdet,
+			(-m00 * m11 * m23 + m00 * m13 * m21 + m10 * m01 * m23 - m10 * m03 * m21 - m20 * m01 * m13 + m20 * m03 * m11) * invdet,
+			(-m10 * m21 * m32 + m10 * m22 * m31 + m20 * m11 * m32 - m20 * m12 * m31 - m30 * m11 * m22 + m30 * m12 * m21) * invdet,
+			(m00 * m21 * m32 - m00 * m22 * m31 - m20 * m01 * m32 + m20 * m02 * m31 + m30 * m01 * m22 - m30 * m02 * m21) * invdet,
+			(-m00 * m11 * m32 + m00 * m12 * m31 + m10 * m01 * m32 - m10 * m02 * m31 - m30 * m01 * m12 + m30 * m02 * m11) * invdet,
+			(m00 * m11 * m22 - m00 * m12 * m21 - m10 * m01 * m22 + m10 * m02 * m21 + m20 * m01 * m12 - m20 * m02 * m11) * invdet
+		);
+	}
+	
+	private double determinant() {
+		return
+		  m00 * m11 * m22 * m33 + m00 * m12 * m23 * m31 + m00 * m13 * m21 * m32
+		+ m01 * m10 * m23 * m32 + m01 * m12 * m20 * m33 + m01 * m13 * m22 * m30
+		+ m02 * m10 * m21 * m33 + m02 * m11 * m23 * m30 + m02 * m13 * m20 * m31
+		+ m03 * m10 * m22 * m31 + m03 * m11 * m20 * m32 + m03 * m12 * m21 * m30
+		- m00 * m11 * m23 * m32 - m00 * m12 * m21 * m33 - m00 * m13 * m22 * m31
+		- m01 * m10 * m22 * m33 - m01 * m12 * m23 * m30 - m01 * m13 * m20 * m32
+		- m02 * m10 * m23 * m31 - m02 * m11 * m20 * m33 - m02 * m13 * m21 * m30
+		- m03 * m10 * m21 * m32 - m03 * m11 * m22 * m30 - m03 * m12 * m20 * m31;
 	}
 	
 	public Vec3D transform(Vec3D vec) {

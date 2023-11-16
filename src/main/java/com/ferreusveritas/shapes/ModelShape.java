@@ -2,6 +2,7 @@ package com.ferreusveritas.shapes;
 
 import com.ferreusveritas.math.*;
 import com.ferreusveritas.model.QSP;
+import com.ferreusveritas.model.SimpleFace;
 import com.ferreusveritas.model.SimpleMeshModel;
 
 import java.util.Optional;
@@ -12,23 +13,38 @@ import java.util.Optional;
 public class ModelShape implements Shape {
 	
 	private final QSP qsp;
-	private final AABBD aabb;
 	private final Matrix4X4 transform;
+	private final AABBI aabb;
 	
 	public ModelShape(QSP qsp, Matrix4X4 transform) {
-		this.aabb = qsp.getAABB();
 		this.qsp = qsp;
-		this.transform = transform;
+		this.transform = transform.invert();
+		this.aabb = calcAABB(qsp, transform);
 	}
 	
 	public ModelShape(QSP qsp) {
 		this(qsp, Matrix4X4.IDENTITY);
 	}
 	
+	private AABBI calcAABB(QSP qsp, Matrix4X4 transform) {
+		SimpleMeshModel smm = qsp.getAABB().toMeshModel();
+		AABBD tempAABB = null;
+		for(SimpleFace face : smm.getFaces()) {
+			for(Vec3D vertex : face.getVertices()) {
+				vertex = transform.transform(vertex);
+				AABBD vertAABB = new AABBD(vertex, vertex);
+				tempAABB = AABBD.union(tempAABB, vertAABB);
+			}
+		}
+		if(tempAABB == null) {
+			throw new IllegalArgumentException("Unable to calculate AABB for ModelShape");
+		}
+		return tempAABB.toAABBI();
+	}
+	
 	@Override
 	public Optional<AABBI> getAABB() {
-		// TODO: Transform the AABB by the transform matrix
-		return Optional.of(aabb.toAABBI());
+		return Optional.of(aabb);
 	}
 	
 	@Override

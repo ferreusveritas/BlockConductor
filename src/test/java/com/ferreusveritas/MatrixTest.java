@@ -68,17 +68,40 @@ class MatrixTest {
 		Vec3D p7 = rotXYZ.transform(p);
 		assertEquals(new Vec3D(3, -2, 1), p7);
 		
-		Matrix4X4 rotX2 = new Matrix4X4().transform(rotX);
+		Matrix4X4 rotX2 = new Matrix4X4().mul(rotX);
 		Vec3D p8 = rotX2.transform(p);
 		assertEquals(new Vec3D(1, 3, -2), p8);
 		
-		Matrix4X4 rotY2 = new Matrix4X4().transform(rotY);
+		Matrix4X4 rotY2 = new Matrix4X4().mul(rotY);
 		Vec3D p9 = rotY2.transform(p);
 		assertEquals(new Vec3D(-3, 2, 1), p9);
 		
-		Matrix4X4 rotZ2 = new Matrix4X4().transform(rotZ);
+		Matrix4X4 rotZ2 = new Matrix4X4().mul(rotZ);
 		Vec3D p10 = rotZ2.transform(p);
 		assertEquals(new Vec3D(2, -1, 3), p10);
+		
+	}
+	
+	@Test
+	void testMatrixInversion() {
+		
+		Vec3D p = new Vec3D(1, 2, 3);
+		
+		Matrix4X4 trans = new Matrix4X4().translate(new Vec3D(1, 2, 3));
+		Vec3D p2 = trans.transform(p);
+		assertEquals(new Vec3D(2, 4, 6), p2);
+		
+		trans = trans.invert();
+		Vec3D p3 = trans.transform(p2);
+		assertEquals(p, p3);
+		
+		Matrix4X4 rotX = new Matrix4X4().rotateX(Math.PI / 2);
+		Vec3D p4 = rotX.transform(p);
+		assertEquals(new Vec3D(1, 3, -2), p4);
+		
+		rotX = rotX.invert();
+		Vec3D p5 = rotX.transform(p4);
+		assertEquals(p, p5);
 		
 	}
 	

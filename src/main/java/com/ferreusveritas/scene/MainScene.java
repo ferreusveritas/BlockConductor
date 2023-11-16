@@ -61,9 +61,19 @@ public class MainScene {
 		FullMeshModel model = ModelLoader.loadResource("/dragon_skull.obj").orElseThrow();
 		SimpleMeshModel simpleModel = model.toSimpleMeshModel();
 		QSP qsp = simpleModel.calculateQSP();
-		Shape modelShape = new ModelShape(qsp, Matrix4X4.IDENTITY.scale(new Vec3D(3, 3, 3)));
-		Shape transModelShape = new TranslateShape(modelShape, new Vec3I(16, 56, 8));
-		return new ShapeBlockProvider(transModelShape, BlockTypes.STONE);
+		Shape modelShape = new ModelShape(qsp, Matrix4X4.IDENTITY
+				.scale(new Vec3D(.25, .25, .25))
+				.rotateX(Math.toRadians(12))
+				.rotateY(Math.toRadians(45))
+		);
+		Shape transModelShape = new TranslateShape(modelShape, new Vec3I(15, 56, 16));
+		Shape cylinderShape = new CylinderShape(new Vec3D(16, 56, 16), 15.5, 1);
+		
+		BlockProvider skullBlocks = new ShapeBlockProvider(transModelShape, BlockTypes.BONE);
+		BlockProvider cylinderBlocks = new ShapeBlockProvider(cylinderShape, BlockTypes.BLACKSTONE);
+		BlockProvider skullAndCylinder = new CombineBlockProvider(skullBlocks, cylinderBlocks);
+		
+		return skullAndCylinder;
 	}
 	
 	private static BlockProvider air() {

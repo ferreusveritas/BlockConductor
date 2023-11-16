@@ -38,14 +38,13 @@ public class SimpleFace {
 	}
 	
 	private AABBD calculateAABB() {
-		Vec3D vertex = vertices[0];
-		AABBD aabb = new AABBD(vertex, vertex);
-		for(int i = 1; i < 3; i++) {
-			vertex = vertices[i];
+		AABBD tempAABB = null;
+		for(int i = 0; i < 3; i++) {
+			Vec3D vertex = vertices[i];
 			AABBD vertAABB = new AABBD(vertex, vertex);
-			aabb = aabb.union(vertAABB);
+			tempAABB = AABBD.union(tempAABB, vertAABB);
 		}
-		return aabb;
+		return tempAABB;
 	}
 	
 	public AABBD getAABB() {

@@ -24,7 +24,7 @@ public record AABBI(
 	}
 	
 	public AABBI(AABBD aabb) {
-		this(new Vec3I(aabb.min()), new Vec3I(aabb.max()));
+		this(new Vec3I(aabb.min().floor()), new Vec3I(aabb.max().ceil()));
 	}
 	
 	public AABBD toAABBD() {
