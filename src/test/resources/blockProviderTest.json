@@ -1,0 +1,136 @@
+[
+  {
+    "type": "translate",
+    "offset": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "provider": {
+      "type": "solid",
+      "block": {
+        "name": "minecraft:stone",
+        "state": ""
+      }
+    }
+  },
+  {
+    "type": "combine",
+    "providers": [
+      {
+        "type": "solid",
+        "block": {
+          "name": "minecraft:air",
+          "state": ""
+        }
+      },
+      {
+        "type": "shape",
+        "shape": {
+          "type": "box",
+          "aabb": {
+            "min": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "max": {
+              "x": 1,
+              "y": 0,
+              "z": 1
+            }
+          }
+        },
+        "block": {
+          "name": "minecraft:stone",
+          "state": ""
+        }
+      }
+    ]
+  },
+  {
+    "type": "shape",
+    "shape": {
+      "type": "cylinder",
+      "center": {
+        "x": 0.5,
+        "y": 0,
+        "z": 0.5
+      },
+      "radius": 4,
+      "height": 5
+    },
+    "block": {
+      "name": "minecraft:bone_block",
+      "state": ""
+    }
+  },
+  {
+    "type": "mapper",
+    "mapper": {
+        "type": "identity"
+    },
+    "provider": {
+      "type": "solid",
+      "block": {
+        "name": "minecraft:stone",
+        "state": ""
+      }
+    }
+  },
+  {
+    "type": "mapper",
+    "mapper": {
+      "type": "simple",
+      "map": [
+        {
+          "in": {
+            "name": "minecraft:stone",
+            "state": ""
+          },
+          "out": {
+            "name": "minecraft:dirt",
+            "state": ""
+          }
+        },
+        {
+         "in": {
+           "name": "minecraft:sandstone",
+           "state": ""
+         },
+         "out": {
+           "name": "minecraft:bone_block",
+           "state": ""
+         }
+        }
+      ]
+    },
+    "provider": {
+      "type": "solid",
+      "block": {
+        "name": "minecraft:stone",
+        "state": ""
+      }
+    }
+  },
+  {
+    "type": "routing",
+    "providers": {
+      "air": {
+        "type": "solid",
+        "block": {
+          "name": "minecraft:air",
+          "state": ""
+        }
+      },
+      "stone": {
+        "type": "solid",
+        "block": {
+          "name": "minecraft:stone",
+          "state": ""
+        }
+      }
+    }
+
+  }
+]

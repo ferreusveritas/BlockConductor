@@ -8,4 +8,8 @@ public record Request(String context, AABBI area) {
 		return new Request(context, area);
 	}
 	
+	public Request withContext(String context) {
+		return new Request(context, area);
+	}
+	
 }

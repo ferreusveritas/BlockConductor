@@ -1,7 +1,5 @@
 package com.ferreusveritas.math;
 
-import java.util.Optional;
-
 /**
  * A 4x4 Matrix
  */

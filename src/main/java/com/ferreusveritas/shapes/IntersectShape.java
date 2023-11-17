@@ -1,5 +1,7 @@
 package com.ferreusveritas.shapes;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
 
@@ -13,7 +15,10 @@ public class IntersectShape implements Shape {
 	
 	private final List<Shape> shapes;
 	
-	public IntersectShape(Shape... shapes) {
+	@JsonCreator
+	public IntersectShape(
+		@JsonProperty("shapes") Shape... shapes
+	) {
 		this.shapes = List.of(shapes);
 		if(this.shapes.isEmpty()) {
 			throw new IllegalArgumentException("IntersectShape must have at least one shape");

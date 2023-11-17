@@ -1,5 +1,7 @@
 package com.ferreusveritas.shapes;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Axis;
 import com.ferreusveritas.math.Vec3I;
@@ -14,7 +16,10 @@ public class CheckerShape implements Shape {
 		this(null);
 	}
 	
-	public CheckerShape(Axis axis) {
+	@JsonCreator
+	public CheckerShape(
+		@JsonProperty("axis") Axis axis
+	) {
 		this.axis = axis;
 	}
 	

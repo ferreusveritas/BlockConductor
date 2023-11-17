@@ -1,7 +1,7 @@
 package com.ferreusveritas.shapes;
 
 import com.ferreusveritas.math.*;
-import com.ferreusveritas.model.QSP;
+import com.ferreusveritas.model.QSPModel;
 import com.ferreusveritas.model.SimpleFace;
 import com.ferreusveritas.model.SimpleMeshModel;
 
@@ -10,23 +10,23 @@ import java.util.Optional;
 /**
  * A Shape that uses a SimpleMeshModel to determine if a point is inside a model.
  */
-public class ModelShape implements Shape {
+public class MeshModelShape implements Shape {
 	
-	private final QSP qsp;
+	private final QSPModel qsp;
 	private final Matrix4X4 transform;
 	private final AABBI aabb;
 	
-	public ModelShape(QSP qsp, Matrix4X4 transform) {
+	public MeshModelShape(QSPModel qsp, Matrix4X4 transform) {
 		this.qsp = qsp;
 		this.transform = transform.invert();
 		this.aabb = calcAABB(qsp, transform);
 	}
 	
-	public ModelShape(QSP qsp) {
+	public MeshModelShape(QSPModel qsp) {
 		this(qsp, Matrix4X4.IDENTITY);
 	}
 	
-	private AABBI calcAABB(QSP qsp, Matrix4X4 transform) {
+	private AABBI calcAABB(QSPModel qsp, Matrix4X4 transform) {
 		SimpleMeshModel smm = qsp.getAABB().toMeshModel();
 		AABBD tempAABB = null;
 		for(SimpleFace face : smm.getFaces()) {

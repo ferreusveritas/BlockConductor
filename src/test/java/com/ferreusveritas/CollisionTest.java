@@ -14,9 +14,9 @@ class CollisionTest {
 		Line2D lineB = new Line2D(new Vec2D(2.0, 6.0), new Vec2D(12.0, 2.0));
 		Line2D lineC = new Line2D(new Vec2D(2.0, 6.0), new Vec2D(12.0, 10.0));
 		
-		assertTrue(Collision.lineIntersectsLine(lineA, lineB));
-		assertFalse(Collision.lineIntersectsLine(lineA, lineC));
-		assertTrue(Collision.lineIntersectsLine(lineB, lineC));
+		assertTrue(Collision2D.lineIntersectsLine(lineA, lineB));
+		assertFalse(Collision2D.lineIntersectsLine(lineA, lineC));
+		assertTrue(Collision2D.lineIntersectsLine(lineB, lineC));
 		
 		RectD rect1 = new RectD(0.0, 0.0, 15.0, 10.0);
 		Vec2D[] triangle1 = new Vec2D[] { new Vec2D(0, 0), new Vec2D(10.0, 0), new Vec2D(0, 10.0) }; // Triangle overlapping upper left corner
@@ -27,13 +27,13 @@ class CollisionTest {
 		Vec2D[] triangle6 = new Vec2D[] { new Vec2D(10.0, -2.0), new Vec2D(20.0, -2.0), new Vec2D(20.0, 7.5) }; // Triangle overlapping upper right corner
 		Vec2D[] triangle7 = new Vec2D[] { new Vec2D(-2.0, 2.0), new Vec2D(8.0, 2.0), new Vec2D(-2.0, 10.0) }; // Single triangle corner inside rect
 		
-		assertTrue(Collision.rectIntersectsTriangle(rect1, triangle1));
-		assertTrue(Collision.rectIntersectsTriangle(rect1, triangle2));
-		assertTrue(Collision.rectIntersectsTriangle(rect1, triangle3));
-		assertFalse(Collision.rectIntersectsTriangle(rect1, triangle4));
-		assertTrue(Collision.rectIntersectsTriangle(rect1, triangle5));
-		assertTrue(Collision.rectIntersectsTriangle(rect1, triangle6));
-		assertTrue(Collision.rectIntersectsTriangle(rect1, triangle7));
+		assertTrue(Collision2D.rectIntersectsTriangle(rect1, triangle1));
+		assertTrue(Collision2D.rectIntersectsTriangle(rect1, triangle2));
+		assertTrue(Collision2D.rectIntersectsTriangle(rect1, triangle3));
+		assertFalse(Collision2D.rectIntersectsTriangle(rect1, triangle4));
+		assertTrue(Collision2D.rectIntersectsTriangle(rect1, triangle5));
+		assertTrue(Collision2D.rectIntersectsTriangle(rect1, triangle6));
+		assertTrue(Collision2D.rectIntersectsTriangle(rect1, triangle7));
 		
 	}
 	
@@ -46,15 +46,15 @@ class CollisionTest {
 		
 		Vec3D[] triangle1 = new Vec3D[] { new Vec3D(-3, 10, 1), new Vec3D(1, 10, -3), new Vec3D(1, 10, 1) };
 		
-		assertTrue(Collision.lineInTriangle(line1, triangle1));
-		assertFalse(Collision.lineInTriangle(line2, triangle1));
-		assertFalse(Collision.lineInTriangle(line3, triangle1));
-		assertTrue(Collision.lineInTriangle(line4, triangle1));
+		assertTrue(Collision3D.lineInTriangle(line1, triangle1));
+		assertFalse(Collision3D.lineInTriangle(line2, triangle1));
+		assertFalse(Collision3D.lineInTriangle(line3, triangle1));
+		assertTrue(Collision3D.lineInTriangle(line4, triangle1));
 		
-		assertFalse(Collision.lineInTriangle(line1.flip(), triangle1));
-		assertFalse(Collision.lineInTriangle(line2.flip(), triangle1));
-		assertFalse(Collision.lineInTriangle(line3.flip(), triangle1));
-		assertFalse(Collision.lineInTriangle(line4.flip(), triangle1));
+		assertFalse(Collision3D.lineInTriangle(line1.flip(), triangle1));
+		assertFalse(Collision3D.lineInTriangle(line2.flip(), triangle1));
+		assertFalse(Collision3D.lineInTriangle(line3.flip(), triangle1));
+		assertFalse(Collision3D.lineInTriangle(line4.flip(), triangle1));
 		
 		
 	}

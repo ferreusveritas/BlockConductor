@@ -10,7 +10,7 @@ import com.ferreusveritas.math.Vec3D;
 import com.ferreusveritas.math.Vec3I;
 import com.ferreusveritas.model.FullMeshModel;
 import com.ferreusveritas.model.ModelLoader;
-import com.ferreusveritas.model.QSP;
+import com.ferreusveritas.model.QSPModel;
 import com.ferreusveritas.model.SimpleMeshModel;
 import com.ferreusveritas.shapes.*;
 
@@ -38,7 +38,7 @@ public class MainScene {
 	private static BlockProvider shapeTest() {
 		Vec3I move = new Vec3I(4, 3, 4);
 		
-		Shape sphere = new SphereShape(new Vec3I(8, 64, 8), 12);
+		Shape sphere = new SphereShape(new Vec3D(8, 64, 8), 12);
 		Shape transSphere = new TranslateShape(sphere, move);
 		CavitateShape cavitate = new CavitateShape(transSphere);
 		BoxShape boxShape = new BoxShape(new AABBI(4, 1, 4, 8, 84, 8));
@@ -53,15 +53,15 @@ public class MainScene {
 	
 	private static BlockProvider heightMapTest() {
 		BufferImage image = ImageLoader.loadImageFromResource("/skull.png");
-		Shape heightMap = new HeightMapShape(image, 16, Vec3I.ZERO.up(56), true);
+		Shape heightMap = new HeightmapShape(image, 16, Vec3I.ZERO.up(56), true);
 		return new ShapeBlockProvider(heightMap, BlockTypes.STONE);
 	}
 	
 	private static BlockProvider modelTest() {
 		FullMeshModel model = ModelLoader.loadResource("/dragon_skull.obj").orElseThrow();
 		SimpleMeshModel simpleModel = model.toSimpleMeshModel();
-		QSP qsp = simpleModel.calculateQSP();
-		Shape modelShape = new ModelShape(qsp, Matrix4X4.IDENTITY
+		QSPModel qsp = simpleModel.calculateQSP();
+		Shape modelShape = new MeshModelShape(qsp, Matrix4X4.IDENTITY
 				.scale(new Vec3D(.25, .25, .25))
 				.rotateX(Math.toRadians(12))
 				.rotateY(Math.toRadians(45))

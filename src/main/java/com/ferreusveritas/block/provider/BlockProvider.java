@@ -1,5 +1,7 @@
 package com.ferreusveritas.block.provider;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.block.Blocks;
 import com.ferreusveritas.api.Request;
@@ -7,6 +9,18 @@ import com.ferreusveritas.api.Request;
 import java.util.Collection;
 import java.util.Optional;
 
+@JsonTypeInfo(
+	use = JsonTypeInfo.Id.NAME,
+	property = "type"
+)
+@JsonSubTypes({
+	@JsonSubTypes.Type(value = SolidBlockProvider.class, name = "solid"),
+	@JsonSubTypes.Type(value = TranslateBlockProvider.class, name = "translate"),
+	@JsonSubTypes.Type(value = CombineBlockProvider.class, name = "combine"),
+	@JsonSubTypes.Type(value = ShapeBlockProvider.class, name = "shape"),
+	@JsonSubTypes.Type(value = MapperBlockProvider.class, name = "mapper"),
+	@JsonSubTypes.Type(value = RoutingBlockProvider.class, name = "routing")
+})
 public abstract class BlockProvider {
 	
 	/**
@@ -48,15 +62,7 @@ public abstract class BlockProvider {
 	protected AABBI unionProviders(Collection<BlockProvider> providers) {
 		AABBI aabb = null;
 		for (BlockProvider provider : providers) {
-			Optional<AABBI> providerAABB = provider.getAABB();
-			if (providerAABB.isEmpty()) {
-				continue;
-			}
-			if (aabb == null) {
-				aabb = providerAABB.get();
-			} else {
-				aabb = aabb.union(providerAABB.get());
-			}
+			aabb = AABBI.union(aabb, provider.getAABB().orElse(null));
 		}
 		return aabb;
 	}

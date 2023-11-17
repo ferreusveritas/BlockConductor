@@ -118,6 +118,13 @@ public record AABBI(
 		return new AABBI(min.min(aabb.min), max.max(aabb.max));
 	}
 	
+	public static AABBI union(AABBI a, AABBI b) {
+		if (a != null && b != null) {
+			return a.union(b);
+		}
+		return a != null ? a : b;
+	}
+	
 	/**
 	 * Iterates over all positions in this AABB.
 	 * @param func A function that accepts the absolute position and the relative position respectively.

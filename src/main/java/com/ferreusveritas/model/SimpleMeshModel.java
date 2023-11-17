@@ -46,8 +46,8 @@ public class SimpleMeshModel {
 		return Optional.of(box);
 	}
 	
-	public QSP calculateQSP() {
-		return QSP.load(this);
+	public QSPModel calculateQSP() {
+		return QSPModel.load(this);
 	}
 	
 }

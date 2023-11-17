@@ -8,9 +8,9 @@ import java.util.Optional;
 /**
  * A shape that represents all blocks in the world.
  */
-public class UbiqueShape implements Shape {
+public class UbiquitousShape implements Shape {
 
-	public UbiqueShape(Shape shape) {}
+	public UbiquitousShape() {}
 	
 	@Override
 	public Optional<AABBI> getAABB() {

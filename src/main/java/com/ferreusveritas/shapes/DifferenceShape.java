@@ -1,5 +1,7 @@
 package com.ferreusveritas.shapes;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
 
@@ -13,7 +15,11 @@ public class DifferenceShape implements Shape {
 	private final Shape shape1;
 	private final Shape shape2;
 	
-	public DifferenceShape(Shape shape1, Shape shape2) {
+	@JsonCreator
+	public DifferenceShape(
+		@JsonProperty("shape1") Shape shape1,
+		@JsonProperty("shape2") Shape shape2
+	) {
 		this.shape1 = shape1;
 		this.shape2 = shape2;
 	}

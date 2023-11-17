@@ -12,21 +12,25 @@ import java.util.List;
  * quadrants.  This is a Quadtree Space Partitioner that is used to determine
  * if a point is inside a 3D model.
  **/
-public class QSP {
+public class QSPModel {
 	
 	private static final int MIN_FACES = 3;
-	private static final int MAX_DEPTH = 4;
+	private static final int DEFAULT_DEPTH = 4;
 	private final QSPNode root;
 	private final AABBD aabb;
 	
-	private QSP(QSPNode root, SimpleMeshModel model) {
+	private QSPModel(QSPNode root, SimpleMeshModel model) {
 		this.root = root;
 		this.aabb = model.getAABB();
 	}
 	
-	public static QSP load(SimpleMeshModel model) {
-		QSPNode node = subdivide(model.getFaces(), model.getAABB().toRect(), 0);
-		return new QSP(node, model);
+	public static QSPModel load(SimpleMeshModel model) {
+		return load(model, DEFAULT_DEPTH);
+	}
+	
+	public static QSPModel load(SimpleMeshModel model, int depth) {
+		QSPNode node = subdivide(model.getFaces(), model.getAABB().toRect(), depth);
+		return new QSPModel(node, model);
 	}
 	
 	public boolean pointIsInside(Vec3D pos) {
@@ -39,7 +43,7 @@ public class QSP {
 		Line3D line = new Line3D(pos, pos.withY(aabb.max().y() + 1.0));
 		for(SimpleFace face : list) {
 			face.getVertices(tri);
-			if(Collision.lineInTriangle(line, tri)) {
+			if(Collision3D.lineInTriangle(line, tri)) {
 				count++;
 			}
 		}
@@ -51,7 +55,7 @@ public class QSP {
 	}
 	
 	private static QSPNode subdivide(List<SimpleFace> faces, RectD rect, int depth) {
-		if(faces.size() < MIN_FACES || depth == MAX_DEPTH) {
+		if(faces.size() < MIN_FACES || depth == 0) {
 			return new QSPNode(rect, faces, null);
 		}
 		RectD[] rects = rect.subdivide();
@@ -111,7 +115,7 @@ public class QSP {
 				childList.add(faces.get(j));
 			}
 		}
-		return subdivide(childList, rect, depth + 1);
+		return subdivide(childList, rect, depth - 1);
 	}
 	
 	private static class QSPNode {

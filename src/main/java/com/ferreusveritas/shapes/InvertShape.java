@@ -1,5 +1,7 @@
 package com.ferreusveritas.shapes;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
 
@@ -12,7 +14,10 @@ public class InvertShape implements Shape {
 	
 	private final Shape shape;
 	
-	public InvertShape(Shape shape) {
+	@JsonCreator
+	public InvertShape(
+		@JsonProperty("shape") Shape shape
+	) {
 		this.shape = shape;
 	}
 	

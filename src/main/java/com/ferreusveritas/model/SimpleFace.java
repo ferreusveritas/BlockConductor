@@ -1,13 +1,10 @@
 package com.ferreusveritas.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ferreusveritas.math.AABBD;
-import com.ferreusveritas.math.Collision;
+import com.ferreusveritas.math.Collision2D;
 import com.ferreusveritas.math.RectD;
 import com.ferreusveritas.math.Vec3D;
-
-import java.util.Arrays;
 
 public class SimpleFace {
 	
@@ -53,7 +50,7 @@ public class SimpleFace {
 	
 	public boolean rectIntersects(RectD rect) {
 		RectD thisAABB = getAABB().toRect();
-		return thisAABB.intersects(rect) && Collision.rectIntersectsTriangle(rect, vertices);
+		return thisAABB.intersects(rect) && Collision2D.rectIntersectsTriangle(rect, vertices);
 	}
 	
 }

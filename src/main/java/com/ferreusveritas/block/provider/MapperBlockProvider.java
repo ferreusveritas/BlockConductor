@@ -1,5 +1,7 @@
 package com.ferreusveritas.block.provider;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.block.Block;
 import com.ferreusveritas.block.Blocks;
@@ -8,14 +10,24 @@ import com.ferreusveritas.block.mapper.BlockMapper;
 
 import java.util.Optional;
 
-public class BlockMapperProvider extends BlockProvider {
+public class MapperBlockProvider extends BlockProvider {
 	
-	private final BlockMapper blockMapper;
+	private final BlockMapper mapper;
 	private final BlockProvider provider;
 	
-	public BlockMapperProvider(BlockMapper blockMapper, BlockProvider provider) {
-		this.blockMapper = blockMapper;
+	@JsonCreator
+	public MapperBlockProvider(
+		@JsonProperty("mapper") BlockMapper mapper,
+		@JsonProperty("provider") BlockProvider provider
+	) {
+		this.mapper = mapper;
 		this.provider = provider;
+		if(mapper == null) {
+			throw new IllegalArgumentException("MapperBlockProvider must have a mapper");
+		}
+		if(provider == null) {
+			throw new IllegalArgumentException("MapperBlockProvider must have a provider");
+		}
 	}
 	
 	@Override
@@ -32,8 +44,8 @@ public class BlockMapperProvider extends BlockProvider {
 		Blocks mappedBlocks = new Blocks(area);
 		area.forEach((abs, rel) -> {
 			Block block = blocks.get(rel);
-			Block mapped = blockMapper.map(block);
-			blocks.set(rel, mapped);
+			Block mapped = mapper.map(block);
+			mappedBlocks.set(rel, mapped);
 		});
 		return Optional.of(mappedBlocks);
 	}

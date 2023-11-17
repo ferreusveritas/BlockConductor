@@ -1,5 +1,7 @@
 package com.ferreusveritas.shapes;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
 
@@ -9,7 +11,11 @@ public class SurfaceShape implements Shape {
 	
 	private final AABBI aabb;
 	
-	public SurfaceShape(Vec3I dir, int offset) {
+	@JsonCreator
+	public SurfaceShape(
+		@JsonProperty("dir") Vec3I dir,
+		@JsonProperty("offset") int offset
+	) {
 		this.aabb = createAABB(dir.mul(offset), dir);
 	}
 	

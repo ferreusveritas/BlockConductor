@@ -71,13 +71,7 @@ public record AABBD(
 		if(a != null && b != null) {
 			return a.union(b);
 		}
-		if(a != null) {
-			return a;
-		}
-		if(b != null) {
-			return b;
-		}
-		return null;
+		return a != null ? a : b;
 	}
 	
 	public AABBD union(AABBD other) {

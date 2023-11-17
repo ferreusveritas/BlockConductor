@@ -1,5 +1,7 @@
 package com.ferreusveritas.shapes;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
 
@@ -16,7 +18,11 @@ public class CacheShape implements Shape {
 	private final AABBI aabb;
 	private final BitSet cache;
 	
-	public CacheShape(Shape shape, AABBI aabb) {
+	@JsonCreator
+	public CacheShape(
+		@JsonProperty("shape") Shape shape,
+		@JsonProperty("aabb") AABBI aabb
+	) {
 		this.shape = shape;
 		this.aabb = determineAAABB(shape, aabb);
 		this.cache = buildCache(this.aabb);

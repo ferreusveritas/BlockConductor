@@ -1,6 +1,8 @@
 package com.ferreusveritas.block.provider;
 
-import com.ferreusveritas.api.*;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.ferreusveritas.api.Request;
 import com.ferreusveritas.block.Block;
 import com.ferreusveritas.block.Blocks;
 import com.ferreusveritas.math.AABBI;
@@ -11,12 +13,22 @@ import java.util.Optional;
 
 public class ShapeBlockProvider extends BlockProvider {
 	
-	private final Shape shapeProvider;
+	private final Shape shape;
 	private final Block block;
-
-	public ShapeBlockProvider(Shape shapeProvider, Block block) {
-		this.shapeProvider = shapeProvider;
+	
+	@JsonCreator
+	public ShapeBlockProvider(
+		@JsonProperty("shape") Shape shape,
+		@JsonProperty("block") Block block
+	) {
+		this.shape = shape;
 		this.block = block;
+		if(shape == null) {
+			throw new IllegalArgumentException("shape cannot be null");
+		}
+		if(block == null) {
+			throw new IllegalArgumentException("block cannot be null");
+		}
 	}
 	
 	public Block getBlock() {
@@ -36,14 +48,14 @@ public class ShapeBlockProvider extends BlockProvider {
 	}
 	
 	private void processBlock(Blocks blocks, Vec3I absPos, Vec3I relPos) {
-		if(shapeProvider.isInside(absPos)) {
+		if(shape.isInside(absPos)) {
 			blocks.set(relPos, block);
 		}
 	}
 	
 	@Override
 	public Optional<AABBI> getAABB() {
-		return shapeProvider.getAABB();
+		return shape.getAABB();
 	}
 	
 }

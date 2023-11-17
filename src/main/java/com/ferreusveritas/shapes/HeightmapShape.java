@@ -1,5 +1,7 @@
 package com.ferreusveritas.shapes;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ferreusveritas.image.Image;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
@@ -9,14 +11,20 @@ import java.util.Optional;
 /**
  * Use an image as a height map
  */
-public class HeightMapShape implements Shape {
+public class HeightmapShape implements Shape {
 
 	private final Image image;
 	private final int height;
 	private final Vec3I offset;
 	private final AABBI aabb;
 	
-	public HeightMapShape(Image image, int height, Vec3I offset, boolean infinite) {
+	@JsonCreator
+	public HeightmapShape(
+		@JsonProperty("image") Image image,
+		@JsonProperty("height") int height,
+		@JsonProperty("offset") Vec3I offset,
+		@JsonProperty("infinite") boolean infinite
+	) {
 		this.image = image;
 		this.height = height;
 		this.offset = offset;

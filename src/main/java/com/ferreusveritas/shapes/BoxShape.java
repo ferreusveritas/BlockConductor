@@ -1,5 +1,7 @@
 package com.ferreusveritas.shapes;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
 
@@ -9,7 +11,10 @@ public class BoxShape implements Shape {
 	
 	private final AABBI aabb;
 	
-	public BoxShape(AABBI aabb) {
+	@JsonCreator
+	public BoxShape(
+		@JsonProperty("aabb") AABBI aabb
+	) {
 		this.aabb = aabb;
 	}
 	
