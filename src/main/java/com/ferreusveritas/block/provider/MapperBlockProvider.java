@@ -2,15 +2,19 @@ package com.ferreusveritas.block.provider;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.block.Block;
 import com.ferreusveritas.block.Blocks;
 import com.ferreusveritas.api.Request;
 import com.ferreusveritas.block.mapper.BlockMapper;
 
+import java.util.Map;
 import java.util.Optional;
 
 public class MapperBlockProvider extends BlockProvider {
+	
+	public static final String TYPE = "mapper";
 	
 	private final BlockMapper mapper;
 	private final BlockProvider provider;
@@ -28,6 +32,15 @@ public class MapperBlockProvider extends BlockProvider {
 		if(provider == null) {
 			throw new IllegalArgumentException("MapperBlockProvider must have a provider");
 		}
+	}
+	
+	@JsonValue
+	private Map<String, Object> getJson() {
+		return Map.of(
+			"type", TYPE,
+			"mapper", mapper,
+			"provider", provider
+		);
 	}
 	
 	@Override

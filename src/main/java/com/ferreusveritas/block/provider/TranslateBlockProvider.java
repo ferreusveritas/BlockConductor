@@ -2,14 +2,18 @@ package com.ferreusveritas.block.provider;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.block.Blocks;
 import com.ferreusveritas.api.Request;
 import com.ferreusveritas.math.Vec3I;
 
+import java.util.Map;
 import java.util.Optional;
 
 public class TranslateBlockProvider extends BlockProvider {
+	
+	public static final String TYPE = "translate";
 	
 	private final BlockProvider provider;
 	private final Vec3I offset;
@@ -21,6 +25,15 @@ public class TranslateBlockProvider extends BlockProvider {
 	) {
 		this.provider = provider;
 		this.offset = offset;
+	}
+	
+	@JsonValue
+	private Map<String, Object> getJson() {
+		return Map.of(
+			"type", TYPE,
+			"provider", provider,
+			"offset", offset
+		);
 	}
 	
 	public Vec3I getOffset() {

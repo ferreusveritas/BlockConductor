@@ -2,6 +2,7 @@ package com.ferreusveritas.block.provider;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.ferreusveritas.api.Request;
 import com.ferreusveritas.block.Block;
 import com.ferreusveritas.block.Blocks;
@@ -9,9 +10,12 @@ import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
 import com.ferreusveritas.shapes.Shape;
 
+import java.util.Map;
 import java.util.Optional;
 
 public class ShapeBlockProvider extends BlockProvider {
+	
+	public static final String TYPE = "shape";
 	
 	private final Shape shape;
 	private final Block block;
@@ -29,6 +33,15 @@ public class ShapeBlockProvider extends BlockProvider {
 		if(block == null) {
 			throw new IllegalArgumentException("block cannot be null");
 		}
+	}
+	
+	@JsonValue
+	private Map<String, Object> getJson() {
+		return Map.of(
+			"type", TYPE,
+			"shape", shape,
+			"block", block
+		);
 	}
 	
 	public Block getBlock() {

@@ -2,15 +2,19 @@ package com.ferreusveritas.shapes;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
 
+import java.util.Map;
 import java.util.Optional;
 
 /**
  * Inverts the represented shape, so it's empty where there's blocks and vice versa.
  */
 public class InvertShape implements Shape {
+	
+	public static final String TYPE = "invert";
 	
 	private final Shape shape;
 	
@@ -19,6 +23,14 @@ public class InvertShape implements Shape {
 		@JsonProperty("shape") Shape shape
 	) {
 		this.shape = shape;
+	}
+	
+	@JsonValue
+	private Map<String, Object> getJson() {
+		return Map.of(
+			"type", TYPE,
+			"shape", shape
+		);
 	}
 	
 	@Override

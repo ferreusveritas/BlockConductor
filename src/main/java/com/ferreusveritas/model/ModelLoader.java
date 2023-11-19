@@ -2,6 +2,7 @@ package com.ferreusveritas.model;
 
 import com.ferreusveritas.math.Vec2D;
 import com.ferreusveritas.math.Vec3D;
+import com.ferreusveritas.support.storage.Storage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,24 +22,14 @@ public class ModelLoader {
 	private List<Vec3D> normals = new ArrayList<>();
 	private final List<FullFace> faces = new ArrayList<>();
 	
-	public static Optional<FullMeshModel> load(String filename) {
-		FileReader reader = null;
+	public static Optional<FullMeshModel> load(String path) {
 		try {
-			reader = new FileReader(filename);
-		} catch (FileNotFoundException e) {
-			LOG.error("Failed to load model: {}", filename, e);
+			InputStream stream = Storage.getInputStream(path);
+			return load(stream);
+		} catch (Exception e) {
+			LOG.error("Failed to load model: {}", path, e);
 			return Optional.empty();
 		}
-		return load(reader);
-	}
-	
-	public static Optional<FullMeshModel> loadResource(String resourceName) {
-		InputStream stream = ModelLoader.class.getResourceAsStream(resourceName);
-		if(stream == null) {
-			LOG.error("Failed to load model: {}", resourceName);
-			return Optional.empty();
-		}
-		return load(stream);
 	}
 	
 	public static Optional<FullMeshModel> load(InputStream stream) {

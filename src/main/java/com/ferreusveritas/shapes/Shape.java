@@ -12,23 +12,23 @@ import java.util.Optional;
 	property = "type"
 )
 @JsonSubTypes({
-	@JsonSubTypes.Type(value = BoxShape.class, name = "box"),
-	@JsonSubTypes.Type(value = CacheShape.class, name = "cache"),
-	@JsonSubTypes.Type(value = CavitateShape.class, name = "cavitate"),
-	@JsonSubTypes.Type(value = CheckerShape.class, name = "checker"),
-	@JsonSubTypes.Type(value = CylinderShape.class, name = "cylinder"),
-	@JsonSubTypes.Type(value = DifferenceShape.class, name = "difference"),
-	@JsonSubTypes.Type(value = HeightmapShape.class, name = "heightmap"),
-	@JsonSubTypes.Type(value = IntersectShape.class, name = "intersect"),
-	@JsonSubTypes.Type(value = InvertShape.class, name = "invert"),
-	@JsonSubTypes.Type(value = LayerShape.class, name = "layer"),
-	@JsonSubTypes.Type(value = MeshModelShape.class, name = "model"),
-	@JsonSubTypes.Type(value = SphereShape.class, name = "sphere"),
-	@JsonSubTypes.Type(value = SurfaceShape.class, name = "surface"),
-	@JsonSubTypes.Type(value = TranslateShape.class, name = "translate"),
-	@JsonSubTypes.Type(value = UbiquitousShape.class, name = "ubiquitous"),
-	@JsonSubTypes.Type(value = UnionShape.class, name = "union"),
-	@JsonSubTypes.Type(value = VoidShape.class, name = "void")
+	@JsonSubTypes.Type(value = BoxShape.class, name = BoxShape.TYPE),
+	@JsonSubTypes.Type(value = CacheShape.class, name = CacheShape.TYPE),
+	@JsonSubTypes.Type(value = CavitateShape.class, name = CavitateShape.TYPE),
+	@JsonSubTypes.Type(value = CheckerShape.class, name = CheckerShape.TYPE),
+	@JsonSubTypes.Type(value = CylinderShape.class, name = CylinderShape.TYPE),
+	@JsonSubTypes.Type(value = DifferenceShape.class, name = DifferenceShape.TYPE),
+	@JsonSubTypes.Type(value = HeightmapShape.class, name = HeightmapShape.TYPE),
+	@JsonSubTypes.Type(value = IntersectShape.class, name = IntersectShape.TYPE),
+	@JsonSubTypes.Type(value = InvertShape.class, name = InvertShape.TYPE),
+	@JsonSubTypes.Type(value = LayerShape.class, name = LayerShape.TYPE),
+	@JsonSubTypes.Type(value = MeshModelShape.class, name = MeshModelShape.TYPE),
+	@JsonSubTypes.Type(value = SphereShape.class, name = SphereShape.TYPE),
+	@JsonSubTypes.Type(value = SurfaceShape.class, name = SurfaceShape.TYPE),
+	@JsonSubTypes.Type(value = TranslateShape.class, name = TranslateShape.TYPE),
+	@JsonSubTypes.Type(value = UbiquitousShape.class, name = UbiquitousShape.TYPE),
+	@JsonSubTypes.Type(value = UnionShape.class, name = UnionShape.TYPE),
+	@JsonSubTypes.Type(value = VoidShape.class, name = VoidShape.TYPE)
 })
 public interface Shape {
 	

@@ -1,5 +1,6 @@
 package com.ferreusveritas.scene;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ferreusveritas.block.provider.*;
 import com.ferreusveritas.image.BufferImage;
 import com.ferreusveritas.image.ImageLoader;
@@ -18,6 +19,7 @@ import java.util.Map;
 
 public class MainScene {
 	
+	private static final ObjectMapper mapper = new ObjectMapper();
 	private static final BlockProvider provider = createProvider();
 	
 	private static BlockProvider createProvider() {
@@ -52,13 +54,13 @@ public class MainScene {
 	}
 	
 	private static BlockProvider heightMapTest() {
-		BufferImage image = ImageLoader.loadImageFromResource("/skull.png");
+		BufferImage image = ImageLoader.load("res://skull.png");
 		Shape heightMap = new HeightmapShape(image, 16, Vec3I.ZERO.up(56), true);
 		return new ShapeBlockProvider(heightMap, BlockTypes.STONE);
 	}
 	
 	private static BlockProvider modelTest() {
-		FullMeshModel model = ModelLoader.loadResource("/dragon_skull.obj").orElseThrow();
+		FullMeshModel model = ModelLoader.load("res://dragon_skull.obj").orElseThrow();
 		SimpleMeshModel simpleModel = model.toSimpleMeshModel();
 		QSPModel qsp = simpleModel.calculateQSP();
 		Shape modelShape = new MeshModelShape(qsp, Matrix4X4.IDENTITY

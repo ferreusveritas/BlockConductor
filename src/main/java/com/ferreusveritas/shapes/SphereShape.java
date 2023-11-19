@@ -2,13 +2,17 @@ package com.ferreusveritas.shapes;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3D;
 import com.ferreusveritas.math.Vec3I;
 
+import java.util.Map;
 import java.util.Optional;
 
 public class SphereShape implements Shape {
+	
+	public static final String TYPE = "sphere";
 	
 	private final Vec3D center;
 	private final double radius;
@@ -23,6 +27,15 @@ public class SphereShape implements Shape {
 		this.radius = radius;
 		Vec3I v = center.toVecI();
 		this.aabb = new AABBI(v, v).expand((int)Math.ceil(radius)).orElseThrow();
+	}
+	
+	@JsonValue
+	private Map<String, Object> getJson() {
+		return Map.of(
+			"type", TYPE,
+			"center", center,
+			"radius", radius
+		);
 	}
 	
 	@Override

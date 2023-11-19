@@ -2,13 +2,19 @@ package com.ferreusveritas.shapes;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
 
+import java.util.Map;
 import java.util.Optional;
 
 public class SurfaceShape implements Shape {
 	
+	public static final String TYPE = "surface";
+	
+	private final Vec3I dir;
+	private final int offset;
 	private final AABBI aabb;
 	
 	@JsonCreator
@@ -16,7 +22,18 @@ public class SurfaceShape implements Shape {
 		@JsonProperty("dir") Vec3I dir,
 		@JsonProperty("offset") int offset
 	) {
+		this.dir = dir;
+		this.offset = offset;
 		this.aabb = createAABB(dir.mul(offset), dir);
+	}
+	
+	@JsonValue
+	private Object getJson() {
+		return Map.of(
+			"type", TYPE,
+			"dir", dir,
+			"offset", offset
+		);
 	}
 	
 	private AABBI createAABB(Vec3I pos, Vec3I dir) {

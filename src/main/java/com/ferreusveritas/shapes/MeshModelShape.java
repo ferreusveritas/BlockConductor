@@ -12,6 +12,8 @@ import java.util.Optional;
  */
 public class MeshModelShape implements Shape {
 	
+	public static final String TYPE = "mesh_model";
+	
 	private final QSPModel qsp;
 	private final Matrix4X4 transform;
 	private final AABBI aabb;

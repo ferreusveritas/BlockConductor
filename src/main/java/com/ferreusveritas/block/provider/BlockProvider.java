@@ -14,12 +14,12 @@ import java.util.Optional;
 	property = "type"
 )
 @JsonSubTypes({
-	@JsonSubTypes.Type(value = SolidBlockProvider.class, name = "solid"),
-	@JsonSubTypes.Type(value = TranslateBlockProvider.class, name = "translate"),
-	@JsonSubTypes.Type(value = CombineBlockProvider.class, name = "combine"),
-	@JsonSubTypes.Type(value = ShapeBlockProvider.class, name = "shape"),
-	@JsonSubTypes.Type(value = MapperBlockProvider.class, name = "mapper"),
-	@JsonSubTypes.Type(value = RoutingBlockProvider.class, name = "routing")
+	@JsonSubTypes.Type(value = SolidBlockProvider.class, name = SolidBlockProvider.TYPE),
+	@JsonSubTypes.Type(value = TranslateBlockProvider.class, name = TranslateBlockProvider.TYPE),
+	@JsonSubTypes.Type(value = CombineBlockProvider.class, name = CombineBlockProvider.TYPE),
+	@JsonSubTypes.Type(value = ShapeBlockProvider.class, name = ShapeBlockProvider.TYPE),
+	@JsonSubTypes.Type(value = MapperBlockProvider.class, name = MapperBlockProvider.TYPE),
+	@JsonSubTypes.Type(value = RoutingBlockProvider.class, name = RoutingBlockProvider.TYPE)
 })
 public abstract class BlockProvider {
 	

@@ -2,16 +2,20 @@ package com.ferreusveritas.shapes;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
  * Combine two or more shapes in such a way that only the blocks common to all are present.  This is an intersect (∩) operation
  */
 public class IntersectShape implements Shape {
+	
+	public static final String TYPE = "intersect";
 	
 	private final List<Shape> shapes;
 	
@@ -23,6 +27,14 @@ public class IntersectShape implements Shape {
 		if(this.shapes.isEmpty()) {
 			throw new IllegalArgumentException("IntersectShape must have at least one shape");
 		}
+	}
+	
+	@JsonValue
+	private Object getJson() {
+		return Map.of(
+			"type", TYPE,
+			"shapes", shapes
+		);
 	}
 	
 	@Override

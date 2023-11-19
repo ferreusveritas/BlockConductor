@@ -2,15 +2,19 @@ package com.ferreusveritas.shapes;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
 
+import java.util.Map;
 import java.util.Optional;
 
 /**
  * Remove the presence of the second shape from the first shape with a Difference (-) operation
  */
 public class DifferenceShape implements Shape {
+	
+	public static final String TYPE = "difference";
 	
 	private final Shape shape1;
 	private final Shape shape2;
@@ -22,6 +26,15 @@ public class DifferenceShape implements Shape {
 	) {
 		this.shape1 = shape1;
 		this.shape2 = shape2;
+	}
+	
+	@JsonValue
+	private Object getJson() {
+		return Map.of(
+			"type", TYPE,
+			"shape1", shape1,
+			"shape2", shape2
+		);
 	}
 	
 	@Override

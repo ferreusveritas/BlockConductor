@@ -2,7 +2,8 @@ package com.ferreusveritas.block.provider;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.ferreusveritas.api.*;
+import com.fasterxml.jackson.annotation.JsonValue;
+import com.ferreusveritas.api.Request;
 import com.ferreusveritas.block.Block;
 import com.ferreusveritas.block.BlockTypes;
 import com.ferreusveritas.block.Blocks;
@@ -10,6 +11,7 @@ import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -17,8 +19,11 @@ import java.util.Optional;
  * Each provider is processed in order. Blocks from each provider are overwritten by blocks from later providers.
  */
 public class CombineBlockProvider extends BlockProvider {
-
+	
+	public static final String TYPE = "combine";
+	
 	private final List<BlockProvider> providers;
+	
 	private final AABBI aabb;
 	
 	@JsonCreator
@@ -27,6 +32,14 @@ public class CombineBlockProvider extends BlockProvider {
 	) {
 		this.providers = List.of(providers);
 		this.aabb = unionProviders(this.providers);
+	}
+	
+	@JsonValue
+	private Map<String, Object> getJson() {
+		return Map.of(
+			"type", TYPE,
+			"providers", providers
+		);
 	}
 	
 	@Override

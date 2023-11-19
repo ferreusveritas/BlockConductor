@@ -2,13 +2,17 @@ package com.ferreusveritas.shapes;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Axis;
 import com.ferreusveritas.math.Vec3I;
 
+import java.util.Map;
 import java.util.Optional;
 
 public class CheckerShape implements Shape {
+	
+	public static final String TYPE = "checker";
 	
 	private final Axis axis; // null means all axes(3D checker block)
 	
@@ -21,6 +25,14 @@ public class CheckerShape implements Shape {
 		@JsonProperty("axis") Axis axis
 	) {
 		this.axis = axis;
+	}
+	
+	@JsonValue
+	private Map<String, Object> getJson() {
+		return Map.of(
+			"type", TYPE,
+			"axis", axis
+		);
 	}
 	
 	@Override

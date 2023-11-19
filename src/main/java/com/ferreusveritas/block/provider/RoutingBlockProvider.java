@@ -2,6 +2,7 @@ package com.ferreusveritas.block.provider;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.block.Blocks;
 import com.ferreusveritas.api.Request;
@@ -12,6 +13,8 @@ import java.util.Optional;
 
 public class RoutingBlockProvider extends BlockProvider {
 	
+	public static final String TYPE = "routing";
+	
 	private final Map<String, BlockProvider> providers;
 	private final AABBI aabb;
 	
@@ -21,6 +24,14 @@ public class RoutingBlockProvider extends BlockProvider {
 	) {
 		this.providers = new HashMap<>(providers);
 		this.aabb = unionProviders(this.providers.values());
+	}
+	
+	@JsonValue
+	private Map<String, Object> getJson() {
+		return Map.of(
+			"type", TYPE,
+			"providers", providers
+		);
 	}
 	
 	@Override
