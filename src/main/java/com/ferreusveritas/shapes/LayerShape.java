@@ -1,40 +1,36 @@
 package com.ferreusveritas.shapes;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonValue;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
+import com.ferreusveritas.support.json.InvalidJsonProperty;
+import com.ferreusveritas.support.json.JsonObj;
 
-import java.util.Map;
 import java.util.Optional;
 
 /**
  * A shape that represents a layer of blocks in the y axis.
  */
-public class LayerShape implements Shape {
+public class LayerShape extends Shape {
 	
 	public static final String TYPE = "layer";
 	
 	private final int min;
 	private final int max;
 	
-	@JsonCreator
-	public LayerShape(
-		@JsonProperty("min") int min,
-		@JsonProperty("max") int max
-	) {
+	public LayerShape(int min, int max) {
 		this.min = min;
 		this.max = max;
 	}
 	
-	@JsonValue
-	private Object getJson() {
-		return Map.of(
-			"type", TYPE,
-			"min", min,
-			"max", max
-		);
+	public LayerShape(JsonObj src) {
+		super(src);
+		this.min = src.getInt("min").orElseThrow(() -> new InvalidJsonProperty("Missing min"));
+		this.max = src.getInt("max").orElseThrow(() -> new InvalidJsonProperty("Missing max"));
+	}
+	
+	@Override
+	public String getType() {
+		return TYPE;
 	}
 	
 	@Override
@@ -45,6 +41,13 @@ public class LayerShape implements Shape {
 	@Override
 	public boolean isInside(Vec3I pos) {
 		return pos.y() >= min && pos.y() <= max;
+	}
+	
+	@Override
+	public JsonObj toJsonObj() {
+		return super.toJsonObj()
+			.set("min", min)
+			.set("max", max);
 	}
 	
 }

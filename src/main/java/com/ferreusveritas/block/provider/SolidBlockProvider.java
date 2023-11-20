@@ -1,14 +1,12 @@
 package com.ferreusveritas.block.provider;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonValue;
-import com.ferreusveritas.api.*;
+import com.ferreusveritas.api.Request;
 import com.ferreusveritas.block.Block;
 import com.ferreusveritas.block.Blocks;
 import com.ferreusveritas.math.AABBI;
+import com.ferreusveritas.support.json.InvalidJsonProperty;
+import com.ferreusveritas.support.json.JsonObj;
 
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -20,19 +18,18 @@ public class SolidBlockProvider extends BlockProvider {
 	
 	private final Block block;
 	
-	@JsonCreator
-	public SolidBlockProvider(
-		@JsonProperty("block") Block block
-	) {
+	public SolidBlockProvider(Block block) {
 		this.block = block;
 	}
 	
-	@JsonValue
-	private Map<String, Object> getJson() {
-		return Map.of(
-			"type", TYPE,
-			"block", block
-		);
+	public SolidBlockProvider(JsonObj src) {
+		super(src);
+		this.block = src.getObj("block").map(Block::new).orElseThrow(() -> new InvalidJsonProperty("Missing block"));
+	}
+	
+	@Override
+	public String getType() {
+		return TYPE;
 	}
 	
 	@Override
@@ -48,6 +45,12 @@ public class SolidBlockProvider extends BlockProvider {
 	@Override
 	public Optional<AABBI> getAABB() {
 		return Optional.of(AABBI.INFINITE);
+	}
+	
+	@Override
+	public JsonObj toJsonObj() {
+		return super.toJsonObj()
+			.set("block", block);
 	}
 	
 }

@@ -2,27 +2,39 @@ package com.ferreusveritas.image;
 
 import com.ferreusveritas.math.Pixel;
 import com.ferreusveritas.math.RectI;
+import com.ferreusveritas.support.json.JsonObj;
+import com.ferreusveritas.support.json.Jsonable;
 
-public abstract class Image {
+import java.util.UUID;
 
-	private final RectI bounds;
+public abstract class Image implements Jsonable {
 	
-	protected Image(int width, int height) {
-		this.bounds = new RectI(width, height);
-	}
-
-	public int width() {
-		return bounds.width();
-	}
+	private final UUID uuid;
 	
-	public int height() {
-		return bounds.height();
+	protected Image() {
+		this.uuid = UUID.randomUUID();
 	}
 	
-	public RectI bounds() {
-		return bounds;
+	protected Image(JsonObj src) {
+		this.uuid = src.getString("uuid").map(UUID::fromString).orElse(UUID.randomUUID());
 	}
+	
+	public abstract String getType();
+	
+	public abstract RectI bounds();
 	
 	public abstract Pixel getPixel(int x, int y);
+	
+	@Override
+	public JsonObj toJsonObj() {
+		return JsonObj.newMap()
+			.set("type", getType())
+			.set("uuid", uuid.toString());
+	}
+	
+	@Override
+	public String toString() {
+		return toJsonObj().toString();
+	}
 	
 }

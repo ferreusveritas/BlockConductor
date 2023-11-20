@@ -1,16 +1,15 @@
 package com.ferreusveritas.block.provider;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonValue;
 import com.ferreusveritas.api.Request;
 import com.ferreusveritas.block.Block;
 import com.ferreusveritas.block.Blocks;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
 import com.ferreusveritas.shapes.Shape;
+import com.ferreusveritas.shapes.ShapeFactory;
+import com.ferreusveritas.support.json.InvalidJsonProperty;
+import com.ferreusveritas.support.json.JsonObj;
 
-import java.util.Map;
 import java.util.Optional;
 
 public class ShapeBlockProvider extends BlockProvider {
@@ -20,11 +19,7 @@ public class ShapeBlockProvider extends BlockProvider {
 	private final Shape shape;
 	private final Block block;
 	
-	@JsonCreator
-	public ShapeBlockProvider(
-		@JsonProperty("shape") Shape shape,
-		@JsonProperty("block") Block block
-	) {
+	public ShapeBlockProvider(Shape shape, Block block) {
 		this.shape = shape;
 		this.block = block;
 		if(shape == null) {
@@ -35,13 +30,15 @@ public class ShapeBlockProvider extends BlockProvider {
 		}
 	}
 	
-	@JsonValue
-	private Map<String, Object> getJson() {
-		return Map.of(
-			"type", TYPE,
-			"shape", shape,
-			"block", block
-		);
+	public ShapeBlockProvider(JsonObj src) {
+		super(src);
+		this.shape = src.getObj("shape").map(ShapeFactory::create).orElseThrow(() -> new InvalidJsonProperty("Missing shape"));
+		this.block = src.getObj("block").map(Block::new).orElseThrow(() -> new InvalidJsonProperty("Missing block"));
+	}
+	
+	@Override
+	public String getType() {
+		return TYPE;
 	}
 	
 	public Block getBlock() {
@@ -69,6 +66,13 @@ public class ShapeBlockProvider extends BlockProvider {
 	@Override
 	public Optional<AABBI> getAABB() {
 		return shape.getAABB();
+	}
+	
+	@Override
+	public JsonObj toJsonObj() {
+		return super.toJsonObj()
+			.set("shape", shape)
+			.set("block", block);
 	}
 	
 }

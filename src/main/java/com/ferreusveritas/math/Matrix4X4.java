@@ -1,5 +1,11 @@
 package com.ferreusveritas.math;
 
+import com.ferreusveritas.support.json.JsonObj;
+import com.ferreusveritas.support.json.Jsonable;
+
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * A 4x4 Matrix
  */
@@ -8,7 +14,7 @@ public record Matrix4X4(
 	double m10, double m11, double m12, double m13,
 	double m20, double m21, double m22, double m23,
 	double m30, double m31, double m32, double m33
-) {
+) implements Jsonable {
 	
 	public static final Matrix4X4 IDENTITY = new Matrix4X4();
 	public static final Matrix4X4 ZERO = new Matrix4X4(
@@ -26,6 +32,19 @@ public record Matrix4X4(
 			0, 0, 1, 0,
 			0, 0, 0, 1
 		);
+	}
+	
+	public Matrix4X4(double[] e) {
+		this(
+			e[0], e[1], e[2], e[3],
+			e[4], e[5], e[6], e[7],
+			e[8], e[9], e[10], e[11],
+			e[12], e[13], e[14], e[15]
+		);
+	}
+	
+	public Matrix4X4(JsonObj src) {
+		this(src.toImmutableList(j -> j.asDouble().orElse(0.0)).stream().mapToDouble(Double::doubleValue).toArray());
 	}
 	
 	public static Matrix4X4 translateMatrix(Vec3D vec) {
@@ -194,6 +213,30 @@ public record Matrix4X4(
 			m20 * vec.z(), m21 * vec.z(), m22 * vec.z(), m23 * vec.z(),
 			m30, m31, m32, m33
 		);
+	}
+	
+	public double[] asArray() {
+		return new double[] {
+			m00, m01, m02, m03,
+			m10, m11, m12, m13,
+			m20, m21, m22, m23,
+			m30, m31, m32, m33
+		};
+	}
+	
+	@Override
+	public JsonObj toJsonObj() {
+		return JsonObj.newList(List.of(
+			m00, m01, m02, m03,
+			m10, m11, m12, m13,
+			m20, m21, m22, m23,
+			m30, m31, m32, m33
+		));
+	}
+	
+	@Override
+	public String toString() {
+		return toJsonObj().toString();
 	}
 	
 }

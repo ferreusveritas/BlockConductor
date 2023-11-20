@@ -1,51 +1,55 @@
 package com.ferreusveritas.shapes;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonValue;
 import com.ferreusveritas.image.Image;
+import com.ferreusveritas.image.ImageFactory;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
+import com.ferreusveritas.support.json.InvalidJsonProperty;
+import com.ferreusveritas.support.json.JsonObj;
 
-import java.util.Map;
 import java.util.Optional;
 
 /**
  * Use an image as a height map
  */
-public class HeightmapShape implements Shape {
+public class HeightmapShape extends Shape {
 	
 	public static final String TYPE = "heightmap";
 	
 	private final Image image;
 	private final int height;
 	private final Vec3I offset;
+	private final boolean infinite;
 	private final AABBI aabb;
 	
-	@JsonCreator
-	public HeightmapShape(
-		@JsonProperty("image") Image image,
-		@JsonProperty("height") int height,
-		@JsonProperty("offset") Vec3I offset,
-		@JsonProperty("infinite") boolean infinite
-	) {
+	public HeightmapShape(Image image, int height, Vec3I offset, boolean infinite) {
 		this.image = image;
 		this.height = height;
 		this.offset = offset;
+		this.infinite = infinite;
 		this.aabb = calculateAABB(image, height, offset, infinite);
+		validate();
+	}
+	
+	public HeightmapShape(JsonObj src) {
+		super(src);
+		this.image = src.getObj("image").map(ImageFactory::create).orElseThrow(() -> new InvalidJsonProperty("Missing image"));
+		this.height = src.getInt("height").orElse(1);
+		this.offset = src.getObj("offset").map(Vec3I::new).orElse(Vec3I.ZERO);
+		this.infinite = src.getBoolean("infinite").orElse(false);
+		this.aabb = calculateAABB(image, height, offset, infinite);
+		validate();
+	}
+	
+	private void validate() {
 		if(height < 1) {
 			throw new IllegalArgumentException("Height must be at least 1");
 		}
 	}
 	
-	@JsonValue
-	private Object getJson() {
-		return Map.of(
-			"type", TYPE,
-			"image", image,
-			"height", height,
-			"offset", offset
-		);
+	@Override
+	public String getType() {
+		return TYPE;
 	}
 	
 	private static AABBI calculateAABB(Image image, int height, Vec3I offset, boolean infinite) {
@@ -74,6 +78,15 @@ public class HeightmapShape implements Shape {
 		}
 		int red = image.getPixel(x, z).getR(); // Use the red channel as the height map
 		return y < red * height / 255;
+	}
+	
+	@Override
+	public JsonObj toJsonObj() {
+		return super.toJsonObj()
+			.set("image", image)
+			.set("height", height)
+			.set("offset", offset)
+			.set("infinite", infinite);
 	}
 	
 }

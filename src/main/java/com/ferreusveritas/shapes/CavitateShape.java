@@ -1,36 +1,33 @@
 package com.ferreusveritas.shapes;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonValue;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
+import com.ferreusveritas.support.json.InvalidJsonProperty;
+import com.ferreusveritas.support.json.JsonObj;
 
-import java.util.Map;
 import java.util.Optional;
 
 /**
  * Hollows out a provided shape using a 3d kernel
  */
-public class CavitateShape implements Shape {
+public class CavitateShape extends Shape {
 	
 	public static final String TYPE = "cavitate";
 	
 	private final Shape shape;
 	
-	@JsonCreator
-	public CavitateShape(
-		@JsonProperty("shape") Shape shape
-	) {
+	public CavitateShape(Shape shape) {
 		this.shape = shape;
 	}
 	
-	@JsonValue
-	private Map<String, Object> getJson() {
-		return Map.of(
-			"type", TYPE,
-			"shape", shape
-		);
+	public CavitateShape(JsonObj src) {
+		super(src);
+		this.shape = src.getObj("shape").map(ShapeFactory::create).orElseThrow(() -> new InvalidJsonProperty("Missing shape"));
+	}
+	
+	@Override
+	public String getType() {
+		return TYPE;
 	}
 	
 	@Override
@@ -50,4 +47,11 @@ public class CavitateShape implements Shape {
 				&& shape.isInside(pos.add(Vec3I.WEST))
 			);
 	}
+	
+	@Override
+	public JsonObj toJsonObj() {
+		return super.toJsonObj()
+			.set("shape", shape);
+	}
+	
 }

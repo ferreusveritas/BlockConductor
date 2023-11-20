@@ -1,36 +1,33 @@
 package com.ferreusveritas.shapes;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonValue;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
+import com.ferreusveritas.support.json.InvalidJsonProperty;
+import com.ferreusveritas.support.json.JsonObj;
 
-import java.util.Map;
 import java.util.Optional;
 
 /**
  * Inverts the represented shape, so it's empty where there's blocks and vice versa.
  */
-public class InvertShape implements Shape {
+public class InvertShape extends Shape {
 	
 	public static final String TYPE = "invert";
 	
 	private final Shape shape;
 	
-	@JsonCreator
-	public InvertShape(
-		@JsonProperty("shape") Shape shape
-	) {
+	public InvertShape(Shape shape) {
 		this.shape = shape;
 	}
 	
-	@JsonValue
-	private Map<String, Object> getJson() {
-		return Map.of(
-			"type", TYPE,
-			"shape", shape
-		);
+	public InvertShape(JsonObj src) {
+		super(src);
+		this.shape = src.getObj("shape").map(ShapeFactory::create).orElseThrow(() -> new InvalidJsonProperty("Missing shape"));
+	}
+	
+	@Override
+	public String getType() {
+		return TYPE;
 	}
 	
 	@Override
@@ -42,4 +39,11 @@ public class InvertShape implements Shape {
 	public boolean isInside(Vec3I pos) {
 		return !shape.isInside(pos);
 	}
+	
+	@Override
+	public JsonObj toJsonObj() {
+		return super.toJsonObj()
+			.set("shape", shape);
+	}
+	
 }

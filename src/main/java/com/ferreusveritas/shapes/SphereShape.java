@@ -1,16 +1,14 @@
 package com.ferreusveritas.shapes;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonValue;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3D;
 import com.ferreusveritas.math.Vec3I;
+import com.ferreusveritas.support.json.InvalidJsonProperty;
+import com.ferreusveritas.support.json.JsonObj;
 
-import java.util.Map;
 import java.util.Optional;
 
-public class SphereShape implements Shape {
+public class SphereShape extends Shape {
 	
 	public static final String TYPE = "sphere";
 	
@@ -18,24 +16,24 @@ public class SphereShape implements Shape {
 	private final double radius;
 	private final AABBI aabb;
 	
-	@JsonCreator
-	public SphereShape(
-		@JsonProperty("center") Vec3D center,
-		@JsonProperty("radius") double radius
-	) {
+	public SphereShape(Vec3D center, double radius) {
 		this.center = center;
 		this.radius = radius;
 		Vec3I v = center.toVecI();
 		this.aabb = new AABBI(v, v).expand((int)Math.ceil(radius)).orElseThrow();
 	}
 	
-	@JsonValue
-	private Map<String, Object> getJson() {
-		return Map.of(
-			"type", TYPE,
-			"center", center,
-			"radius", radius
-		);
+	public SphereShape(JsonObj src) {
+		super(src);
+		this.center = src.getObj("center").map(Vec3D::new).orElseThrow(() -> new InvalidJsonProperty("Missing center property"));
+		this.radius = src.getDouble("radius").orElse(0.0);
+		Vec3I v = center.toVecI();
+		this.aabb = new AABBI(v, v).expand((int)Math.ceil(radius)).orElseThrow();
+	}
+	
+	@Override
+	public String getType() {
+		return TYPE;
 	}
 	
 	@Override
@@ -46,6 +44,13 @@ public class SphereShape implements Shape {
 	@Override
 	public boolean isInside(Vec3I pos) {
 		return center.distanceSqTo(pos.toVecD()) <= radius * radius;
+	}
+	
+	@Override
+	public JsonObj toJsonObj() {
+		return super.toJsonObj()
+			.set("center", center)
+			.set("radius", radius);
 	}
 	
 }

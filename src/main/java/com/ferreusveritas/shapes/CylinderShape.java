@@ -1,20 +1,18 @@
 package com.ferreusveritas.shapes;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonValue;
 import com.ferreusveritas.math.AABBD;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3D;
 import com.ferreusveritas.math.Vec3I;
+import com.ferreusveritas.support.json.InvalidJsonProperty;
+import com.ferreusveritas.support.json.JsonObj;
 
-import java.util.Map;
 import java.util.Optional;
 
 /**
  * A vertically oriented cylinder shape
  */
-public class CylinderShape implements Shape {
+public class CylinderShape extends Shape {
 	
 	public static final String TYPE = "cylinder";
 	
@@ -22,25 +20,22 @@ public class CylinderShape implements Shape {
 	private final double radius;
 	private final int height;
 	
-	@JsonCreator
-	public CylinderShape(
-		@JsonProperty("center") Vec3D center,
-		@JsonProperty("radius") double radius,
-		@JsonProperty("height") int h
-	) {
+	public CylinderShape(Vec3D center, double radius, int h) {
 		this.center = center;
 		this.radius = radius;
 		this.height = h;
 	}
 	
-	@JsonValue
-	private Object getJson() {
-		return Map.of(
-			"type", TYPE,
-			"center", center,
-			"radius", radius,
-			"height", height
-		);
+	public CylinderShape(JsonObj src) {
+		super(src);
+		this.center = src.getObj("center").map(Vec3D::new).orElseThrow(() -> new InvalidJsonProperty("Missing center property"));
+		this.radius = src.getDouble("radius").orElse(0.0);
+		this.height = src.getInt("height").orElse(0);
+	}
+	
+	@Override
+	public String getType() {
+		return TYPE;
 	}
 	
 	@Override
@@ -53,6 +48,14 @@ public class CylinderShape implements Shape {
 	public boolean isInside(Vec3I pos) {
 		Vec3D delta = pos.toVecD().sub(center);
 		return delta.y() >= 0 && delta.y() < height && delta.x() * delta.x() + delta.z() * delta.z() <= radius * radius;
+	}
+	
+	@Override
+	public JsonObj toJsonObj() {
+		return super.toJsonObj()
+			.set("center", center)
+			.set("radius", radius)
+			.set("height", height);
 	}
 	
 }

@@ -1,40 +1,44 @@
 package com.ferreusveritas.shapes;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonValue;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
+import com.ferreusveritas.support.json.JsonObj;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 /**
  * Combine two or more shape providers with a Union (|) operation
  */
-public class UnionShape implements Shape {
+public class UnionShape extends Shape {
 	
 	public static final String TYPE = "union";
 	
 	private final List<Shape> shapes;
 	
-	@JsonCreator
-	public UnionShape(
-		@JsonProperty("shapes") Shape... shapes
-	) {
-		this.shapes = List.of(shapes);
-		if(this.shapes.isEmpty()) {
+	public UnionShape(Shape... shapes) {
+		this(List.of(shapes));
+	}
+	
+	public UnionShape(List<Shape> shapes) {
+		this.shapes = shapes;
+		validate();
+	}
+	
+	public UnionShape(JsonObj src) {
+		super(src);
+		this.shapes = src.getObj("shapes").orElseGet(JsonObj::newList).toImmutableList(ShapeFactory::create);
+	}
+	
+	private void validate() {
+		if(shapes.isEmpty()) {
 			throw new IllegalArgumentException("UnionShape must have at least one shape");
 		}
 	}
 	
-	@JsonValue
-	private Map<String, Object> getJson() {
-		return Map.of(
-			"type", TYPE,
-			"shapes", shapes
-		);
+	@Override
+	public String getType() {
+		return TYPE;
 	}
 	
 	@Override
@@ -62,4 +66,11 @@ public class UnionShape implements Shape {
 		}
 		return false;
 	}
+	
+	@Override
+	public JsonObj toJsonObj() {
+		return super.toJsonObj()
+			.set("shapes", shapes);
+	}
+	
 }

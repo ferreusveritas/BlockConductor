@@ -1,20 +1,18 @@
 package com.ferreusveritas.shapes;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonValue;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
+import com.ferreusveritas.support.json.InvalidJsonProperty;
+import com.ferreusveritas.support.json.JsonObj;
 
 import java.util.BitSet;
-import java.util.Map;
 import java.util.Optional;
 
 /**
  * A shape that caches the results of isInside() in a BitSet.
  * This is useful for shapes that are expensive to calculate.
  */
-public class CacheShape implements Shape {
+public class CacheShape extends Shape {
 	
 	public static final String TYPE = "cache";
 	
@@ -22,23 +20,22 @@ public class CacheShape implements Shape {
 	private final AABBI aabb;
 	private final BitSet cache;
 	
-	@JsonCreator
-	public CacheShape(
-		@JsonProperty("shape") Shape shape,
-		@JsonProperty("aabb") AABBI aabb
-	) {
+	public CacheShape(Shape shape, AABBI aabb) {
 		this.shape = shape;
 		this.aabb = determineAAABB(shape, aabb);
 		this.cache = buildCache(this.aabb);
 	}
 	
-	@JsonValue
-	private Map<String, Object> getJson() {
-		return Map.of(
-			"type", TYPE,
-			"shape", shape,
-			"aabb", aabb
-		);
+	public CacheShape(JsonObj src) {
+		super(src);
+		this.shape = src.getObj("shape").map(ShapeFactory::create).orElseThrow(() -> new InvalidJsonProperty("CacheShape must have a valid shape"));
+		this.aabb = src.getObj("aabb").map(AABBI::new).orElseThrow(() -> new InvalidJsonProperty("CacheShape must have a valid AABB"));
+		this.cache = buildCache(this.aabb);
+	}
+	
+	@Override
+	public String getType() {
+		return TYPE;
 	}
 	
 	private AABBI determineAAABB(Shape shape, AABBI aabb) {
@@ -69,6 +66,13 @@ public class CacheShape implements Shape {
 	@Override
 	public boolean isInside(Vec3I pos) {
 		return cache.get(pos.calcIndex(aabb.size()));
+	}
+	
+	@Override
+	public JsonObj toJsonObj() {
+		return super.toJsonObj()
+			.set("shape", shape)
+			.set("aabb", aabb);
 	}
 	
 }

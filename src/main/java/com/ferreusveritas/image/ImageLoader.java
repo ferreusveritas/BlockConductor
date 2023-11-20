@@ -8,7 +8,7 @@ import java.io.*;
 
 public class ImageLoader {
 	
-	public static BufferImage load(String path) {
+	public static BufferedImage load(String path) {
 		try {
 			InputStream stream = Storage.getInputStream(path);
 			return load(stream);
@@ -17,9 +17,8 @@ public class ImageLoader {
 		}
 	}
 	
-	private static BufferImage load(InputStream stream) throws IOException {
-		BufferedImage image = ImageIO.read(stream);
-		return new BufferImage(image);
+	private static BufferedImage load(InputStream stream) throws IOException {
+		return ImageIO.read(stream);
 	}
 	
 	private ImageLoader() {

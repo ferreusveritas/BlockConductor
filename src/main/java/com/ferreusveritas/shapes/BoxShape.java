@@ -1,33 +1,31 @@
 package com.ferreusveritas.shapes;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonValue;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
+import com.ferreusveritas.support.json.InvalidJsonProperty;
+import com.ferreusveritas.support.json.JsonObj;
 
-import java.util.Map;
 import java.util.Optional;
 
-public class BoxShape implements Shape {
+public class BoxShape extends Shape {
 	
 	public static final String TYPE = "box";
 	
 	private final AABBI aabb;
 	
-	@JsonCreator
-	public BoxShape(
-		@JsonProperty("aabb") AABBI aabb
-	) {
+	public BoxShape(AABBI aabb) {
+		super();
 		this.aabb = aabb;
 	}
 	
-	@JsonValue
-	private Map<String, Object> getJson() {
-		return Map.of(
-			"type", TYPE,
-			"aabb", aabb
-		);
+	public BoxShape(JsonObj src) {
+		super(src);
+		this.aabb = new AABBI(src.getObj("aabb").orElseThrow(() -> new InvalidJsonProperty("Missing aabb")));
+	}
+	
+	@Override
+	public String getType() {
+		return TYPE;
 	}
 	
 	@Override
@@ -38,6 +36,12 @@ public class BoxShape implements Shape {
 	@Override
 	public boolean isInside(Vec3I pos) {
 		return aabb.isPointInside(pos);
+	}
+	
+	@Override
+	public JsonObj toJsonObj() {
+		return super.toJsonObj()
+			.set("aabb", aabb);
 	}
 	
 }

@@ -1,17 +1,14 @@
 package com.ferreusveritas.block.provider;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonValue;
 import com.ferreusveritas.api.Request;
 import com.ferreusveritas.block.Block;
 import com.ferreusveritas.block.BlockTypes;
 import com.ferreusveritas.block.Blocks;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
+import com.ferreusveritas.support.json.JsonObj;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -23,23 +20,22 @@ public class CombineBlockProvider extends BlockProvider {
 	public static final String TYPE = "combine";
 	
 	private final List<BlockProvider> providers;
-	
 	private final AABBI aabb;
 	
-	@JsonCreator
-	public CombineBlockProvider(
-		@JsonProperty("providers") BlockProvider ... providers
-	) {
+	public CombineBlockProvider(BlockProvider ... providers) {
 		this.providers = List.of(providers);
 		this.aabb = unionProviders(this.providers);
 	}
 	
-	@JsonValue
-	private Map<String, Object> getJson() {
-		return Map.of(
-			"type", TYPE,
-			"providers", providers
-		);
+	public CombineBlockProvider(JsonObj src) {
+		super(src);
+		this.providers = src.getObj("providers").stream().map(BlockProviderFactory::create).toList();
+		this.aabb = unionProviders(this.providers);
+	}
+	
+	@Override
+	public String getType() {
+		return TYPE;
 	}
 	
 	@Override
@@ -91,6 +87,12 @@ public class CombineBlockProvider extends BlockProvider {
 	@Override
 	public Optional<AABBI> getAABB() {
 		return Optional.of(aabb);
+	}
+	
+	@Override
+	public JsonObj toJsonObj() {
+		return super.toJsonObj()
+			.set("providers", JsonObj.newList(providers));
 	}
 	
 }

@@ -1,25 +1,19 @@
 package com.ferreusveritas.scene;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ferreusveritas.block.BlockTypes;
 import com.ferreusveritas.block.provider.*;
 import com.ferreusveritas.image.BufferImage;
-import com.ferreusveritas.image.ImageLoader;
 import com.ferreusveritas.math.AABBI;
-import com.ferreusveritas.block.BlockTypes;
 import com.ferreusveritas.math.Matrix4X4;
 import com.ferreusveritas.math.Vec3D;
 import com.ferreusveritas.math.Vec3I;
-import com.ferreusveritas.model.FullMeshModel;
-import com.ferreusveritas.model.ModelLoader;
-import com.ferreusveritas.model.QSPModel;
-import com.ferreusveritas.model.SimpleMeshModel;
 import com.ferreusveritas.shapes.*;
+import com.ferreusveritas.transform.MatrixTransform;
 
 import java.util.Map;
 
 public class MainScene {
 	
-	private static final ObjectMapper mapper = new ObjectMapper();
 	private static final BlockProvider provider = createProvider();
 	
 	private static BlockProvider createProvider() {
@@ -54,20 +48,17 @@ public class MainScene {
 	}
 	
 	private static BlockProvider heightMapTest() {
-		BufferImage image = ImageLoader.load("res://skull.png");
+		BufferImage image = new BufferImage("res://skull.png");
 		Shape heightMap = new HeightmapShape(image, 16, Vec3I.ZERO.up(56), true);
 		return new ShapeBlockProvider(heightMap, BlockTypes.STONE);
 	}
 	
 	private static BlockProvider modelTest() {
-		FullMeshModel model = ModelLoader.load("res://dragon_skull.obj").orElseThrow();
-		SimpleMeshModel simpleModel = model.toSimpleMeshModel();
-		QSPModel qsp = simpleModel.calculateQSP();
-		Shape modelShape = new MeshModelShape(qsp, Matrix4X4.IDENTITY
-				.scale(new Vec3D(.25, .25, .25))
-				.rotateX(Math.toRadians(12))
-				.rotateY(Math.toRadians(45))
-		);
+		Matrix4X4 matrix4X4 = Matrix4X4.IDENTITY
+			.scale(new Vec3D(.25, .25, .25))
+			.rotateX(Math.toRadians(12))
+			.rotateY(Math.toRadians(45));
+		Shape modelShape = new MeshModelShape("res://dragon_skull.obj",	new MatrixTransform(matrix4X4));
 		Shape transModelShape = new TranslateShape(modelShape, new Vec3I(15, 56, 16));
 		Shape cylinderShape = new CylinderShape(new Vec3D(16, 56, 16), 15.5, 1);
 		

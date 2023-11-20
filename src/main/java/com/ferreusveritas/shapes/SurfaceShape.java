@@ -1,15 +1,12 @@
 package com.ferreusveritas.shapes;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonValue;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
+import com.ferreusveritas.support.json.JsonObj;
 
-import java.util.Map;
 import java.util.Optional;
 
-public class SurfaceShape implements Shape {
+public class SurfaceShape extends Shape {
 	
 	public static final String TYPE = "surface";
 	
@@ -17,23 +14,22 @@ public class SurfaceShape implements Shape {
 	private final int offset;
 	private final AABBI aabb;
 	
-	@JsonCreator
-	public SurfaceShape(
-		@JsonProperty("dir") Vec3I dir,
-		@JsonProperty("offset") int offset
-	) {
+	public SurfaceShape(Vec3I dir, int offset) {
 		this.dir = dir;
 		this.offset = offset;
 		this.aabb = createAABB(dir.mul(offset), dir);
 	}
 	
-	@JsonValue
-	private Object getJson() {
-		return Map.of(
-			"type", TYPE,
-			"dir", dir,
-			"offset", offset
-		);
+	public SurfaceShape(JsonObj src) {
+		super(src);
+		this.dir = src.getObj("dir").map(Vec3I::new).orElse(Vec3I.UP);
+		this.offset = src.getInt("offset").orElse(0);
+		this.aabb = createAABB(dir.mul(offset), dir);
+	}
+	
+	@Override
+	public String getType() {
+		return TYPE;
 	}
 	
 	private AABBI createAABB(Vec3I pos, Vec3I dir) {
@@ -66,6 +62,13 @@ public class SurfaceShape implements Shape {
 	@Override
 	public boolean isInside(Vec3I pos) {
 		return aabb.isPointInside(pos);
+	}
+	
+	@Override
+	public JsonObj toJsonObj() {
+		return super.toJsonObj()
+			.set("dir", dir)
+			.set("offset", offset);
 	}
 	
 }

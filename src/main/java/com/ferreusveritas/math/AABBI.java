@@ -1,5 +1,8 @@
 package com.ferreusveritas.math;
 
+import com.ferreusveritas.support.json.InvalidJsonProperty;
+import com.ferreusveritas.support.json.JsonObj;
+import com.ferreusveritas.support.json.Jsonable;
 import net.querz.nbt.tag.CompoundTag;
 
 import java.util.Optional;
@@ -11,7 +14,7 @@ import java.util.function.BiConsumer;
 public record AABBI(
 	Vec3I min,
 	Vec3I max
-) {
+) implements Jsonable {
 	public static final AABBI NONE = new AABBI(Vec3I.ZERO, Vec3I.ZERO);
 	public static final AABBI INFINITE = new AABBI(Vec3I.MIN, Vec3I.MAX);
 	
@@ -25,6 +28,13 @@ public record AABBI(
 	
 	public AABBI(AABBD aabb) {
 		this(new Vec3I(aabb.min().floor()), new Vec3I(aabb.max().ceil()));
+	}
+	
+	public AABBI(JsonObj src) {
+		this(
+			src.getObj("min").map(Vec3I::new).orElseThrow(() -> new InvalidJsonProperty("Missing min")),
+			src.getObj("max").map(Vec3I::new).orElseThrow(() -> new InvalidJsonProperty("Missing max"))
+		);
 	}
 	
 	public AABBD toAABBD() {
@@ -155,6 +165,18 @@ public record AABBI(
 		Vec3I blockPos = chunkPos.mul(16);
 		Vec3I chunkSize = new Vec3I(16, 16, 16);
 		return new AABBI(blockPos, blockPos.add(chunkSize));
+	}
+	
+	@Override
+	public JsonObj toJsonObj() {
+		return JsonObj.newMap()
+			.set("min", min)
+			.set("max", max);
+	}
+	
+	@Override
+	public String toString() {
+		return toJsonObj().toString();
 	}
 	
 }

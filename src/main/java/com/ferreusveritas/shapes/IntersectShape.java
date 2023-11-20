@@ -1,40 +1,45 @@
 package com.ferreusveritas.shapes;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonValue;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
+import com.ferreusveritas.support.json.JsonObj;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 /**
  * Combine two or more shapes in such a way that only the blocks common to all are present.  This is an intersect (∩) operation
  */
-public class IntersectShape implements Shape {
+public class IntersectShape extends Shape {
 	
 	public static final String TYPE = "intersect";
 	
 	private final List<Shape> shapes;
 	
-	@JsonCreator
-	public IntersectShape(
-		@JsonProperty("shapes") Shape... shapes
-	) {
-		this.shapes = List.of(shapes);
-		if(this.shapes.isEmpty()) {
+	public IntersectShape(Shape... shapes) {
+		this(List.of(shapes));
+	}
+	
+	public IntersectShape(List<Shape> shapes) {
+		this.shapes = shapes;
+		validate();
+	}
+	
+	public IntersectShape(JsonObj src) {
+		super(src);
+		this.shapes = src.getObj("shapes").orElseGet(JsonObj::newList).toImmutableList(ShapeFactory::create);
+		validate();
+	}
+	
+	private void validate() {
+		if(shapes.isEmpty()) {
 			throw new IllegalArgumentException("IntersectShape must have at least one shape");
 		}
 	}
 	
-	@JsonValue
-	private Object getJson() {
-		return Map.of(
-			"type", TYPE,
-			"shapes", shapes
-		);
+	@Override
+	public String getType() {
+		return TYPE;
 	}
 	
 	@Override
@@ -61,4 +66,11 @@ public class IntersectShape implements Shape {
 	public boolean isInside(Vec3I pos) {
 		return false;
 	}
+	
+	@Override
+	public JsonObj toJsonObj() {
+		return super.toJsonObj()
+			.set("shapes", JsonObj.newList(shapes));
+	}
+	
 }

@@ -1,38 +1,34 @@
 package com.ferreusveritas.shapes;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonValue;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Axis;
 import com.ferreusveritas.math.Vec3I;
+import com.ferreusveritas.support.json.JsonObj;
 
-import java.util.Map;
 import java.util.Optional;
 
-public class CheckerShape implements Shape {
+public class CheckerShape extends Shape {
 	
 	public static final String TYPE = "checker";
 	
 	private final Axis axis; // null means all axes(3D checker block)
 	
 	public CheckerShape() {
-		this(null);
+		this((Axis)null);
 	}
 	
-	@JsonCreator
-	public CheckerShape(
-		@JsonProperty("axis") Axis axis
-	) {
+	public CheckerShape(Axis axis) {
 		this.axis = axis;
 	}
 	
-	@JsonValue
-	private Map<String, Object> getJson() {
-		return Map.of(
-			"type", TYPE,
-			"axis", axis
-		);
+	public CheckerShape(JsonObj src) {
+		super(src);
+		this.axis = src.getString("axis").flatMap(Axis::of).orElse(null);
+	}
+	
+	@Override
+	public String getType() {
+		return TYPE;
 	}
 	
 	@Override
@@ -50,7 +46,12 @@ public class CheckerShape implements Shape {
 			case Y -> pos.x() + pos.z() % 2 == 0;
 			case Z -> pos.x() + pos.y() % 2 == 0;
 		};
-		
+	}
+	
+	@Override
+	public JsonObj toJsonObj() {
+		return super.toJsonObj()
+			.set("axis", axis);
 	}
 	
 }

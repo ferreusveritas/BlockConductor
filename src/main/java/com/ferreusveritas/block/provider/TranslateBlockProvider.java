@@ -1,14 +1,12 @@
 package com.ferreusveritas.block.provider;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonValue;
-import com.ferreusveritas.math.AABBI;
-import com.ferreusveritas.block.Blocks;
 import com.ferreusveritas.api.Request;
+import com.ferreusveritas.block.Blocks;
+import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
+import com.ferreusveritas.support.json.InvalidJsonProperty;
+import com.ferreusveritas.support.json.JsonObj;
 
-import java.util.Map;
 import java.util.Optional;
 
 public class TranslateBlockProvider extends BlockProvider {
@@ -18,22 +16,20 @@ public class TranslateBlockProvider extends BlockProvider {
 	private final BlockProvider provider;
 	private final Vec3I offset;
 	
-	@JsonCreator
-	public TranslateBlockProvider(
-		@JsonProperty("provider") BlockProvider provider,
-		@JsonProperty("offset") Vec3I offset
-	) {
+	public TranslateBlockProvider(BlockProvider provider, Vec3I offset) {
 		this.provider = provider;
 		this.offset = offset;
 	}
 	
-	@JsonValue
-	private Map<String, Object> getJson() {
-		return Map.of(
-			"type", TYPE,
-			"provider", provider,
-			"offset", offset
-		);
+	public TranslateBlockProvider(JsonObj src) {
+		super(src);
+		this.provider = src.getObj("provider").map(BlockProviderFactory::create).orElseThrow(() -> new InvalidJsonProperty("Missing provider"));
+		this.offset = src.getObj("offset").map(Vec3I::new).orElseThrow(() -> new InvalidJsonProperty("Missing offset"));
+	}
+	
+	@Override
+	public String getType() {
+		return TYPE;
 	}
 	
 	public Vec3I getOffset() {
@@ -53,6 +49,13 @@ public class TranslateBlockProvider extends BlockProvider {
 	@Override
 	public Optional<AABBI> getAABB() {
 		return provider.getAABB().map(a -> a.offset(offset.neg()));
+	}
+	
+	@Override
+	public JsonObj toJsonObj() {
+		return super.toJsonObj()
+			.set("provider", provider)
+			.set("offset", offset);
 	}
 	
 }

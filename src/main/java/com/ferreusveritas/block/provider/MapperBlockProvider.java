@@ -1,15 +1,13 @@
 package com.ferreusveritas.block.provider;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonValue;
-import com.ferreusveritas.math.AABBI;
+import com.ferreusveritas.api.Request;
 import com.ferreusveritas.block.Block;
 import com.ferreusveritas.block.Blocks;
-import com.ferreusveritas.api.Request;
 import com.ferreusveritas.block.mapper.BlockMapper;
+import com.ferreusveritas.block.mapper.BlockMapperFactory;
+import com.ferreusveritas.math.AABBI;
+import com.ferreusveritas.support.json.JsonObj;
 
-import java.util.Map;
 import java.util.Optional;
 
 public class MapperBlockProvider extends BlockProvider {
@@ -19,11 +17,7 @@ public class MapperBlockProvider extends BlockProvider {
 	private final BlockMapper mapper;
 	private final BlockProvider provider;
 	
-	@JsonCreator
-	public MapperBlockProvider(
-		@JsonProperty("mapper") BlockMapper mapper,
-		@JsonProperty("provider") BlockProvider provider
-	) {
+	public MapperBlockProvider(BlockMapper mapper, BlockProvider provider) {
 		this.mapper = mapper;
 		this.provider = provider;
 		if(mapper == null) {
@@ -34,13 +28,15 @@ public class MapperBlockProvider extends BlockProvider {
 		}
 	}
 	
-	@JsonValue
-	private Map<String, Object> getJson() {
-		return Map.of(
-			"type", TYPE,
-			"mapper", mapper,
-			"provider", provider
-		);
+	public MapperBlockProvider(JsonObj src) {
+		super(src);
+		this.mapper = src.getObj("mapper").map(BlockMapperFactory::create).orElseThrow(() -> new IllegalArgumentException("Missing mapper"));
+		this.provider = src.getObj("provider").map(BlockProviderFactory::create).orElseThrow(() -> new IllegalArgumentException("Missing provider"));
+	}
+	
+	@Override
+	public String getType() {
+		return TYPE;
 	}
 	
 	@Override
@@ -67,4 +63,12 @@ public class MapperBlockProvider extends BlockProvider {
 	public Optional<AABBI> getAABB() {
 		return provider.getAABB();
 	}
+	
+	@Override
+	public JsonObj toJsonObj() {
+		return super.toJsonObj()
+			.set("mapper", mapper)
+			.set("provider", provider);
+	}
+	
 }

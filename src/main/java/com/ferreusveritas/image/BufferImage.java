@@ -1,16 +1,42 @@
 package com.ferreusveritas.image;
 
 import com.ferreusveritas.math.Pixel;
+import com.ferreusveritas.math.RectI;
+import com.ferreusveritas.support.json.InvalidJsonProperty;
+import com.ferreusveritas.support.json.JsonObj;
 
 import java.awt.image.BufferedImage;
 
 public class BufferImage extends Image {
 	
-	public final BufferedImage image;
+	public static final String TYPE = "buffer";
 	
-	public BufferImage(BufferedImage image) {
-		super(image.getWidth(), image.getHeight());
-		this.image = image;
+	private final String resource;
+	private final BufferedImage image;
+	private final RectI bounds;
+	
+	public BufferImage(String resource) {
+		super();
+		this.resource = resource;
+		this.image = ImageLoader.load(resource);
+		this.bounds = new RectI(0, 0, image.getWidth(), image.getHeight());
+	}
+	
+	public BufferImage(JsonObj src) {
+		super(src);
+		this.resource = src.getString("resource").orElseThrow(() -> new InvalidJsonProperty("Missing resource"));
+		this.image = ImageLoader.load(resource);
+		this.bounds = new RectI(0, 0, image.getWidth(), image.getHeight());
+	}
+	
+	@Override
+	public String getType() {
+		return TYPE;
+	}
+	
+	@Override
+	public RectI bounds() {
+		return bounds;
 	}
 	
 	@Override
@@ -20,4 +46,11 @@ public class BufferImage extends Image {
 		}
 		return Pixel.BLACK;
 	}
+	
+	@Override
+	public JsonObj toJsonObj() {
+		return super.toJsonObj()
+			.set("resource", resource);
+	}
+	
 }

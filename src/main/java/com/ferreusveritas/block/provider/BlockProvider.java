@@ -1,27 +1,32 @@
 package com.ferreusveritas.block.provider;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.ferreusveritas.math.AABBI;
-import com.ferreusveritas.block.Blocks;
 import com.ferreusveritas.api.Request;
+import com.ferreusveritas.block.Blocks;
+import com.ferreusveritas.math.AABBI;
+import com.ferreusveritas.support.json.JsonObj;
+import com.ferreusveritas.support.json.Jsonable;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.UUID;
 
-@JsonTypeInfo(
-	use = JsonTypeInfo.Id.NAME,
-	property = "type"
-)
-@JsonSubTypes({
-	@JsonSubTypes.Type(value = SolidBlockProvider.class, name = SolidBlockProvider.TYPE),
-	@JsonSubTypes.Type(value = TranslateBlockProvider.class, name = TranslateBlockProvider.TYPE),
-	@JsonSubTypes.Type(value = CombineBlockProvider.class, name = CombineBlockProvider.TYPE),
-	@JsonSubTypes.Type(value = ShapeBlockProvider.class, name = ShapeBlockProvider.TYPE),
-	@JsonSubTypes.Type(value = MapperBlockProvider.class, name = MapperBlockProvider.TYPE),
-	@JsonSubTypes.Type(value = RoutingBlockProvider.class, name = RoutingBlockProvider.TYPE)
-})
-public abstract class BlockProvider {
+public abstract class BlockProvider implements Jsonable {
+	
+	private final UUID uuid;
+	
+	BlockProvider() {
+		this.uuid = UUID.randomUUID();
+	}
+	
+	BlockProvider(JsonObj src) {
+		this.uuid = src.getString("uuid").map(UUID::fromString).orElse(UUID.randomUUID());
+	}
+	
+	public abstract String getType();
+	
+	public UUID getUuid() {
+		return uuid;
+	}
 	
 	/**
 	 * Get a block array for the given area.
@@ -65,6 +70,18 @@ public abstract class BlockProvider {
 			aabb = AABBI.union(aabb, provider.getAABB().orElse(null));
 		}
 		return aabb;
+	}
+	
+	@Override
+	public JsonObj toJsonObj() {
+		return JsonObj.newMap()
+			.set("type", getType())
+			.set("uuid", uuid.toString());
+	}
+	
+	@Override
+	public String toString() {
+		return toJsonObj().toString();
 	}
 	
 }
