@@ -1,6 +1,7 @@
 package com.ferreusveritas.block.mapper;
 
 import com.ferreusveritas.block.Block;
+import com.ferreusveritas.scene.Scene;
 import com.ferreusveritas.support.json.JsonObj;
 import com.ferreusveritas.support.json.Jsonable;
 
@@ -12,13 +13,16 @@ import java.util.UUID;
  */
 public abstract class BlockMapper implements Jsonable {
 	
+	private final Scene scene;
 	private final UUID uuid;
 	
-	protected BlockMapper() {
+	protected BlockMapper(Scene scene) {
+		this.scene = scene;
 		this.uuid = UUID.randomUUID();
 	}
 	
-	protected BlockMapper(JsonObj src) {
+	protected BlockMapper(Scene scene, JsonObj src) {
+		this.scene = scene;
 		this.uuid = src.getString("uuid").map(UUID::fromString).orElse(UUID.randomUUID());
 	}
 	

@@ -8,6 +8,8 @@ import com.ferreusveritas.block.Blocks;
 import com.ferreusveritas.block.provider.*;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
+import com.ferreusveritas.scene.Scene;
+import com.ferreusveritas.support.json.JsonObj;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -21,8 +23,12 @@ class BlockProviderFactoryTest extends BaseTest {
 	void testReading() throws JsonProcessingException {
 		ObjectMapper mapper = new ObjectMapper();
 		
-		String blockProviderTestString= readResourceAsString("blockProviderTest.json");
-		List<BlockProvider> providers = mapper.readValue(blockProviderTestString, mapper.getTypeFactory().constructCollectionType(List.class, BlockProvider.class));
+		String blockProviderTestString = readResourceAsString("blockProviderTest.json");
+		JsonObj blockProviderTest = JsonObj.fromJsonString(blockProviderTestString);
+		
+		Scene scene = new Scene();
+		
+		List<BlockProvider> providers = blockProviderTest.toImmutableList(scene::createBlockProvider);
 		assertEquals(6, providers.size());
 		
 		BlockProvider provider = providers.get(0);

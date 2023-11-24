@@ -2,6 +2,7 @@ package com.ferreusveritas.block.mapper;
 
 import com.ferreusveritas.block.Block;
 import com.ferreusveritas.block.BlockTypes;
+import com.ferreusveritas.scene.Scene;
 import com.ferreusveritas.support.json.JsonObj;
 
 import java.util.List;
@@ -18,22 +19,24 @@ public class SimpleBlockMapper extends BlockMapper {
 	private final Map<Block, Block> map;
 	private final Block defaultBlock;
 	
-	public SimpleBlockMapper(List<BlockInOut> map,Block defaultBlock) {
+	public SimpleBlockMapper(Scene scene, List<BlockInOut> map, Block defaultBlock) {
+		super(scene);
 		this.map = map.stream().collect(Collectors.toMap(BlockInOut::in, BlockInOut::out));
 		this.defaultBlock = defaultBlock == null ? BlockTypes.NONE : defaultBlock;
 	}
 	
-	public SimpleBlockMapper(Map<Block, Block> map, Block defaultBlock) {
+	public SimpleBlockMapper(Scene scene, Map<Block, Block> map, Block defaultBlock) {
+		super(scene);
 		this.map = Map.copyOf(map);
 		this.defaultBlock = defaultBlock == null ? BlockTypes.NONE : defaultBlock;
 	}
 	
-	public SimpleBlockMapper(Map<Block, Block> mapper) {
-		this(mapper, null);
+	public SimpleBlockMapper(Scene scene, Map<Block, Block> mapper) {
+		this(scene, mapper, null);
 	}
 	
-	public SimpleBlockMapper(JsonObj src) {
-		super(src);
+	public SimpleBlockMapper(Scene scene, JsonObj src) {
+		super(scene, src);
 		this.map = src.getObj("map").orElseGet(JsonObj::newList).toImmutableList(BlockInOut::new).stream().collect(Collectors.toMap(BlockInOut::in, BlockInOut::out));
 		this.defaultBlock = src.getObj("defaultBlock").map(Block::new).orElse(null);
 	}

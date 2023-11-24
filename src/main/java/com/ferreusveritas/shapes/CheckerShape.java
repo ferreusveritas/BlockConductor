@@ -3,6 +3,7 @@ package com.ferreusveritas.shapes;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Axis;
 import com.ferreusveritas.math.Vec3I;
+import com.ferreusveritas.scene.Scene;
 import com.ferreusveritas.support.json.JsonObj;
 
 import java.util.Optional;
@@ -13,16 +14,17 @@ public class CheckerShape extends Shape {
 	
 	private final Axis axis; // null means all axes(3D checker block)
 	
-	public CheckerShape() {
-		this((Axis)null);
+	public CheckerShape(Scene scene) {
+		this(scene, (Axis)null);
 	}
 	
-	public CheckerShape(Axis axis) {
+	public CheckerShape(Scene scene, Axis axis) {
+		super(scene);
 		this.axis = axis;
 	}
 	
-	public CheckerShape(JsonObj src) {
-		super(src);
+	public CheckerShape(Scene scene, JsonObj src) {
+		super(scene, src);
 		this.axis = src.getString("axis").flatMap(Axis::of).orElse(null);
 	}
 	

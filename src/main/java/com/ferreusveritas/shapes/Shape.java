@@ -2,6 +2,7 @@ package com.ferreusveritas.shapes;
 
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
+import com.ferreusveritas.scene.Scene;
 import com.ferreusveritas.support.json.JsonObj;
 import com.ferreusveritas.support.json.Jsonable;
 
@@ -10,14 +11,17 @@ import java.util.UUID;
 
 public abstract class Shape implements Jsonable {
 	
+	private final Scene scene;
 	private final UUID uuid;
 	
-	protected Shape() {
+	protected Shape(Scene scene) {
+		this.scene = scene;
 		this.uuid = java.util.UUID.randomUUID();
 	}
 	
-	protected Shape(JsonObj src) {
-		this.uuid = src.getString("uuid").map(UUID::fromString).orElseThrow(() -> new IllegalArgumentException("Missing uuid"));
+	protected Shape(Scene scene, JsonObj src) {
+		this.scene = scene;
+		this.uuid = src.getString("uuid").map(UUID::fromString).orElseGet(UUID::randomUUID);
 	}
 	
 	/**

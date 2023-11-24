@@ -1,6 +1,7 @@
 package com.ferreusveritas.block.mapper;
 
 import com.ferreusveritas.block.Block;
+import com.ferreusveritas.scene.Scene;
 import com.ferreusveritas.support.json.JsonObj;
 
 /**
@@ -11,12 +12,12 @@ public class IdentityBlockMapper extends BlockMapper {
 	
 	public static final String TYPE = "identity";
 	
-	public IdentityBlockMapper() {
-		super();
+	public IdentityBlockMapper(Scene scene) {
+		super(scene);
 	}
 	
-	public IdentityBlockMapper(JsonObj src) {
-		super(src);
+	public IdentityBlockMapper(Scene scene, JsonObj src) {
+		super(scene, src);
 	}
 	
 	@Override

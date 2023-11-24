@@ -3,6 +3,7 @@ package com.ferreusveritas.block.provider;
 import com.ferreusveritas.api.Request;
 import com.ferreusveritas.block.Blocks;
 import com.ferreusveritas.math.AABBI;
+import com.ferreusveritas.scene.Scene;
 import com.ferreusveritas.support.json.JsonObj;
 import com.ferreusveritas.support.json.Jsonable;
 
@@ -12,13 +13,16 @@ import java.util.UUID;
 
 public abstract class BlockProvider implements Jsonable {
 	
+	private final Scene scene;
 	private final UUID uuid;
 	
-	BlockProvider() {
+	BlockProvider(Scene scene) {
+		this.scene = scene;
 		this.uuid = UUID.randomUUID();
 	}
 	
-	BlockProvider(JsonObj src) {
+	BlockProvider(Scene scene, JsonObj src) {
+		this.scene = scene;
 		this.uuid = src.getString("uuid").map(UUID::fromString).orElse(UUID.randomUUID());
 	}
 	

@@ -11,9 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class ModelLoader {
+public class ObjModelLoader {
 	
-	private static final Logger LOG = LoggerFactory.getLogger(ModelLoader.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ObjModelLoader.class);
 	private static final boolean INVERT_Z = true;
 	private static final boolean SWAP_YZ = false;
 	
@@ -22,7 +22,7 @@ public class ModelLoader {
 	private List<Vec3D> normals = new ArrayList<>();
 	private final List<FullFace> faces = new ArrayList<>();
 	
-	public static Optional<FullMeshModel> load(String path) {
+	public static Optional<ObjModel> load(String path) {
 		try {
 			InputStream stream = Storage.getInputStream(path);
 			return load(stream);
@@ -32,17 +32,18 @@ public class ModelLoader {
 		}
 	}
 	
-	public static Optional<FullMeshModel> load(InputStream stream) {
+	public static Optional<ObjModel> load(InputStream stream) {
 		InputStreamReader reader = new InputStreamReader(stream);
 		return load(reader);
 	}
 	
-	public static Optional<FullMeshModel> load(Reader reader) {
-		ModelLoader loader = new ModelLoader(reader);
-		return Optional.of(loader.toFullMeshModel());
+	public static Optional<ObjModel> load(Reader reader) {
+		ObjModelLoader loader = new ObjModelLoader(reader);
+		ObjModel model = new ObjModel(loader.getFaces());
+		return Optional.of(model);
 	}
 	
-	private ModelLoader(Reader reader) {
+	private ObjModelLoader(Reader reader) {
 		try (BufferedReader bufferedReader = new BufferedReader(reader)) {
 			String line;
 			while((line = bufferedReader.readLine()) != null) {
@@ -152,8 +153,8 @@ public class ModelLoader {
 		return new Vec3D(vec.x(), vec.y(), -vec.z());
 	}
 	
-	private FullMeshModel toFullMeshModel() {
-		return new FullMeshModel(faces);
+	public List<FullFace> getFaces() {
+		return faces;
 	}
 	
 }

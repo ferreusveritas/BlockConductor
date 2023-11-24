@@ -3,6 +3,7 @@ package com.ferreusveritas.block.provider;
 import com.ferreusveritas.api.Request;
 import com.ferreusveritas.block.Blocks;
 import com.ferreusveritas.math.AABBI;
+import com.ferreusveritas.scene.Scene;
 import com.ferreusveritas.support.json.JsonObj;
 
 import java.util.HashMap;
@@ -16,14 +17,15 @@ public class RoutingBlockProvider extends BlockProvider {
 	private final Map<String, BlockProvider> providers;
 	private final AABBI aabb;
 	
-	public RoutingBlockProvider(Map<String, BlockProvider> providers) {
+	public RoutingBlockProvider(Scene scene, Map<String, BlockProvider> providers) {
+		super(scene);
 		this.providers = new HashMap<>(providers);
 		this.aabb = unionProviders(this.providers.values());
 	}
 	
-	public RoutingBlockProvider(JsonObj src) {
-		super(src);
-		this.providers = src.getObj("providers").orElseGet(JsonObj::newMap).toImmutableMap(BlockProviderFactory::create);
+	public RoutingBlockProvider(Scene scene, JsonObj src) {
+		super(scene, src);
+		this.providers = src.getObj("providers").orElseGet(JsonObj::newMap).toImmutableMap(scene::createBlockProvider);
 		this.aabb = unionProviders(this.providers.values());
 	}
 	

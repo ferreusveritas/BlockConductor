@@ -1,11 +1,12 @@
 package com.ferreusveritas.block.provider;
 
-import com.ferreusveritas.support.Factory;
+import com.ferreusveritas.scene.Scene;
+import com.ferreusveritas.support.BiFactory;
 import com.ferreusveritas.support.json.JsonObj;
 
 public class BlockProviderFactory {
 	
-	private static final Factory<BlockProvider> factory = new Factory.Builder<BlockProvider>()
+	private static final BiFactory<BlockProvider> FACTORY = new BiFactory.Builder<BlockProvider>()
 		.add(CombineBlockProvider.TYPE, CombineBlockProvider::new)
 		.add(MapperBlockProvider.TYPE, MapperBlockProvider::new)
 		.add(RoutingBlockProvider.TYPE, RoutingBlockProvider::new)
@@ -14,8 +15,8 @@ public class BlockProviderFactory {
 		.add(TranslateBlockProvider.TYPE, TranslateBlockProvider::new)
 		.build();
 	
-	public static BlockProvider create(JsonObj src) {
-		return factory.create(src);
+	public static BlockProvider create(Scene scene, JsonObj src) {
+		return FACTORY.create(scene, src);
 	}
 	
 	private BlockProviderFactory() {

@@ -4,6 +4,7 @@ import com.ferreusveritas.image.Image;
 import com.ferreusveritas.image.ImageFactory;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
+import com.ferreusveritas.scene.Scene;
 import com.ferreusveritas.support.json.InvalidJsonProperty;
 import com.ferreusveritas.support.json.JsonObj;
 
@@ -22,7 +23,8 @@ public class HeightmapShape extends Shape {
 	private final boolean infinite;
 	private final AABBI aabb;
 	
-	public HeightmapShape(Image image, int height, Vec3I offset, boolean infinite) {
+	public HeightmapShape(Scene scene, Image image, int height, Vec3I offset, boolean infinite) {
+		super(scene);
 		this.image = image;
 		this.height = height;
 		this.offset = offset;
@@ -31,9 +33,9 @@ public class HeightmapShape extends Shape {
 		validate();
 	}
 	
-	public HeightmapShape(JsonObj src) {
-		super(src);
-		this.image = src.getObj("image").map(ImageFactory::create).orElseThrow(() -> new InvalidJsonProperty("Missing image"));
+	public HeightmapShape(Scene scene, JsonObj src) {
+		super(scene, src);
+		this.image = src.getObj("image").map(scene::createImage).orElseThrow(() -> new InvalidJsonProperty("Missing image"));
 		this.height = src.getInt("height").orElse(1);
 		this.offset = src.getObj("offset").map(Vec3I::new).orElse(Vec3I.ZERO);
 		this.infinite = src.getBoolean("infinite").orElse(false);

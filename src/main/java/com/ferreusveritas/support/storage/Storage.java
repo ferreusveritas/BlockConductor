@@ -1,5 +1,7 @@
 package com.ferreusveritas.support.storage;
 
+import com.ferreusveritas.support.json.JsonObj;
+
 import java.io.InputStream;
 
 public class Storage {
@@ -19,6 +21,10 @@ public class Storage {
 	
 	public static String getString(String path) {
 		return storageSystem.getString(path);
+	}
+	
+	public static JsonObj getJson(String path) {
+		return JsonObj.fromJsonString(storageSystem.getString(path));
 	}
 	
 	private Storage() {

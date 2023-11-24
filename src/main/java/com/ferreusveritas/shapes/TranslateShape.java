@@ -2,6 +2,7 @@ package com.ferreusveritas.shapes;
 
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
+import com.ferreusveritas.scene.Scene;
 import com.ferreusveritas.support.json.InvalidJsonProperty;
 import com.ferreusveritas.support.json.JsonObj;
 
@@ -17,14 +18,15 @@ public class TranslateShape extends Shape {
 	private final Shape shape;
 	private final Vec3I offset;
 	
-	public TranslateShape(Shape shape, Vec3I offset) {
+	public TranslateShape(Scene scene, Shape shape, Vec3I offset) {
+		super(scene);
 		this.shape = shape;
 		this.offset = offset;
 	}
 	
-	public TranslateShape(JsonObj src) {
-		super(src);
-		this.shape = src.getObj("shape").map(ShapeFactory::create).orElseThrow(() -> new InvalidJsonProperty("Missing shape"));
+	public TranslateShape(Scene scene, JsonObj src) {
+		super(scene, src);
+		this.shape = src.getObj("shape").map(scene::createShape).orElseThrow(() -> new InvalidJsonProperty("Missing shape"));
 		this.offset = src.getObj("offset").map(Vec3I::new).orElseThrow(() -> new InvalidJsonProperty("Missing offset"));
 	}
 	

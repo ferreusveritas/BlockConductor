@@ -10,7 +10,6 @@ public abstract class Transform implements Jsonable {
 	
 	public abstract String getType();
 	
-	
 	public JsonObj toJsonObj() {
 		return JsonObj.newMap()
 			.set("type", getType());

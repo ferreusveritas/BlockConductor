@@ -2,6 +2,7 @@ package com.ferreusveritas.shapes;
 
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
+import com.ferreusveritas.scene.Scene;
 import com.ferreusveritas.support.json.JsonObj;
 
 import java.util.Optional;
@@ -14,14 +15,15 @@ public class SurfaceShape extends Shape {
 	private final int offset;
 	private final AABBI aabb;
 	
-	public SurfaceShape(Vec3I dir, int offset) {
+	public SurfaceShape(Scene scene, Vec3I dir, int offset) {
+		super(scene);
 		this.dir = dir;
 		this.offset = offset;
 		this.aabb = createAABB(dir.mul(offset), dir);
 	}
 	
-	public SurfaceShape(JsonObj src) {
-		super(src);
+	public SurfaceShape(Scene scene, JsonObj src) {
+		super(scene, src);
 		this.dir = src.getObj("dir").map(Vec3I::new).orElse(Vec3I.UP);
 		this.offset = src.getInt("offset").orElse(0);
 		this.aabb = createAABB(dir.mul(offset), dir);

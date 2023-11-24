@@ -1,0 +1,24 @@
+{
+  "type": "shape",
+  "uuid": "5125ffd6-7b77-4c8e-b318-331231cd54e9",
+  "shape": {
+    "type": "heightmap",
+    "uuid": "38163755-35b3-411b-9d86-5c082c48cb8f",
+    "image": {
+      "type": "buffer",
+      "uuid": "a21de17d-f707-4eb9-92ef-e9b9cde7ada4",
+      "resource": "res://skull.png"
+    },
+    "height": 16,
+    "offset": {
+      "x": 0,
+      "y": 56,
+      "z": 0
+    },
+    "infinite": true
+  },
+  "block": {
+    "name": "minecraft:stone",
+    "state": ""
+  }
+}

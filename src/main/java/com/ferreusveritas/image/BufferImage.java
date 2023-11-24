@@ -2,6 +2,7 @@ package com.ferreusveritas.image;
 
 import com.ferreusveritas.math.Pixel;
 import com.ferreusveritas.math.RectI;
+import com.ferreusveritas.scene.Scene;
 import com.ferreusveritas.support.json.InvalidJsonProperty;
 import com.ferreusveritas.support.json.JsonObj;
 
@@ -15,15 +16,15 @@ public class BufferImage extends Image {
 	private final BufferedImage image;
 	private final RectI bounds;
 	
-	public BufferImage(String resource) {
-		super();
+	public BufferImage(Scene scene, String resource) {
+		super(scene);
 		this.resource = resource;
 		this.image = ImageLoader.load(resource);
 		this.bounds = new RectI(0, 0, image.getWidth(), image.getHeight());
 	}
 	
-	public BufferImage(JsonObj src) {
-		super(src);
+	public BufferImage(Scene scene, JsonObj src) {
+		super(scene, src);
 		this.resource = src.getString("resource").orElseThrow(() -> new InvalidJsonProperty("Missing resource"));
 		this.image = ImageLoader.load(resource);
 		this.bounds = new RectI(0, 0, image.getWidth(), image.getHeight());

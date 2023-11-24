@@ -4,6 +4,7 @@ import com.ferreusveritas.api.Request;
 import com.ferreusveritas.block.Blocks;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
+import com.ferreusveritas.scene.Scene;
 import com.ferreusveritas.support.json.InvalidJsonProperty;
 import com.ferreusveritas.support.json.JsonObj;
 
@@ -16,14 +17,15 @@ public class TranslateBlockProvider extends BlockProvider {
 	private final BlockProvider provider;
 	private final Vec3I offset;
 	
-	public TranslateBlockProvider(BlockProvider provider, Vec3I offset) {
+	public TranslateBlockProvider(Scene scene, BlockProvider provider, Vec3I offset) {
+		super(scene);
 		this.provider = provider;
 		this.offset = offset;
 	}
 	
-	public TranslateBlockProvider(JsonObj src) {
-		super(src);
-		this.provider = src.getObj("provider").map(BlockProviderFactory::create).orElseThrow(() -> new InvalidJsonProperty("Missing provider"));
+	public TranslateBlockProvider(Scene scene, JsonObj src) {
+		super(scene, src);
+		this.provider = src.getObj("provider").map(scene::createBlockProvider).orElseThrow(() -> new InvalidJsonProperty("Missing provider"));
 		this.offset = src.getObj("offset").map(Vec3I::new).orElseThrow(() -> new InvalidJsonProperty("Missing offset"));
 	}
 	

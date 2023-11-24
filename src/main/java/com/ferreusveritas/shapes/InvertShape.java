@@ -2,6 +2,7 @@ package com.ferreusveritas.shapes;
 
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
+import com.ferreusveritas.scene.Scene;
 import com.ferreusveritas.support.json.InvalidJsonProperty;
 import com.ferreusveritas.support.json.JsonObj;
 
@@ -16,13 +17,14 @@ public class InvertShape extends Shape {
 	
 	private final Shape shape;
 	
-	public InvertShape(Shape shape) {
+	public InvertShape(Scene scene, Shape shape) {
+		super(scene);
 		this.shape = shape;
 	}
 	
-	public InvertShape(JsonObj src) {
-		super(src);
-		this.shape = src.getObj("shape").map(ShapeFactory::create).orElseThrow(() -> new InvalidJsonProperty("Missing shape"));
+	public InvertShape(Scene scene, JsonObj src) {
+		super(scene, src);
+		this.shape = src.getObj("shape").map(scene::createShape).orElseThrow(() -> new InvalidJsonProperty("Missing shape"));
 	}
 	
 	@Override

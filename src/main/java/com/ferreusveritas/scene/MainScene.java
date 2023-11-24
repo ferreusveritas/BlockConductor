@@ -1,14 +1,12 @@
 package com.ferreusveritas.scene;
 
 import com.ferreusveritas.block.BlockTypes;
-import com.ferreusveritas.block.provider.*;
-import com.ferreusveritas.image.BufferImage;
-import com.ferreusveritas.math.AABBI;
-import com.ferreusveritas.math.Matrix4X4;
-import com.ferreusveritas.math.Vec3D;
-import com.ferreusveritas.math.Vec3I;
-import com.ferreusveritas.shapes.*;
-import com.ferreusveritas.transform.MatrixTransform;
+import com.ferreusveritas.block.provider.BlockProvider;
+import com.ferreusveritas.block.provider.BlockProviderFactory;
+import com.ferreusveritas.block.provider.RoutingBlockProvider;
+import com.ferreusveritas.block.provider.SolidBlockProvider;
+import com.ferreusveritas.support.json.JsonObj;
+import com.ferreusveritas.support.storage.Storage;
 
 import java.util.Map;
 
@@ -18,12 +16,14 @@ public class MainScene {
 	
 	private static BlockProvider createProvider() {
 		
-		BlockProvider shapeTest = shapeTest();
-		BlockProvider heightMapTest = heightMapTest();
-		BlockProvider modelTest = modelTest();
-		BlockProvider air = air();
+		Scene scene = new Scene();
 		
-		return new RoutingBlockProvider(Map.of(
+		BlockProvider shapeTest = shapeTest(scene);
+		BlockProvider heightMapTest = heightMapTest(scene);
+		BlockProvider modelTest = modelTest(scene);
+		BlockProvider air = air(scene);
+		
+		return new RoutingBlockProvider(scene, Map.of(
 			"", shapeTest,
 			"h", heightMapTest,
 			"m", modelTest,
@@ -31,46 +31,24 @@ public class MainScene {
 		));
 	}
 	
-	private static BlockProvider shapeTest() {
-		Vec3I move = new Vec3I(4, 3, 4);
+	private static BlockProvider shapeTest(Scene scene) {
+		JsonObj shapes = Storage.getJson("res://scenes/shapes.json");
+		return BlockProviderFactory.create(scene, shapes);
 		
-		Shape sphere = new SphereShape(new Vec3D(8, 64, 8), 12);
-		Shape transSphere = new TranslateShape(sphere, move);
-		CavitateShape cavitate = new CavitateShape(transSphere);
-		BoxShape boxShape = new BoxShape(new AABBI(4, 1, 4, 8, 84, 8));
-		Shape surface = new SurfaceShape(Vec3I.EAST, 15);
-		
-		BlockProvider sphereProvider = new ShapeBlockProvider(cavitate, BlockTypes.STONE);
-		BlockProvider cuboidProvider = new ShapeBlockProvider(boxShape, BlockTypes.DIRT);
-		BlockProvider surfaceProvider = new ShapeBlockProvider(new DifferenceShape(surface, transSphere), BlockTypes.SANDSTONE);
-		
-		return new CombineBlockProvider(cuboidProvider, surfaceProvider, sphereProvider);
 	}
 	
-	private static BlockProvider heightMapTest() {
-		BufferImage image = new BufferImage("res://skull.png");
-		Shape heightMap = new HeightmapShape(image, 16, Vec3I.ZERO.up(56), true);
-		return new ShapeBlockProvider(heightMap, BlockTypes.STONE);
+	private static BlockProvider heightMapTest(Scene scene) {
+		JsonObj shapes = Storage.getJson("res://scenes/heightmap.json");
+		return BlockProviderFactory.create(scene, shapes);
 	}
 	
-	private static BlockProvider modelTest() {
-		Matrix4X4 matrix4X4 = Matrix4X4.IDENTITY
-			.scale(new Vec3D(.25, .25, .25))
-			.rotateX(Math.toRadians(12))
-			.rotateY(Math.toRadians(45));
-		Shape modelShape = new MeshModelShape("res://dragon_skull.obj",	new MatrixTransform(matrix4X4));
-		Shape transModelShape = new TranslateShape(modelShape, new Vec3I(15, 56, 16));
-		Shape cylinderShape = new CylinderShape(new Vec3D(16, 56, 16), 15.5, 1);
-		
-		BlockProvider skullBlocks = new ShapeBlockProvider(transModelShape, BlockTypes.BONE);
-		BlockProvider cylinderBlocks = new ShapeBlockProvider(cylinderShape, BlockTypes.BLACKSTONE);
-		BlockProvider skullAndCylinder = new CombineBlockProvider(skullBlocks, cylinderBlocks);
-		
-		return skullAndCylinder;
+	private static BlockProvider modelTest(Scene scene) {
+		JsonObj dragon = Storage.getJson("res://scenes/dragon.json");
+		return BlockProviderFactory.create(scene, dragon);
 	}
 	
-	private static BlockProvider air() {
-		return new SolidBlockProvider(BlockTypes.AIR);
+	private static BlockProvider air(Scene scene) {
+		return new SolidBlockProvider(scene, BlockTypes.AIR);
 	}
 	
 	public static BlockProvider getProvider() {

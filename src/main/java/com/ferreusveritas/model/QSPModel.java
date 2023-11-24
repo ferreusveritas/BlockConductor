@@ -12,23 +12,23 @@ import java.util.List;
  * quadrants.  This is a Quadtree Space Partitioner that is used to determine
  * if a point is inside a 3D model.
  **/
-public class QSPModel {
+class QSPModel {
 	
 	private static final int MIN_FACES = 3;
 	private static final int DEFAULT_DEPTH = 4;
 	private final QSPNode root;
 	private final AABBD aabb;
 	
-	private QSPModel(QSPNode root, SimpleMeshModel model) {
+	private QSPModel(QSPNode root, MeshModel model) {
 		this.root = root;
 		this.aabb = model.getAABB();
 	}
 	
-	public static QSPModel load(SimpleMeshModel model) {
+	public static QSPModel load(MeshModel model) {
 		return load(model, DEFAULT_DEPTH);
 	}
 	
-	public static QSPModel load(SimpleMeshModel model, int depth) {
+	public static QSPModel load(MeshModel model, int depth) {
 		QSPNode node = subdivide(model.getFaces(), model.getAABB().toRect(), depth);
 		return new QSPModel(node, model);
 	}

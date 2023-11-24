@@ -5,6 +5,7 @@ import com.ferreusveritas.block.Block;
 import com.ferreusveritas.block.Blocks;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
+import com.ferreusveritas.scene.Scene;
 import com.ferreusveritas.shapes.Shape;
 import com.ferreusveritas.shapes.ShapeFactory;
 import com.ferreusveritas.support.json.InvalidJsonProperty;
@@ -19,7 +20,8 @@ public class ShapeBlockProvider extends BlockProvider {
 	private final Shape shape;
 	private final Block block;
 	
-	public ShapeBlockProvider(Shape shape, Block block) {
+	public ShapeBlockProvider(Scene scene, Shape shape, Block block) {
+		super(scene);
 		this.shape = shape;
 		this.block = block;
 		if(shape == null) {
@@ -30,9 +32,9 @@ public class ShapeBlockProvider extends BlockProvider {
 		}
 	}
 	
-	public ShapeBlockProvider(JsonObj src) {
-		super(src);
-		this.shape = src.getObj("shape").map(ShapeFactory::create).orElseThrow(() -> new InvalidJsonProperty("Missing shape"));
+	public ShapeBlockProvider(Scene scene, JsonObj src) {
+		super(scene, src);
+		this.shape = src.getObj("shape").map(scene::createShape).orElseThrow(() -> new InvalidJsonProperty("Missing shape"));
 		this.block = src.getObj("block").map(Block::new).orElseThrow(() -> new InvalidJsonProperty("Missing block"));
 	}
 	

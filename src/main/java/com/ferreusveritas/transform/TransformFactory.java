@@ -1,6 +1,5 @@
 package com.ferreusveritas.transform;
 
-import com.ferreusveritas.math.Matrix4X4;
 import com.ferreusveritas.support.Factory;
 import com.ferreusveritas.support.json.JsonObj;
 
@@ -8,6 +7,11 @@ public class TransformFactory {
 
 	private static final Factory<Transform> FACTORY = new Factory.Builder<Transform>()
 		.add(MatrixTransform.TYPE, MatrixTransform::new)
+		.add(RotateX.TYPE, RotateX::new)
+		.add(RotateY.TYPE, RotateY::new)
+		.add(RotateZ.TYPE, RotateZ::new)
+		.add(Scale.TYPE, Scale::new)
+		.add(Transforms.TYPE, Transforms::new)
 		.build();
 	
 	public static Transform create(JsonObj src) {

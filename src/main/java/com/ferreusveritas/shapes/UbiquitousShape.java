@@ -2,6 +2,7 @@ package com.ferreusveritas.shapes;
 
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
+import com.ferreusveritas.scene.Scene;
 import com.ferreusveritas.support.json.JsonObj;
 
 import java.util.Optional;
@@ -13,12 +14,12 @@ public class UbiquitousShape extends Shape {
 	
 	public static final String TYPE = "ubiquitous";
 	
-	public UbiquitousShape() {
-		super();
+	public UbiquitousShape(Scene scene) {
+		super(scene);
 	}
 	
-	public UbiquitousShape(JsonObj src) {
-		super(src);
+	public UbiquitousShape(Scene scene, JsonObj src) {
+		super(scene, src);
 	}
 	
 	@Override

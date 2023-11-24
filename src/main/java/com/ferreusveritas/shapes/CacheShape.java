@@ -2,6 +2,7 @@ package com.ferreusveritas.shapes;
 
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
+import com.ferreusveritas.scene.Scene;
 import com.ferreusveritas.support.json.InvalidJsonProperty;
 import com.ferreusveritas.support.json.JsonObj;
 
@@ -20,15 +21,16 @@ public class CacheShape extends Shape {
 	private final AABBI aabb;
 	private final BitSet cache;
 	
-	public CacheShape(Shape shape, AABBI aabb) {
+	public CacheShape(Scene scene, Shape shape, AABBI aabb) {
+		super(scene);
 		this.shape = shape;
 		this.aabb = determineAAABB(shape, aabb);
 		this.cache = buildCache(this.aabb);
 	}
 	
-	public CacheShape(JsonObj src) {
-		super(src);
-		this.shape = src.getObj("shape").map(ShapeFactory::create).orElseThrow(() -> new InvalidJsonProperty("CacheShape must have a valid shape"));
+	public CacheShape(Scene scene, JsonObj src) {
+		super(scene, src);
+		this.shape = src.getObj("shape").map(scene::createShape).orElseThrow(() -> new InvalidJsonProperty("CacheShape must have a valid shape"));
 		this.aabb = src.getObj("aabb").map(AABBI::new).orElseThrow(() -> new InvalidJsonProperty("CacheShape must have a valid AABB"));
 		this.cache = buildCache(this.aabb);
 	}

@@ -4,6 +4,7 @@ import com.ferreusveritas.math.AABBD;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3D;
 import com.ferreusveritas.math.Vec3I;
+import com.ferreusveritas.scene.Scene;
 import com.ferreusveritas.support.json.InvalidJsonProperty;
 import com.ferreusveritas.support.json.JsonObj;
 
@@ -20,14 +21,15 @@ public class CylinderShape extends Shape {
 	private final double radius;
 	private final int height;
 	
-	public CylinderShape(Vec3D center, double radius, int h) {
+	public CylinderShape(Scene scene, Vec3D center, double radius, int h) {
+		super(scene);
 		this.center = center;
 		this.radius = radius;
 		this.height = h;
 	}
 	
-	public CylinderShape(JsonObj src) {
-		super(src);
+	public CylinderShape(Scene scene, JsonObj src) {
+		super(scene, src);
 		this.center = src.getObj("center").map(Vec3D::new).orElseThrow(() -> new InvalidJsonProperty("Missing center property"));
 		this.radius = src.getDouble("radius").orElse(0.0);
 		this.height = src.getInt("height").orElse(0);

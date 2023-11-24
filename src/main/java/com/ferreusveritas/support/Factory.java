@@ -17,7 +17,7 @@ public class Factory<T> {
 	
 	public T create(JsonObj src) {
 		String type = src.getString("type").orElseThrow(() -> new InvalidJsonProperty("Missing type"));
-		Function<JsonObj, T> factory = factoryMap.get(type);
+		var factory = factoryMap.get(type);
 		if(factory == null) {
 			throw new InvalidJsonProperty("Unknown type: " + type);
 		}

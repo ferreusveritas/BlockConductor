@@ -6,6 +6,7 @@ import com.ferreusveritas.block.Blocks;
 import com.ferreusveritas.block.mapper.BlockMapper;
 import com.ferreusveritas.block.mapper.BlockMapperFactory;
 import com.ferreusveritas.math.AABBI;
+import com.ferreusveritas.scene.Scene;
 import com.ferreusveritas.support.json.JsonObj;
 
 import java.util.Optional;
@@ -17,7 +18,8 @@ public class MapperBlockProvider extends BlockProvider {
 	private final BlockMapper mapper;
 	private final BlockProvider provider;
 	
-	public MapperBlockProvider(BlockMapper mapper, BlockProvider provider) {
+	public MapperBlockProvider(Scene scene, BlockMapper mapper, BlockProvider provider) {
+		super(scene);
 		this.mapper = mapper;
 		this.provider = provider;
 		if(mapper == null) {
@@ -28,10 +30,10 @@ public class MapperBlockProvider extends BlockProvider {
 		}
 	}
 	
-	public MapperBlockProvider(JsonObj src) {
-		super(src);
-		this.mapper = src.getObj("mapper").map(BlockMapperFactory::create).orElseThrow(() -> new IllegalArgumentException("Missing mapper"));
-		this.provider = src.getObj("provider").map(BlockProviderFactory::create).orElseThrow(() -> new IllegalArgumentException("Missing provider"));
+	public MapperBlockProvider(Scene scene, JsonObj src) {
+		super(scene, src);
+		this.mapper = src.getObj("mapper").map(scene::createBlockMapper).orElseThrow(() -> new IllegalArgumentException("Missing mapper"));
+		this.provider = src.getObj("provider").map(scene::createBlockProvider).orElseThrow(() -> new IllegalArgumentException("Missing provider"));
 	}
 	
 	@Override

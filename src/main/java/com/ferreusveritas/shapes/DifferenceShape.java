@@ -2,9 +2,11 @@ package com.ferreusveritas.shapes;
 
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
+import com.ferreusveritas.scene.Scene;
 import com.ferreusveritas.support.json.InvalidJsonProperty;
 import com.ferreusveritas.support.json.JsonObj;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -14,18 +16,27 @@ public class DifferenceShape extends Shape {
 	
 	public static final String TYPE = "difference";
 	
-	private final Shape shape1;
-	private final Shape shape2;
+	private final List<Shape> shapes;
 	
-	public DifferenceShape(Shape shape1, Shape shape2) {
-		this.shape1 = shape1;
-		this.shape2 = shape2;
+	public DifferenceShape(Scene scene, Shape ... shapes) {
+		this(scene, List.of(shapes));
 	}
 	
-	public DifferenceShape(JsonObj src) {
-		super(src);
-		this.shape1 = src.getObj("shape1").map(ShapeFactory::create).orElseThrow(() -> new InvalidJsonProperty("Missing shape1 property"));
-		this.shape2 = src.getObj("shape2").map(ShapeFactory::create).orElseThrow(() -> new InvalidJsonProperty("Missing shape2 property"));
+	public DifferenceShape(Scene scene, List<Shape> shapes) {
+		super(scene);
+		this.shapes = shapes;
+		validate();
+	}
+	
+	public DifferenceShape(Scene scene, JsonObj src) {
+		super(scene, src);
+		this.shapes = src.getObj("shapes").orElseGet(JsonObj::newList).toImmutableList(scene::createShape);
+	}
+	
+	private void validate() {
+		if(shapes.isEmpty()) {
+			throw new IllegalArgumentException("UnionShape must have at least one shape");
+		}
 	}
 	
 	@Override
@@ -35,19 +46,26 @@ public class DifferenceShape extends Shape {
 	
 	@Override
 	public Optional<AABBI> getAABB() {
-		return shape1.getAABB();
+		return shapes.get(0).getAABB();
 	}
 	
 	@Override
 	public boolean isInside(Vec3I pos) {
-		return shape1.isInside(pos) && !shape2.isInside(pos);
+		if(!shapes.get(0).isInside(pos)) {
+			return false;
+		}
+		for(int i = 1; i < shapes.size(); i++) {
+			if(shapes.get(i).isInside(pos)) {
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	@Override
 	public JsonObj toJsonObj() {
 		return super.toJsonObj()
-			.set("shape1", shape1)
-			.set("shape2", shape2);
+			.set("shapes", JsonObj.newList(shapes));
 	}
 	
 }

@@ -6,6 +6,7 @@ import com.ferreusveritas.block.BlockTypes;
 import com.ferreusveritas.block.Blocks;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
+import com.ferreusveritas.scene.Scene;
 import com.ferreusveritas.support.json.JsonObj;
 
 import java.util.List;
@@ -22,14 +23,16 @@ public class CombineBlockProvider extends BlockProvider {
 	private final List<BlockProvider> providers;
 	private final AABBI aabb;
 	
-	public CombineBlockProvider(BlockProvider ... providers) {
+	public CombineBlockProvider(Scene scene, BlockProvider ... providers) {
+		super(scene);
 		this.providers = List.of(providers);
 		this.aabb = unionProviders(this.providers);
 	}
 	
-	public CombineBlockProvider(JsonObj src) {
-		super(src);
-		this.providers = src.getObj("providers").stream().map(BlockProviderFactory::create).toList();
+	public CombineBlockProvider(Scene scene, JsonObj src) {
+		super(scene, src);
+		List<BlockProvider> list = src.getObj("providers").orElse(JsonObj.newList()).toImmutableList(scene::createBlockProvider);
+		this.providers = list;
 		this.aabb = unionProviders(this.providers);
 	}
 	

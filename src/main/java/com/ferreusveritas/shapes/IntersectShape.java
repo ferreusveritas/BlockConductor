@@ -2,6 +2,7 @@ package com.ferreusveritas.shapes;
 
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
+import com.ferreusveritas.scene.Scene;
 import com.ferreusveritas.support.json.JsonObj;
 
 import java.util.List;
@@ -16,18 +17,19 @@ public class IntersectShape extends Shape {
 	
 	private final List<Shape> shapes;
 	
-	public IntersectShape(Shape... shapes) {
-		this(List.of(shapes));
+	public IntersectShape(Scene scene, Shape... shapes) {
+		this(scene, List.of(shapes));
 	}
 	
-	public IntersectShape(List<Shape> shapes) {
+	public IntersectShape(Scene scene, List<Shape> shapes) {
+		super(scene);
 		this.shapes = shapes;
 		validate();
 	}
 	
-	public IntersectShape(JsonObj src) {
-		super(src);
-		this.shapes = src.getObj("shapes").orElseGet(JsonObj::newList).toImmutableList(ShapeFactory::create);
+	public IntersectShape(Scene scene, JsonObj src) {
+		super(scene, src);
+		this.shapes = src.getObj("shapes").orElseGet(JsonObj::newList).toImmutableList(scene::createShape);
 		validate();
 	}
 	

@@ -40,8 +40,8 @@ class AABBTest {
 
 		assertEquals(new Vec3I(-1, -3, -5), grown.min());
 		assertEquals(new Vec3I(11, 13, 15), grown.max());
-		assertEquals(new Vec3I(-1, -3, -5), grown2.min());
-		assertEquals(new Vec3I(11, 13, 15), grown2.max());
+		assertEquals(new Vec3I(-1, -1, -1), grown2.min());
+		assertEquals(new Vec3I(11, 11, 11), grown2.max());
 	}
 
 	@Test

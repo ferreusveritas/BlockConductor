@@ -4,6 +4,7 @@ import com.ferreusveritas.api.Request;
 import com.ferreusveritas.block.Block;
 import com.ferreusveritas.block.Blocks;
 import com.ferreusveritas.math.AABBI;
+import com.ferreusveritas.scene.Scene;
 import com.ferreusveritas.support.json.InvalidJsonProperty;
 import com.ferreusveritas.support.json.JsonObj;
 
@@ -18,12 +19,13 @@ public class SolidBlockProvider extends BlockProvider {
 	
 	private final Block block;
 	
-	public SolidBlockProvider(Block block) {
+	public SolidBlockProvider(Scene scene, Block block) {
+		super(scene);
 		this.block = block;
 	}
 	
-	public SolidBlockProvider(JsonObj src) {
-		super(src);
+	public SolidBlockProvider(Scene scene, JsonObj src) {
+		super(scene, src);
 		this.block = src.getObj("block").map(Block::new).orElseThrow(() -> new InvalidJsonProperty("Missing block"));
 	}
 	
