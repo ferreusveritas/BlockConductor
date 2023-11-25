@@ -3,7 +3,6 @@ package com.ferreusveritas.math;
 import com.ferreusveritas.support.json.JsonObj;
 import com.ferreusveritas.support.json.Jsonable;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**

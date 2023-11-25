@@ -26,7 +26,11 @@ public class Transforms extends Transform {
 	}
 	
 	private Matrix4X4 createMatrix(List<Transform> transforms) {
-		return transforms.stream().map(Transform::getMatrix).reduce(Matrix4X4.IDENTITY, Matrix4X4::mul);
+		Matrix4X4 mat = Matrix4X4.IDENTITY;
+		for(Transform transform : transforms) {
+			mat = transform.getMatrix().mul(mat);
+		}
+		return mat;
 	}
 	
 	@Override
@@ -42,6 +46,6 @@ public class Transforms extends Transform {
 	@Override
 	public JsonObj toJsonObj() {
 		return super.toJsonObj()
-			.set("transforms", operations);
+			.set("operations", operations);
 	}
 }
