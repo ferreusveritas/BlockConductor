@@ -1,6 +1,6 @@
 package com.ferreusveritas.scene;
 
-import com.ferreusveritas.block.BlockTypes;
+import com.ferreusveritas.block.BlockCache;
 import com.ferreusveritas.block.provider.BlockProvider;
 import com.ferreusveritas.block.provider.BlockProviderFactory;
 import com.ferreusveritas.block.provider.RoutingBlockProvider;
@@ -18,7 +18,7 @@ public class MainScene {
 		BlockProvider shapeTest = BlockProviderFactory.create(scene, Storage.getJson("res://scenes/shapes.json"));
 		BlockProvider heightMapTest = BlockProviderFactory.create(scene, Storage.getJson("res://scenes/heightmap.json"));
 		BlockProvider modelTest = BlockProviderFactory.create(scene, Storage.getJson("res://scenes/dragon.json"));
-		BlockProvider air = new SolidBlockProvider(scene, BlockTypes.AIR);
+		BlockProvider air = new SolidBlockProvider(scene, BlockCache.AIR);
 		BlockProvider root = new RoutingBlockProvider(scene, Map.of(
 			"", shapeTest,
 			"h", heightMapTest,

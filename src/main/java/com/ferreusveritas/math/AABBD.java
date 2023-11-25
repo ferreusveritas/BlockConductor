@@ -1,7 +1,5 @@
 package com.ferreusveritas.math;
 
-import com.ferreusveritas.transform.Transform;
-
 public record AABBD(
 	Vec3D min,
 	Vec3D max

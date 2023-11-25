@@ -14,11 +14,8 @@ public record Block(
 	String state
 ) implements Jsonable {
 	
-	public Block(JsonObj src) {
-		this(
-			src.getString("name").orElseThrow(),
-			src.getString("state").orElse("")
-		);
+	public Block(String name) {
+		this(name, "");
 	}
 	
 	@Override

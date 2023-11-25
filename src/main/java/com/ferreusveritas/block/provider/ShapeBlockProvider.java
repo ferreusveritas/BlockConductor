@@ -22,7 +22,7 @@ public class ShapeBlockProvider extends BlockProvider {
 	public ShapeBlockProvider(Scene scene, Shape shape, Block block) {
 		super(scene);
 		this.shape = shape;
-		this.block = block;
+		this.block = scene.block(block);
 		if(shape == null) {
 			throw new IllegalArgumentException("shape cannot be null");
 		}
@@ -34,7 +34,7 @@ public class ShapeBlockProvider extends BlockProvider {
 	public ShapeBlockProvider(Scene scene, JsonObj src) {
 		super(scene, src);
 		this.shape = src.getObj("shape").map(scene::createShape).orElseThrow(() -> new InvalidJsonProperty("Missing shape"));
-		this.block = src.getObj("block").map(Block::new).orElseThrow(() -> new InvalidJsonProperty("Missing block"));
+		this.block = src.getObj("block").map(scene::block).orElseThrow(() -> new InvalidJsonProperty("Missing block"));
 	}
 	
 	@Override

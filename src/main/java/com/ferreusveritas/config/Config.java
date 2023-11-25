@@ -9,8 +9,7 @@ public class Config {
 
 	@Bean
 	public ObjectMapper objectMapper() {
-		ObjectMapper mapper = new ObjectMapper();
-		return mapper;
+		return new ObjectMapper();
 	}
 
 }

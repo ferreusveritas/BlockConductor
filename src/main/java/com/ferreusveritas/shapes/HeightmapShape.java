@@ -1,7 +1,6 @@
 package com.ferreusveritas.shapes;
 
 import com.ferreusveritas.image.Image;
-import com.ferreusveritas.image.ImageFactory;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
 import com.ferreusveritas.scene.Scene;

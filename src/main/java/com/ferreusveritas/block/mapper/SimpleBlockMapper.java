@@ -1,7 +1,7 @@
 package com.ferreusveritas.block.mapper;
 
 import com.ferreusveritas.block.Block;
-import com.ferreusveritas.block.BlockTypes;
+import com.ferreusveritas.block.BlockCache;
 import com.ferreusveritas.scene.Scene;
 import com.ferreusveritas.support.json.JsonObj;
 
@@ -22,13 +22,13 @@ public class SimpleBlockMapper extends BlockMapper {
 	public SimpleBlockMapper(Scene scene, List<BlockInOut> map, Block defaultBlock) {
 		super(scene);
 		this.map = map.stream().collect(Collectors.toMap(BlockInOut::in, BlockInOut::out));
-		this.defaultBlock = defaultBlock == null ? BlockTypes.NONE : defaultBlock;
+		this.defaultBlock = defaultBlock == null ? BlockCache.NONE : defaultBlock;
 	}
 	
 	public SimpleBlockMapper(Scene scene, Map<Block, Block> map, Block defaultBlock) {
 		super(scene);
 		this.map = Map.copyOf(map);
-		this.defaultBlock = defaultBlock == null ? BlockTypes.NONE : defaultBlock;
+		this.defaultBlock = defaultBlock == null ? BlockCache.NONE : defaultBlock;
 	}
 	
 	public SimpleBlockMapper(Scene scene, Map<Block, Block> mapper) {
@@ -37,8 +37,8 @@ public class SimpleBlockMapper extends BlockMapper {
 	
 	public SimpleBlockMapper(Scene scene, JsonObj src) {
 		super(scene, src);
-		this.map = src.getObj("map").orElseGet(JsonObj::newList).toImmutableList(BlockInOut::new).stream().collect(Collectors.toMap(BlockInOut::in, BlockInOut::out));
-		this.defaultBlock = src.getObj("defaultBlock").map(Block::new).orElse(null);
+		this.map = src.getObj("map").orElseGet(JsonObj::newList).toImmutableList(j -> new BlockInOut(scene, j)).stream().collect(Collectors.toMap(BlockInOut::in, BlockInOut::out));
+		this.defaultBlock = src.getObj("defaultBlock").map(scene::block).orElse(null);
 	}
 	
 	@Override
@@ -54,7 +54,7 @@ public class SimpleBlockMapper extends BlockMapper {
 	@Override
 	public JsonObj toJsonObj() {
 		return super.toJsonObj()
-			.set("map", map.entrySet().stream().map(e -> new BlockInOut(e.getKey(), e.getValue())).collect(Collectors.toList()))
+			.set("map", map.entrySet().stream().map(e -> new BlockInOut(e.getKey(), e.getValue())).toList())
 			.set("defaultBlock", defaultBlock);
 	}
 	

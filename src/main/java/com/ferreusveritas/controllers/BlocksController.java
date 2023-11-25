@@ -1,14 +1,16 @@
 package com.ferreusveritas.controllers;
 
-import com.ferreusveritas.api.*;
+import com.ferreusveritas.api.Request;
 import com.ferreusveritas.block.Blocks;
-import com.ferreusveritas.block.provider.BlockProvider;
 import com.ferreusveritas.scene.MainScene;
 import com.ferreusveritas.scene.Scene;
 import com.ferreusveritas.support.nbt.NbtHelper;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequestMapping("blocks")

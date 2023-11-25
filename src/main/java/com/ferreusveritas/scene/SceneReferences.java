@@ -19,7 +19,7 @@ public class SceneReferences implements Jsonable {
 	List<Image> images;
 	List<Model> models;
 	
-	public SceneReferences(Scene scene) {
+	public SceneReferences() {
 		this.blockProviders = new ArrayList<>();
 		this.blockMappers = new ArrayList<>();
 		this.shapes = new ArrayList<>();

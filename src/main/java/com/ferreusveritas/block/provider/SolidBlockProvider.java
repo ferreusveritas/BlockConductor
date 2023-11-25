@@ -26,7 +26,7 @@ public class SolidBlockProvider extends BlockProvider {
 	
 	public SolidBlockProvider(Scene scene, JsonObj src) {
 		super(scene, src);
-		this.block = src.getObj("block").map(Block::new).orElseThrow(() -> new InvalidJsonProperty("Missing block"));
+		this.block = src.getObj("block").map(scene::block).orElseThrow(() -> new InvalidJsonProperty("Missing block"));
 	}
 	
 	@Override

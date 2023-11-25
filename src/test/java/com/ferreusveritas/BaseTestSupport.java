@@ -3,7 +3,7 @@ package com.ferreusveritas;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class BaseTest {
+public class BaseTestSupport {
 	
 	public static String readResourceAsString(String path) {
 		InputStream is = readResourceAsStream(path);
@@ -18,7 +18,7 @@ public class BaseTest {
 	}
 	
 	public static InputStream readResourceAsStream(String path) {
-		return BaseTest.class.getClassLoader().getResourceAsStream(path);
+		return BaseTestSupport.class.getClassLoader().getResourceAsStream(path);
 	}
 	
 }

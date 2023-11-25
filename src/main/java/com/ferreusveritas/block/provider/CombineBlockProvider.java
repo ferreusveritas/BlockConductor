@@ -2,7 +2,7 @@ package com.ferreusveritas.block.provider;
 
 import com.ferreusveritas.api.Request;
 import com.ferreusveritas.block.Block;
-import com.ferreusveritas.block.BlockTypes;
+import com.ferreusveritas.block.BlockCache;
 import com.ferreusveritas.block.Blocks;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
@@ -68,7 +68,7 @@ public class CombineBlockProvider extends BlockProvider {
 	
 	private void processBlock(Blocks blocksLayer, Vec3I pos, Blocks blocks) {
 		Block block = blocksLayer.get(pos);
-		if (block != BlockTypes.NONE) {
+		if (block != BlockCache.NONE) {
 			blocks.set(pos, block);
 		}
 	}

@@ -98,9 +98,9 @@ public record Vec3I(
 	}
 
 	public double distanceSqTo(Vec3I center) {
-		double dx = x - center.x;
-		double dy = y - center.y;
-		double dz = z - center.z;
+		double dx = (x - center.x);
+		double dy = (y - center.y);
+		double dz = (z - center.z);
 		return dx * dx + dy * dy + dz * dz;
 	}
 

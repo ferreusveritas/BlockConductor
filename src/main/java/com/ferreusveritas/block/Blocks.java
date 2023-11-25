@@ -39,8 +39,8 @@ public record Blocks(
 	}
 
 	private void setDefaultBlocks() {
-		this.blockMap.add(BlockTypes.NONE);
-		this.blockMap.add(BlockTypes.AIR);
+		this.blockMap.add(BlockCache.NONE);
+		this.blockMap.add(BlockCache.AIR);
 	}
 
 	private int calcIndex(Vec3I pos) {
@@ -59,9 +59,9 @@ public record Blocks(
 
 	public Block get(Vec3I pos) {
 		if(isValid(pos)) {
-			return blockMap.get(blockData[calcIndex(pos)]).orElse(BlockTypes.NONE);
+			return blockMap.get(blockData[calcIndex(pos)]).orElse(BlockCache.NONE);
 		}
-		return BlockTypes.NONE;
+		return BlockCache.NONE;
 	}
 	
 	public int getIndex(Vec3I pos) {

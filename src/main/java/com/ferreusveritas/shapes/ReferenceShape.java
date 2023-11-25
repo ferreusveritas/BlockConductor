@@ -28,16 +28,17 @@ public class ReferenceShape extends Shape {
 	
 	@Override
 	public String getType() {
-		return null;
+		return TYPE;
 	}
 	
 	@Override
 	public Optional<AABBI> getAABB() {
-		return Optional.empty();
+		return ref.getAABB();
 	}
 	
 	@Override
 	public boolean isInside(Vec3I pos) {
-		return false;
+		return ref.isInside(pos);
 	}
+	
 }

@@ -1,5 +1,7 @@
 package com.ferreusveritas.scene;
 
+import com.ferreusveritas.block.Block;
+import com.ferreusveritas.block.BlockCache;
 import com.ferreusveritas.block.mapper.BlockMapper;
 import com.ferreusveritas.block.mapper.BlockMapperFactory;
 import com.ferreusveritas.block.provider.BlockProvider;
@@ -25,9 +27,10 @@ public class Scene implements Jsonable {
 	
 	private final SceneReferences references;
 	private BlockProvider root;
+	private final BlockCache blockCache = new BlockCache();
 	
 	public Scene() {
-		this.references = new SceneReferences(this);
+		this.references = new SceneReferences();
 	}
 	
 	public Scene(JsonObj src) {
@@ -111,6 +114,14 @@ public class Scene implements Jsonable {
 	
 	public Model getModel(UUID uuid) {
 		return models.get(uuid);
+	}
+	
+	public Block block(Block block) {
+		return blockCache.resolve(block);
+	}
+	
+	public Block block(JsonObj src) {
+		return blockCache.resolve(src);
 	}
 	
 	@Override

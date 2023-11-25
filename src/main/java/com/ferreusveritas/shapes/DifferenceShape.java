@@ -3,7 +3,6 @@ package com.ferreusveritas.shapes;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
 import com.ferreusveritas.scene.Scene;
-import com.ferreusveritas.support.json.InvalidJsonProperty;
 import com.ferreusveritas.support.json.JsonObj;
 
 import java.util.List;

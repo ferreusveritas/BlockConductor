@@ -44,6 +44,7 @@ class CollisionTest {
 		Line3D line3 = line1.offset(new Vec3D(1.5, 0, -1.5));
 		Line3D line4 = line1.offset(new Vec3D(0.5, 0, 0.5));
 		
+		// Clockwise winding when viewed from below
 		Vec3D[] triangle1 = new Vec3D[] { new Vec3D(-3, 10, 1), new Vec3D(1, 10, -3), new Vec3D(1, 10, 1) };
 		
 		assertTrue(Collision3D.lineInTriangle(line1, triangle1));
@@ -51,10 +52,10 @@ class CollisionTest {
 		assertFalse(Collision3D.lineInTriangle(line3, triangle1));
 		assertTrue(Collision3D.lineInTriangle(line4, triangle1));
 		
-		assertFalse(Collision3D.lineInTriangle(line1.flip(), triangle1));
+		assertTrue(Collision3D.lineInTriangle(line1.flip(), triangle1));
 		assertFalse(Collision3D.lineInTriangle(line2.flip(), triangle1));
 		assertFalse(Collision3D.lineInTriangle(line3.flip(), triangle1));
-		assertFalse(Collision3D.lineInTriangle(line4.flip(), triangle1));
+		assertTrue(Collision3D.lineInTriangle(line4.flip(), triangle1));
 		
 		
 	}
