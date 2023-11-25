@@ -8,6 +8,7 @@ public class ModelFactory {
 	
 	private static final BiFactory<Model> FACTORY = new BiFactory.Builder<Model>()
 		.add(MeshModel.TYPE, MeshModel::new)
+		.add(ReferenceModel.TYPE, ReferenceModel::new)
 		.build();
 	
 	public static Model create(Scene scene, JsonObj src) {

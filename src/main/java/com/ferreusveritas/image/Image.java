@@ -23,6 +23,10 @@ public abstract class Image implements Jsonable {
 		this.uuid = src.getString("uuid").map(UUID::fromString).orElse(UUID.randomUUID());
 	}
 	
+	public UUID getUuid() {
+		return uuid;
+	}
+	
 	public abstract String getType();
 	
 	public abstract RectI bounds();

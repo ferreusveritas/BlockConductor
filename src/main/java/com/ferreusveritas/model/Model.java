@@ -23,6 +23,10 @@ public abstract class Model implements Jsonable {
 		this.uuid = src.getString("uuid").map(UUID::fromString).orElseGet(UUID::randomUUID);
 	}
 	
+	public UUID getUuid() {
+		return uuid;
+	}
+	
 	public abstract String getType();
 	
 	public abstract boolean pointIsInside(Vec3D point);

@@ -25,7 +25,7 @@ public class RoutingBlockProvider extends BlockProvider {
 	
 	public RoutingBlockProvider(Scene scene, JsonObj src) {
 		super(scene, src);
-		this.providers = src.getObj("providers").orElseGet(JsonObj::newMap).toImmutableMap(scene::createBlockProvider);
+		this.providers = src.getMap("providers").toImmutableMap(scene::createBlockProvider);
 		this.aabb = unionProviders(this.providers.values());
 	}
 	

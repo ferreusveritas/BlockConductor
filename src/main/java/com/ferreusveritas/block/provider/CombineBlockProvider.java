@@ -31,8 +31,7 @@ public class CombineBlockProvider extends BlockProvider {
 	
 	public CombineBlockProvider(Scene scene, JsonObj src) {
 		super(scene, src);
-		List<BlockProvider> list = src.getObj("providers").orElse(JsonObj.newList()).toImmutableList(scene::createBlockProvider);
-		this.providers = list;
+		this.providers = src.getList("providers").toImmutableList(scene::createBlockProvider);
 		this.aabb = unionProviders(this.providers);
 	}
 	

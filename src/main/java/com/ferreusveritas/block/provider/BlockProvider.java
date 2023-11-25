@@ -26,11 +26,11 @@ public abstract class BlockProvider implements Jsonable {
 		this.uuid = src.getString("uuid").map(UUID::fromString).orElse(UUID.randomUUID());
 	}
 	
-	public abstract String getType();
-	
 	public UUID getUuid() {
 		return uuid;
 	}
+	
+	public abstract String getType();
 	
 	/**
 	 * Get a block array for the given area.

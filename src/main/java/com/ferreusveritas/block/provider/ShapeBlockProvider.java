@@ -7,7 +7,6 @@ import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
 import com.ferreusveritas.scene.Scene;
 import com.ferreusveritas.shapes.Shape;
-import com.ferreusveritas.shapes.ShapeFactory;
 import com.ferreusveritas.support.json.InvalidJsonProperty;
 import com.ferreusveritas.support.json.JsonObj;
 

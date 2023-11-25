@@ -11,20 +11,40 @@ import com.ferreusveritas.model.ModelFactory;
 import com.ferreusveritas.shapes.Shape;
 import com.ferreusveritas.shapes.ShapeFactory;
 import com.ferreusveritas.support.json.JsonObj;
+import com.ferreusveritas.support.json.Jsonable;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
-public class Scene {
+public class Scene implements Jsonable {
 	
-	private List<BlockProvider> blockProviders = new ArrayList<>();
-	private List<BlockMapper> blockMappers = new ArrayList<>();
-	private List<Shape> shapes = new ArrayList<>();
-	private List<Image> images = new ArrayList<>();
-	private List<Model> models = new ArrayList<>();
+	private final Map<UUID, BlockProvider> blockProviders = new HashMap<>();
+	private final Map<UUID, BlockMapper> blockMappers = new HashMap<>();
+	private final Map<UUID, Shape> shapes = new HashMap<>();
+	private final Map<UUID, Image> images = new HashMap<>();
+	private final Map<UUID, Model> models = new HashMap<>();
+	
+	private final SceneReferences references;
+	private BlockProvider root;
+	
+	public Scene() {
+		this.references = new SceneReferences(this);
+	}
+	
+	public Scene(JsonObj src) {
+		this.references = new SceneReferences(this, src);
+		this.root = src.getObj("root").map(this::createBlockProvider).orElse(null);
+	}
+	
+	public void setRoot(BlockProvider root) {
+		this.root = root;
+	}
+	
+	public BlockProvider getRoot() {
+		return root;
+	}
 	
 	public void addBlockProvider(BlockProvider blockProvider) {
-		blockProviders.add(blockProvider);
+		blockProviders.put(blockProvider.getUuid(), blockProvider);
 	}
 	
 	public BlockProvider createBlockProvider(JsonObj src) {
@@ -33,8 +53,12 @@ public class Scene {
 		return blockProvider;
 	}
 	
+	public BlockProvider getBlockProvider(UUID uuid) {
+		return blockProviders.get(uuid);
+	}
+	
 	public void addBlockMapper(BlockMapper blockMapper) {
-		blockMappers.add(blockMapper);
+		blockMappers.put(blockMapper.getUuid(), blockMapper);
 	}
 	
 	public BlockMapper createBlockMapper(JsonObj src) {
@@ -43,8 +67,12 @@ public class Scene {
 		return blockMapper;
 	}
 	
+	public BlockMapper getBlockMapper(UUID uuid) {
+		return blockMappers.get(uuid);
+	}
+	
 	public void addShape(Shape shape) {
-		shapes.add(shape);
+		shapes.put(shape.getUuid(), shape);
 	}
 	
 	public Shape createShape(JsonObj src) {
@@ -53,8 +81,12 @@ public class Scene {
 		return shape;
 	}
 	
+	public Shape getShape(UUID uuid) {
+		return shapes.get(uuid);
+	}
+	
 	public void addImage(Image image) {
-		images.add(image);
+		images.put(image.getUuid(), image);
 	}
 	
 	public Image createImage(JsonObj src) {
@@ -63,14 +95,29 @@ public class Scene {
 		return image;
 	}
 	
+	public Image getImage(UUID uuid) {
+		return images.get(uuid);
+	}
+	
 	public void addModel(Model model) {
-		models.add(model);
+		models.put(model.getUuid(), model);
 	}
 	
 	public Model createModel(JsonObj src) {
 		Model model = ModelFactory.create(this, src);
 		addModel(model);
 		return model;
+	}
+	
+	public Model getModel(UUID uuid) {
+		return models.get(uuid);
+	}
+	
+	@Override
+	public JsonObj toJsonObj() {
+		return JsonObj.newMap()
+			.set("references", references)
+			.set("root", root);
 	}
 	
 }

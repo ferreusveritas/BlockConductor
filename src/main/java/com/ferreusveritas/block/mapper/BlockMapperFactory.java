@@ -9,6 +9,7 @@ public class BlockMapperFactory {
 	private static final BiFactory<BlockMapper> FACTORY = new BiFactory.Builder<BlockMapper>()
 		.add(IdentityBlockMapper.TYPE, IdentityBlockMapper::new)
 		.add(SimpleBlockMapper.TYPE, SimpleBlockMapper::new)
+		.add(ReferenceBlockMapper.TYPE, ReferenceBlockMapper::new)
 		.build();
 	
 	public static BlockMapper create(Scene scene, JsonObj src) {

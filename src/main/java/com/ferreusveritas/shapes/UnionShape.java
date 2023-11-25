@@ -29,7 +29,7 @@ public class UnionShape extends Shape {
 	
 	public UnionShape(Scene scene, JsonObj src) {
 		super(scene, src);
-		this.shapes = src.getObj("shapes").orElseGet(JsonObj::newList).toImmutableList(scene::createShape);
+		this.shapes = src.getList("shapes").toImmutableList(scene::createShape);
 	}
 	
 	private void validate() {

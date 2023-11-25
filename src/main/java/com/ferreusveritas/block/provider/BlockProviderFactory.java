@@ -13,6 +13,7 @@ public class BlockProviderFactory {
 		.add(ShapeBlockProvider.TYPE, ShapeBlockProvider::new)
 		.add(SolidBlockProvider.TYPE, SolidBlockProvider::new)
 		.add(TranslateBlockProvider.TYPE, TranslateBlockProvider::new)
+		.add(ReferenceBlockProvider.TYPE, ReferenceBlockProvider::new)
 		.build();
 	
 	public static BlockProvider create(Scene scene, JsonObj src) {

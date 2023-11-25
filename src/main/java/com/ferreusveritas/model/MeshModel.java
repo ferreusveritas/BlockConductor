@@ -8,7 +8,6 @@ import com.ferreusveritas.support.json.JsonObj;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class MeshModel extends Model {
 	
@@ -17,13 +16,13 @@ public class MeshModel extends Model {
 	private final String resource;
 	private final List<SimpleFace> faces;
 	private final AABBD aabb;
-	private QSPModel qsp;
+	private final QSPModel qsp;
 	
 	public MeshModel(Scene scene, JsonObj src) {
 		super(scene, src);
 		this.resource = src.getString("resource").orElseThrow(() -> new InvalidJsonProperty("Missing resource"));
 		ObjModel objModel = ObjModelLoader.load(resource).orElseThrow(() -> new InvalidJsonProperty("Unable to load model: " + resource));
-		this.faces = objModel.getFaces().stream().map(FullFace::toSimpleFace).collect(Collectors.toList());
+		this.faces = objModel.getFaces().stream().map(FullFace::toSimpleFace).toList();
 		this.aabb = calculateAABB().orElseThrow(() -> new InvalidJsonProperty("SimpleMeshModel AABB is null"));
 		this.qsp = calculateQSP();
 	}

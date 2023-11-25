@@ -22,7 +22,7 @@ public class Transforms extends Transform {
 	}
 	
 	public Transforms(JsonObj src) {
-		this(src.getObj("operations").orElseThrow().toImmutableList(TransformFactory::create));
+		this(src.getList("operations").toImmutableList(TransformFactory::create));
 	}
 	
 	private Matrix4X4 createMatrix(List<Transform> transforms) {
@@ -48,4 +48,5 @@ public class Transforms extends Transform {
 		return super.toJsonObj()
 			.set("operations", operations);
 	}
+	
 }

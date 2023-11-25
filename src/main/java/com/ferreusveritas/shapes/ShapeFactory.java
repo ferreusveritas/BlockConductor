@@ -18,6 +18,7 @@ public class ShapeFactory {
 		.add(InvertShape.TYPE, InvertShape::new)
 		.add(LayerShape.TYPE, LayerShape::new)
 		.add(ModelShape.TYPE, ModelShape::new)
+		.add(ReferenceShape.TYPE, ReferenceShape::new)
 		.add(SphereShape.TYPE, SphereShape::new)
 		.add(SurfaceShape.TYPE, SurfaceShape::new)
 		.add(TranslateShape.TYPE, TranslateShape::new)
