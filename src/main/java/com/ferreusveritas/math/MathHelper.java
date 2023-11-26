@@ -29,6 +29,13 @@ public class MathHelper {
 		return low2 + (value - low1) * (high2 - low2) / (high1 - low1);
 	}
 	
+	public static double cubicInterp(final double n0, final double n1, final double n2, final double n3, final double a) {
+		double p = n3 - n2 - (n0 - n1);
+		double q = n0 - n1 - p;
+		double r = n2 - n0;
+		return p * a * a * a + q * a * a + r * a + n1;
+	}
+	
 	private MathHelper() {
 		throw new IllegalStateException("Utility class");
 	}

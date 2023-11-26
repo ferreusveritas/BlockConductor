@@ -1,6 +1,5 @@
 package com.ferreusveritas.image;
 
-import com.ferreusveritas.math.Pixel;
 import com.ferreusveritas.math.RectI;
 import com.ferreusveritas.scene.Scene;
 import com.ferreusveritas.support.json.InvalidJsonProperty;
@@ -37,8 +36,8 @@ public class ReferenceImage extends Image {
 	}
 	
 	@Override
-	public Pixel getPixel(int x, int y) {
-		return ref.getPixel(x, y);
+	public double getVal(int x, int y) {
+		return ref.getVal(x, y);
 	}
 	
 }

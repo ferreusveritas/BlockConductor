@@ -12,13 +12,13 @@
     "height": 16,
     "offset": {
       "x": 0,
-      "y": 56,
+      "y": 55,
       "z": 0
     },
     "infinite": true
   },
   "block": {
-    "name": "minecraft:stone",
+    "name": "minecraft:bone_block",
     "state": ""
   }
 }

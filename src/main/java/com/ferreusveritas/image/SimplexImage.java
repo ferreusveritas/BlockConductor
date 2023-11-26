@@ -1,7 +1,6 @@
 package com.ferreusveritas.image;
 
 import com.ferreusveritas.math.MathHelper;
-import com.ferreusveritas.math.Pixel;
 import com.ferreusveritas.math.RectI;
 import com.ferreusveritas.scene.Scene;
 import com.ferreusveritas.support.json.JsonObj;
@@ -59,11 +58,11 @@ public class SimplexImage extends Image {
 	}
 	
 	@Override
-	public Pixel getPixel(int x, int y) {
+	public double getVal(int x, int y) {
 		double val = simplex.get(x, y, 0.0);
 		val = val * 0.90;
 		val = MathHelper.clamp(val, 0.0, 1.0);
-		return new Pixel(val, 0.0, 0.0, 1.0);
+		return val;
 	}
 	
 	@Override

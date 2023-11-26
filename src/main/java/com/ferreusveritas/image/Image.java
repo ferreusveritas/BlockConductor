@@ -1,6 +1,5 @@
 package com.ferreusveritas.image;
 
-import com.ferreusveritas.math.Pixel;
 import com.ferreusveritas.math.RectI;
 import com.ferreusveritas.scene.Scene;
 import com.ferreusveritas.support.json.JsonObj;
@@ -31,7 +30,7 @@ public abstract class Image implements Jsonable {
 	
 	public abstract RectI bounds();
 	
-	public abstract Pixel getPixel(int x, int y);
+	public abstract double getVal(int x, int y);
 	
 	@Override
 	public JsonObj toJsonObj() {

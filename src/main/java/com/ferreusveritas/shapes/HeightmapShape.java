@@ -77,8 +77,8 @@ public class HeightmapShape extends Shape {
 		if(y < 0) {
 			return true; // slight optimization.  Anything below the height map is considered inside
 		}
-		int red = image.getPixel(x, z).getR(); // Use the red channel as the height map
-		return y < red * height / 255;
+		double val = image.getVal(x, z);
+		return y <= val * height;
 	}
 	
 	@Override
