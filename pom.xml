@@ -15,6 +15,10 @@
       <id>jitpack.io</id>
       <url>https://jitpack.io</url>
     </repository>
+    <repository>
+      <id>spongepowered.org</id>
+      <url>https://repo.spongepowered.org/repository/maven-public/</url>
+    </repository>
   </repositories>
 
   <parent>
@@ -29,7 +33,9 @@
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
   </properties>
+
   <dependencies>
+
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -41,6 +47,7 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
@@ -53,6 +60,11 @@
       <version>6.1</version>
     </dependency>
 
+    <dependency>
+      <groupId>org.spongepowered</groupId>
+      <artifactId>noise</artifactId>
+      <version>2.0.0-SNAPSHOT</version>
+    </dependency>
 
   </dependencies>
 </project>

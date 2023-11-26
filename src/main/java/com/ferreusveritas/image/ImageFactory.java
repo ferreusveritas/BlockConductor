@@ -9,6 +9,8 @@ public class ImageFactory {
 	private static final BiFactory<Image> FACTORY = new BiFactory.Builder<Image>()
 		.add(BufferImage.TYPE, BufferImage::new)
 		.add(ReferenceImage.TYPE, ReferenceImage::new)
+		.add(PerlinImage.TYPE, PerlinImage::new)
+		.add(SimplexImage.TYPE, SimplexImage::new)
 		.build();
 	
 	public static Image create(Scene scene, JsonObj src) {
