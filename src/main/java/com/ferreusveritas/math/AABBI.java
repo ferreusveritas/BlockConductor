@@ -27,7 +27,26 @@ public record AABBI(
 	}
 	
 	public AABBI(AABBD aabb) {
-		this(new Vec3I(aabb.min().floor()), new Vec3I(aabb.max().ceil()));
+		this(
+			new Vec3I(
+				convMin(aabb.min().x()),
+				convMin(aabb.min().y()),
+				convMin(aabb.min().z())
+			),
+			new Vec3I(
+				convMax(aabb.max().x()),
+				convMax(aabb.max().y()),
+				convMax(aabb.max().z())
+			)
+		);
+	}
+	
+	private static int convMin(double v) {
+		return (Double.isInfinite(v) && v < 0) ? Integer.MIN_VALUE : (int)Math.floor(v);
+	}
+	
+	private static int convMax(double v) {
+		return (Double.isInfinite(v) && v > 0) ? Integer.MAX_VALUE : (int)Math.ceil(v);
 	}
 	
 	public AABBI(JsonObj src) {

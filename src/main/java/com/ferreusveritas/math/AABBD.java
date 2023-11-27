@@ -1,9 +1,17 @@
 package com.ferreusveritas.math;
 
+import com.ferreusveritas.support.json.InvalidJsonProperty;
+import com.ferreusveritas.support.json.JsonObj;
+
 public record AABBD(
 	Vec3D min,
 	Vec3D max
 ) {
+	
+	public static AABBD INFINITE = new AABBD(
+		new Vec3D(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY),
+		new Vec3D(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY)
+	);
 	
 	public AABBD(AABBI aabb) {
 		this(aabb.min().toVecD(), aabb.max().toVecD());
@@ -17,6 +25,13 @@ public record AABBD(
 		this(
 			new Vec3D(rect.x1(), Double.NEGATIVE_INFINITY, rect.z1()),
 			new Vec3D(rect.x2(), Double.POSITIVE_INFINITY, rect.z2())
+		);
+	}
+	
+	public AABBD(JsonObj src) {
+		this(
+			src.getObj("min").map(Vec3D::new).orElseThrow(() -> new InvalidJsonProperty("Missing min")),
+			src.getObj("max").map(Vec3D::new).orElseThrow(() -> new InvalidJsonProperty("Missing max"))
 		);
 	}
 	

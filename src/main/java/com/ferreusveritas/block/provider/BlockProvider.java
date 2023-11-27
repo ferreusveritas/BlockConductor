@@ -4,12 +4,14 @@ import com.ferreusveritas.api.Request;
 import com.ferreusveritas.block.Blocks;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.scene.Scene;
+import com.ferreusveritas.support.json.InvalidJsonProperty;
 import com.ferreusveritas.support.json.JsonObj;
 import com.ferreusveritas.support.json.Jsonable;
 
 import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 public abstract class BlockProvider implements Jsonable {
 	
@@ -74,6 +76,10 @@ public abstract class BlockProvider implements Jsonable {
 			aabb = AABBI.union(aabb, provider.getAABB().orElse(null));
 		}
 		return aabb;
+	}
+	
+	protected Supplier<InvalidJsonProperty> missing(String name) {
+		return () -> new InvalidJsonProperty("Missing " + name);
 	}
 	
 	@Override

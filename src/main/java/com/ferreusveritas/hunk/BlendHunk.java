@@ -1,9 +1,6 @@
 package com.ferreusveritas.hunk;
 
-import com.ferreusveritas.math.AABBI;
-import com.ferreusveritas.math.MathHelper;
-import com.ferreusveritas.math.RectI;
-import com.ferreusveritas.math.Vec3D;
+import com.ferreusveritas.math.*;
 import com.ferreusveritas.scene.Scene;
 import com.ferreusveritas.support.json.JsonObj;
 
@@ -20,14 +17,14 @@ public class BlendHunk extends Hunk {
 	private final Hunk hunk1;
 	private final Hunk hunk2;
 	private final Hunk blend;
-	private final AABBI bounds;
+	private final AABBD bounds;
 	
 	public BlendHunk(Scene scene, Hunk hunk1, Hunk hunk2, Hunk blend) {
 		super(scene);
 		this.hunk1 = hunk1;
 		this.hunk2 = hunk2;
 		this.blend = blend;
-		this.bounds = AABBI.union(hunk1.bounds(), hunk2.bounds());
+		this.bounds = AABBD.union(hunk1.bounds(), hunk2.bounds());
 	}
 	
 	public BlendHunk(Scene scene, JsonObj src) {
@@ -35,7 +32,7 @@ public class BlendHunk extends Hunk {
 		this.hunk1 = src.getObj(HUNK_1).map(scene::createHunk).orElseThrow(missing(HUNK_1));
 		this.hunk2 = src.getObj(HUNK_2).map(scene::createHunk).orElseThrow(missing(HUNK_2));
 		this.blend = src.getObj(BLEND).map(scene::createHunk).orElseThrow(missing(BLEND));
-		this.bounds = AABBI.union(hunk1.bounds(), hunk2.bounds());
+		this.bounds = AABBD.union(hunk1.bounds(), hunk2.bounds());
 	}
 	
 	@Override
@@ -44,7 +41,7 @@ public class BlendHunk extends Hunk {
 	}
 	
 	@Override
-	public AABBI bounds() {
+	public AABBD bounds() {
 		return bounds;
 	}
 	

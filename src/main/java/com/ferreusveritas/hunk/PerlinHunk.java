@@ -1,7 +1,6 @@
 package com.ferreusveritas.hunk;
 
-import com.ferreusveritas.math.AABBI;
-import com.ferreusveritas.math.RectI;
+import com.ferreusveritas.math.AABBD;
 import com.ferreusveritas.math.Vec3D;
 import com.ferreusveritas.scene.Scene;
 import com.ferreusveritas.support.json.JsonObj;
@@ -54,8 +53,8 @@ public class PerlinHunk extends Hunk {
 	}
 	
 	@Override
-	public AABBI bounds() {
-		return AABBI.INFINITE;
+	public AABBD bounds() {
+		return AABBD.INFINITE;
 	}
 	
 	@Override

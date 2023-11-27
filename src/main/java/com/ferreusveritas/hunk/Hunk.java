@@ -1,6 +1,6 @@
 package com.ferreusveritas.hunk;
 
-import com.ferreusveritas.math.AABBI;
+import com.ferreusveritas.math.AABBD;
 import com.ferreusveritas.math.Vec3D;
 import com.ferreusveritas.scene.Scene;
 import com.ferreusveritas.support.json.InvalidJsonProperty;
@@ -34,7 +34,7 @@ public abstract class Hunk implements Jsonable {
 	
 	public abstract String getType();
 	
-	public abstract AABBI bounds();
+	public abstract AABBD bounds();
 	
 	public abstract double getVal(Vec3D pos);
 	

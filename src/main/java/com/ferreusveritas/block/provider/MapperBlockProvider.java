@@ -13,6 +13,8 @@ import java.util.Optional;
 public class MapperBlockProvider extends BlockProvider {
 	
 	public static final String TYPE = "mapper";
+	public static final String MAPPER = "mapper";
+	public static final String PROVIDER = "provider";
 	
 	private final BlockMapper mapper;
 	private final BlockProvider provider;
@@ -31,8 +33,8 @@ public class MapperBlockProvider extends BlockProvider {
 	
 	public MapperBlockProvider(Scene scene, JsonObj src) {
 		super(scene, src);
-		this.mapper = src.getObj("mapper").map(scene::createBlockMapper).orElseThrow(() -> new IllegalArgumentException("Missing mapper"));
-		this.provider = src.getObj("provider").map(scene::createBlockProvider).orElseThrow(() -> new IllegalArgumentException("Missing provider"));
+		this.mapper = src.getObj(MAPPER).map(scene::createBlockMapper).orElseThrow(missing(MAPPER));
+		this.provider = src.getObj(PROVIDER).map(scene::createBlockProvider).orElseThrow(missing(PROVIDER));
 	}
 	
 	@Override
@@ -68,8 +70,8 @@ public class MapperBlockProvider extends BlockProvider {
 	@Override
 	public JsonObj toJsonObj() {
 		return super.toJsonObj()
-			.set("mapper", mapper)
-			.set("provider", provider);
+			.set(MAPPER, mapper)
+			.set(PROVIDER, provider);
 	}
 	
 }

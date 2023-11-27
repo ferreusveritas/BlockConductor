@@ -1,9 +1,6 @@
 package com.ferreusveritas.hunk;
 
-import com.ferreusveritas.math.AABBI;
-import com.ferreusveritas.math.RectI;
-import com.ferreusveritas.math.Vec3D;
-import com.ferreusveritas.math.Vec3I;
+import com.ferreusveritas.math.*;
 import com.ferreusveritas.scene.Scene;
 import com.ferreusveritas.support.json.JsonObj;
 
@@ -22,7 +19,7 @@ public class ImageHunk extends Hunk {
 	private final ColorChannel channel;
 	private final float[] data;
 	private final int dataWidth;
-	private final AABBI bounds;
+	private final AABBD bounds;
 	
 	public ImageHunk(Scene scene, String resource) {
 		this(scene, resource, ColorChannel.G);
@@ -35,7 +32,10 @@ public class ImageHunk extends Hunk {
 		BufferedImage image = ImageLoader.load(resource);
 		this.data = createData(image, channel);
 		this.dataWidth = image.getWidth();
-		this.bounds = new AABBI(new RectI(0, 0, image.getWidth(), image.getHeight()), Integer.MIN_VALUE, Integer.MAX_VALUE);
+		this.bounds = new AABBD(
+			new Vec3D(0.0, Double.NEGATIVE_INFINITY, 0.0),
+			new Vec3D(image.getWidth(), Double.POSITIVE_INFINITY, image.getHeight())
+		);
 	}
 	
 	public ImageHunk(Scene scene, JsonObj src) {
@@ -45,7 +45,10 @@ public class ImageHunk extends Hunk {
 		BufferedImage image = ImageLoader.load(resource);
 		this.data = createData(image, channel);
 		this.dataWidth = image.getWidth();
-		this.bounds = new AABBI(new RectI(0, 0, image.getWidth(), image.getHeight()), Integer.MIN_VALUE, Integer.MAX_VALUE);
+		this.bounds = new AABBD(
+			new Vec3D(0.0, Double.NEGATIVE_INFINITY, 0.0),
+			new Vec3D(image.getWidth(), Double.POSITIVE_INFINITY, image.getHeight())
+		);
 	}
 	
 	private float[] createData(BufferedImage image, ColorChannel channel) {
@@ -68,14 +71,14 @@ public class ImageHunk extends Hunk {
 	}
 	
 	@Override
-	public AABBI bounds() {
+	public AABBD bounds() {
 		return bounds;
 	}
 	
 	@Override
 	public double getVal(Vec3D pos) {
-		Vec3I vec = pos.toVecI();
-		if(bounds().isInside(vec)) {
+		if(bounds().isInside(pos)) {
+			Vec3I vec = pos.toVecI();
 			return data[vec.z() * dataWidth + vec.x()];
 		}
 		return 0.0;

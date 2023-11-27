@@ -1,8 +1,7 @@
 package com.ferreusveritas.hunk;
 
-import com.ferreusveritas.math.AABBI;
+import com.ferreusveritas.math.AABBD;
 import com.ferreusveritas.math.Vec3D;
-import com.ferreusveritas.math.Vec3I;
 import com.ferreusveritas.scene.Scene;
 import com.ferreusveritas.support.json.JsonObj;
 
@@ -11,9 +10,9 @@ public class ClipHunk extends Hunk {
 	public static final String TYPE = "clip";
 	
 	private final Hunk hunk;
-	private final AABBI bounds;
+	private final AABBD bounds;
 	
-	public ClipHunk(Scene scene, Hunk hunk, AABBI bounds) {
+	public ClipHunk(Scene scene, Hunk hunk, AABBD bounds) {
 		super(scene);
 		this.hunk = hunk;
 		this.bounds = bounds;
@@ -22,7 +21,7 @@ public class ClipHunk extends Hunk {
 	public ClipHunk(Scene scene, JsonObj src) {
 		super(scene, src);
 		this.hunk = src.getObj(HUNK).map(scene::createHunk).orElseThrow(missing(HUNK));
-		this.bounds = src.getObj(BOUNDS).map(AABBI::new).orElseThrow(missing(BOUNDS));
+		this.bounds = src.getObj(BOUNDS).map(AABBD::new).orElseThrow(missing(BOUNDS));
 	}
 	
 	@Override
@@ -31,14 +30,13 @@ public class ClipHunk extends Hunk {
 	}
 	
 	@Override
-	public AABBI bounds() {
+	public AABBD bounds() {
 		return bounds;
 	}
 	
 	@Override
 	public double getVal(Vec3D pos) {
-		Vec3I vec = pos.toVecI();
-		if(bounds.isInside(vec)) {
+		if(bounds.isInside(pos)) {
 			return hunk.getVal(pos);
 		}
 		return 0;

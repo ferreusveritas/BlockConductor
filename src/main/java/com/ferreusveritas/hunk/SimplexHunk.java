@@ -1,9 +1,6 @@
 package com.ferreusveritas.hunk;
 
-import com.ferreusveritas.math.AABBI;
-import com.ferreusveritas.math.MathHelper;
-import com.ferreusveritas.math.RectI;
-import com.ferreusveritas.math.Vec3D;
+import com.ferreusveritas.math.*;
 import com.ferreusveritas.scene.Scene;
 import com.ferreusveritas.support.json.JsonObj;
 import org.spongepowered.noise.module.source.Simplex;
@@ -55,8 +52,8 @@ public class SimplexHunk extends Hunk {
 	}
 	
 	@Override
-	public AABBI bounds() {
-		return AABBI.INFINITE;
+	public AABBD bounds() {
+		return AABBD.INFINITE;
 	}
 	
 	@Override

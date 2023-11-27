@@ -54,11 +54,12 @@ public class HeightmapShape extends Shape {
 		return TYPE;
 	}
 	
-	private static AABBI calculateAABB(Hunk image, int height, Vec3I offset, boolean infinite) {
-		if(infinite) {
-			return new AABBI(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE, height - 1, Integer.MAX_VALUE).offset(offset);
+	private static AABBI calculateAABB(Hunk hunk, int height, Vec3I offset, boolean infinite) {
+		AABBI aabb = new AABBI(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE, height - 1, Integer.MAX_VALUE);
+		if(!infinite) {
+			aabb = aabb.intersect(hunk.bounds().toAABBI()).orElse(aabb);
 		}
-		return new AABBI(image.bounds().toRectI(), Integer.MIN_VALUE, height - 1).offset(offset);
+		return aabb.offset(offset);
 	}
 	
 	@Override

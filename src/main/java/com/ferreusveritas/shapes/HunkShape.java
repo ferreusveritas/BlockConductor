@@ -40,7 +40,7 @@ public class HunkShape extends Shape {
 	
 	@Override
 	public Optional<AABBI> getAABB() {
-		return Optional.of(hunk.bounds());
+		return Optional.of(hunk.bounds().toAABBI());
 	}
 	
 	@Override

@@ -7,7 +7,6 @@ import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
 import com.ferreusveritas.scene.Scene;
 import com.ferreusveritas.shapes.Shape;
-import com.ferreusveritas.support.json.InvalidJsonProperty;
 import com.ferreusveritas.support.json.JsonObj;
 
 import java.util.Optional;
@@ -15,6 +14,8 @@ import java.util.Optional;
 public class ShapeBlockProvider extends BlockProvider {
 	
 	public static final String TYPE = "shape";
+	public static final String SHAPE = "shape";
+	public static final String BLOCK = "block";
 	
 	private final Shape shape;
 	private final Block block;
@@ -33,8 +34,8 @@ public class ShapeBlockProvider extends BlockProvider {
 	
 	public ShapeBlockProvider(Scene scene, JsonObj src) {
 		super(scene, src);
-		this.shape = src.getObj("shape").map(scene::createShape).orElseThrow(() -> new InvalidJsonProperty("Missing shape"));
-		this.block = src.getObj("block").map(scene::block).orElseThrow(() -> new InvalidJsonProperty("Missing block"));
+		this.shape = src.getObj(SHAPE).map(scene::createShape).orElseThrow(missing(SHAPE));
+		this.block = src.getObj(BLOCK).map(scene::block).orElseThrow(missing(BLOCK));
 	}
 	
 	@Override
@@ -72,8 +73,8 @@ public class ShapeBlockProvider extends BlockProvider {
 	@Override
 	public JsonObj toJsonObj() {
 		return super.toJsonObj()
-			.set("shape", shape)
-			.set("block", block);
+			.set(SHAPE, shape)
+			.set(BLOCK, block);
 	}
 	
 }
