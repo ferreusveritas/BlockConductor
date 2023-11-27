@@ -63,7 +63,7 @@ public class SurfaceShape extends Shape {
 	
 	@Override
 	public boolean isInside(Vec3I pos) {
-		return aabb.isPointInside(pos);
+		return aabb.isInside(pos);
 	}
 	
 	@Override

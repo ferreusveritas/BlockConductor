@@ -1,12 +1,14 @@
-package com.ferreusveritas.image;
+package com.ferreusveritas.hunk;
 
+import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.MathHelper;
 import com.ferreusveritas.math.RectI;
+import com.ferreusveritas.math.Vec3D;
 import com.ferreusveritas.scene.Scene;
 import com.ferreusveritas.support.json.JsonObj;
 import org.spongepowered.noise.module.source.Simplex;
 
-public class SimplexImage extends Image {
+public class SimplexHunk extends Hunk {
 	
 	public static final String TYPE = "perlin";
 	
@@ -17,7 +19,7 @@ public class SimplexImage extends Image {
 	private final int octaves;
 	private final int seed;
 	
-	private SimplexImage(Scene scene, double frequency, double lacunarity, double persistence, int octaves, int seed) {
+	private SimplexHunk(Scene scene, double frequency, double lacunarity, double persistence, int octaves, int seed) {
 		super(scene);
 		this.frequency = frequency;
 		this.lacunarity = lacunarity;
@@ -27,7 +29,7 @@ public class SimplexImage extends Image {
 		this.simplex = setupSimplex();
 	}
 	
-	public SimplexImage(Scene scene, JsonObj src) {
+	public SimplexHunk(Scene scene, JsonObj src) {
 		super(scene, src);
 		this.frequency = src.getDouble("frequency").orElse(Simplex.DEFAULT_SIMPLEX_FREQUENCY);
 		this.lacunarity = src.getDouble("lacunarity").orElse(Simplex.DEFAULT_SIMPLEX_LACUNARITY);
@@ -53,16 +55,13 @@ public class SimplexImage extends Image {
 	}
 	
 	@Override
-	public RectI bounds() {
-		return RectI.INFINITE;
+	public AABBI bounds() {
+		return AABBI.INFINITE;
 	}
 	
 	@Override
-	public double getVal(int x, int y) {
-		double val = simplex.get(x, y, 0.0);
-		val = val * 0.90;
-		val = MathHelper.clamp(val, 0.0, 1.0);
-		return val;
+	public double getVal(Vec3D pos) {
+		return simplex.get(pos.x(), pos.y(), pos.z());
 	}
 	
 	@Override
@@ -112,8 +111,8 @@ public class SimplexImage extends Image {
 			return this;
 		}
 		
-		public SimplexImage build(Scene scene) {
-			return new SimplexImage(scene, frequency, lacunarity, persistence, octaves, seed);
+		public SimplexHunk build(Scene scene) {
+			return new SimplexHunk(scene, frequency, lacunarity, persistence, octaves, seed);
 		}
 		
 	}

@@ -41,6 +41,10 @@ public record AABBI(
 		return new AABBD(this);
 	}
 	
+	public RectI toRectI() {
+		return new RectI(this);
+	}
+	
 	/**
 	 * Returns a new AABB moved by the specified amount.
 	 * @param pos The amount to move
@@ -76,13 +80,13 @@ public record AABBI(
 	 * @param pos The point
 	 * @return Whether the point is inside this AABB.
 	 */
-	public boolean isPointInside(Vec3I pos) {
+	public boolean isInside(Vec3I pos) {
 		return
 			pos.x() >= min.x() && pos.x() <= max.x() &&
 			pos.y() >= min.y() && pos.y() <= max.y() &&
 			pos.z() >= min.z() && pos.z() <= max.z();
 	}
-
+	
 	/**
 	 * Returns whether this AABB intersects another AABB.
 	 * @param aabb The other AABB

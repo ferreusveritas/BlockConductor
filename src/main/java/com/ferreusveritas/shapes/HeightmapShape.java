@@ -1,7 +1,8 @@
 package com.ferreusveritas.shapes;
 
-import com.ferreusveritas.image.Image;
+import com.ferreusveritas.hunk.Hunk;
 import com.ferreusveritas.math.AABBI;
+import com.ferreusveritas.math.Vec3D;
 import com.ferreusveritas.math.Vec3I;
 import com.ferreusveritas.scene.Scene;
 import com.ferreusveritas.support.json.InvalidJsonProperty;
@@ -16,13 +17,13 @@ public class HeightmapShape extends Shape {
 	
 	public static final String TYPE = "heightmap";
 	
-	private final Image image;
+	private final Hunk image;
 	private final int height;
 	private final Vec3I offset;
 	private final boolean infinite;
 	private final AABBI aabb;
 	
-	public HeightmapShape(Scene scene, Image image, int height, Vec3I offset, boolean infinite) {
+	public HeightmapShape(Scene scene, Hunk image, int height, Vec3I offset, boolean infinite) {
 		super(scene);
 		this.image = image;
 		this.height = height;
@@ -34,7 +35,7 @@ public class HeightmapShape extends Shape {
 	
 	public HeightmapShape(Scene scene, JsonObj src) {
 		super(scene, src);
-		this.image = src.getObj("image").map(scene::createImage).orElseThrow(() -> new InvalidJsonProperty("Missing image"));
+		this.image = src.getObj("image").map(scene::createHunk).orElseThrow(() -> new InvalidJsonProperty("Missing image"));
 		this.height = src.getInt("height").orElse(1);
 		this.offset = src.getObj("offset").map(Vec3I::new).orElse(Vec3I.ZERO);
 		this.infinite = src.getBoolean("infinite").orElse(false);
@@ -53,11 +54,11 @@ public class HeightmapShape extends Shape {
 		return TYPE;
 	}
 	
-	private static AABBI calculateAABB(Image image, int height, Vec3I offset, boolean infinite) {
+	private static AABBI calculateAABB(Hunk image, int height, Vec3I offset, boolean infinite) {
 		if(infinite) {
 			return new AABBI(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE, height - 1, Integer.MAX_VALUE).offset(offset);
 		}
-		return new AABBI(image.bounds(), Integer.MIN_VALUE, height - 1).offset(offset);
+		return new AABBI(image.bounds().toRectI(), Integer.MIN_VALUE, height - 1).offset(offset);
 	}
 	
 	@Override
@@ -67,17 +68,16 @@ public class HeightmapShape extends Shape {
 	
 	@Override
 	public boolean isInside(Vec3I pos) {
-		if(!aabb.isPointInside(pos)) {
+		if(!aabb.isInside(pos)) {
 			return false;
 		}
 		pos = pos.sub(offset); // bring to relative coordinates
-		int x = pos.x();
 		int y = pos.y();
-		int z = pos.z();
 		if(y < 0) {
 			return true; // slight optimization.  Anything below the height map is considered inside
 		}
-		double val = image.getVal(x, z);
+		Vec3D posD = pos.toVecD();
+		double val = image.getVal(posD);
 		return y <= val * height;
 	}
 	

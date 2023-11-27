@@ -1,9 +1,9 @@
-package com.ferreusveritas.image;
+package com.ferreusveritas.hunk;
 
+import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.MathHelper;
-import com.ferreusveritas.math.RectI;
+import com.ferreusveritas.math.Vec3D;
 import com.ferreusveritas.scene.Scene;
-import com.ferreusveritas.support.json.InvalidJsonProperty;
 import com.ferreusveritas.support.json.JsonObj;
 import com.ferreusveritas.support.json.Jsonable;
 import org.spongepowered.noise.exception.NoiseException;
@@ -11,23 +11,23 @@ import org.spongepowered.noise.exception.NoiseException;
 import java.util.Comparator;
 import java.util.List;
 
-public class CurveImage extends Image {
+public class CurveHunk extends Hunk {
 	
 	public static final String TYPE = "curve";
 	
-	private final Image image;
+	private final Hunk hunk;
 	private final List<ControlPoint> controlPoints;
 	
-	public CurveImage(Scene scene, Image image, List<ControlPoint> controlPoints) {
+	public CurveHunk(Scene scene, Hunk hunk, List<ControlPoint> controlPoints) {
 		super(scene);
-		this.image = image;
+		this.hunk = hunk;
 		this.controlPoints = sort(controlPoints);
 		validate();
 	}
 	
-	public CurveImage(Scene scene, JsonObj src) {
+	public CurveHunk(Scene scene, JsonObj src) {
 		super(scene, src);
-		this.image = src.getObj("image").map(scene::createImage).orElseThrow(() -> new InvalidJsonProperty("Missing image"));
+		this.hunk = src.getObj(HUNK).map(scene::createHunk).orElseThrow(missing(HUNK));
 		this.controlPoints = sort(src.getList("controlPoints").toImmutableList(ControlPoint::new));
 		validate();
 	}
@@ -48,13 +48,13 @@ public class CurveImage extends Image {
 	}
 	
 	@Override
-	public RectI bounds() {
-		return image.bounds();
+	public AABBI bounds() {
+		return hunk.bounds();
 	}
 	
 	@Override
-	public double getVal(int x, int y) {
-		return process(image.getVal(x, y));
+	public double getVal(Vec3D pos) {
+		return process(hunk.getVal(pos));
 	}
 	
 	private double process(double in) {
@@ -84,11 +84,11 @@ public class CurveImage extends Image {
 	@Override
 	public JsonObj toJsonObj() {
 		return super.toJsonObj()
-			.set("image", image)
+			.set(HUNK, hunk)
 			.set("controlPoints", JsonObj.newList(controlPoints));
 	}
 	
-	public static record ControlPoint(
+	public record ControlPoint(
 		double in,
 		double out
 	) implements Jsonable {

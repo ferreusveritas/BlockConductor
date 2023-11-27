@@ -1,8 +1,10 @@
-package com.ferreusveritas.image;
+package com.ferreusveritas.hunk;
 
+import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.RectI;
+import com.ferreusveritas.math.Vec3D;
+import com.ferreusveritas.math.Vec3I;
 import com.ferreusveritas.scene.Scene;
-import com.ferreusveritas.support.json.InvalidJsonProperty;
 import com.ferreusveritas.support.json.JsonObj;
 
 import java.awt.image.BufferedImage;
@@ -10,38 +12,40 @@ import java.awt.image.BufferedImage;
 /**
  * BufferImage is a type of Image that loads a BufferedImage and uses the specified color channel as the value.
  */
-public class BufferImage extends Image {
+public class ImageHunk extends Hunk {
 	
 	public static final String TYPE = "buffer";
+	public static final String RESOURCE = "resource";
+	public static final String CHANNEL = "channel";
 	
 	private final String resource;
 	private final ColorChannel channel;
 	private final float[] data;
 	private final int dataWidth;
-	private final RectI bounds;
+	private final AABBI bounds;
 	
-	public BufferImage(Scene scene, String resource) {
+	public ImageHunk(Scene scene, String resource) {
 		this(scene, resource, ColorChannel.G);
 	}
 	
-	public BufferImage(Scene scene, String resource, ColorChannel channel) {
+	public ImageHunk(Scene scene, String resource, ColorChannel channel) {
 		super(scene);
 		this.resource = resource;
 		this.channel = channel;
 		BufferedImage image = ImageLoader.load(resource);
 		this.data = createData(image, channel);
 		this.dataWidth = image.getWidth();
-		this.bounds = new RectI(0, 0, image.getWidth(), image.getHeight());
+		this.bounds = new AABBI(new RectI(0, 0, image.getWidth(), image.getHeight()), Integer.MIN_VALUE, Integer.MAX_VALUE);
 	}
 	
-	public BufferImage(Scene scene, JsonObj src) {
+	public ImageHunk(Scene scene, JsonObj src) {
 		super(scene, src);
-		this.resource = src.getString("resource").orElseThrow(() -> new InvalidJsonProperty("Missing resource"));
-		this.channel = src.getString("channel").flatMap(ColorChannel::of).orElse(ColorChannel.G);
+		this.resource = src.getString(RESOURCE).orElseThrow(missing(RESOURCE));
+		this.channel = src.getString(CHANNEL).flatMap(ColorChannel::of).orElse(ColorChannel.G);
 		BufferedImage image = ImageLoader.load(resource);
 		this.data = createData(image, channel);
 		this.dataWidth = image.getWidth();
-		this.bounds = new RectI(0, 0, image.getWidth(), image.getHeight());
+		this.bounds = new AABBI(new RectI(0, 0, image.getWidth(), image.getHeight()), Integer.MIN_VALUE, Integer.MAX_VALUE);
 	}
 	
 	private float[] createData(BufferedImage image, ColorChannel channel) {
@@ -64,14 +68,15 @@ public class BufferImage extends Image {
 	}
 	
 	@Override
-	public RectI bounds() {
+	public AABBI bounds() {
 		return bounds;
 	}
 	
 	@Override
-	public double getVal(int x, int y) {
-		if(bounds().isInside(x, y)) {
-			return data[y * dataWidth + x];
+	public double getVal(Vec3D pos) {
+		Vec3I vec = pos.toVecI();
+		if(bounds().isInside(vec)) {
+			return data[vec.z() * dataWidth + vec.x()];
 		}
 		return 0.0;
 	}
@@ -79,8 +84,8 @@ public class BufferImage extends Image {
 	@Override
 	public JsonObj toJsonObj() {
 		return super.toJsonObj()
-			.set("resource", resource)
-			.set("channel", channel);
+			.set(RESOURCE, resource)
+			.set(CHANNEL, channel);
 	}
 	
 }

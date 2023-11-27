@@ -1,4 +1,4 @@
-package com.ferreusveritas.image;
+package com.ferreusveritas.hunk;
 
 import com.ferreusveritas.support.json.JsonObj;
 import com.ferreusveritas.support.json.Jsonable;

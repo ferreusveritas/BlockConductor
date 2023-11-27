@@ -14,6 +14,7 @@ public class ShapeFactory {
 		.add(CylinderShape.TYPE, CylinderShape::new)
 		.add(DifferenceShape.TYPE, DifferenceShape::new)
 		.add(HeightmapShape.TYPE, HeightmapShape::new)
+		.add(HunkShape.TYPE, HunkShape::new)
 		.add(IntersectShape.TYPE, IntersectShape::new)
 		.add(InvertShape.TYPE, InvertShape::new)
 		.add(LayerShape.TYPE, LayerShape::new)

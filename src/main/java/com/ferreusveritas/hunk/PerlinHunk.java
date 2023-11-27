@@ -1,12 +1,13 @@
-package com.ferreusveritas.image;
+package com.ferreusveritas.hunk;
 
-import com.ferreusveritas.math.MathHelper;
+import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.RectI;
+import com.ferreusveritas.math.Vec3D;
 import com.ferreusveritas.scene.Scene;
 import com.ferreusveritas.support.json.JsonObj;
 import org.spongepowered.noise.module.source.Perlin;
 
-public class PerlinImage extends Image {
+public class PerlinHunk extends Hunk {
 	
 	public static final String TYPE = "perlin";
 	
@@ -17,7 +18,7 @@ public class PerlinImage extends Image {
 	private final int octaves;
 	private final int seed;
 	
-	private PerlinImage(Scene scene, double frequency, double lacunarity, double persistence, int octaves, int seed) {
+	private PerlinHunk(Scene scene, double frequency, double lacunarity, double persistence, int octaves, int seed) {
 		super(scene);
 		this.frequency = frequency;
 		this.lacunarity = lacunarity;
@@ -27,7 +28,7 @@ public class PerlinImage extends Image {
 		this.perlin = setupPerlin();
 	}
 	
-	public PerlinImage(Scene scene, JsonObj src) {
+	public PerlinHunk(Scene scene, JsonObj src) {
 		super(scene, src);
 		this.frequency = src.getDouble("frequency").orElse(Perlin.DEFAULT_PERLIN_FREQUENCY);
 		this.lacunarity = src.getDouble("lacunarity").orElse(Perlin.DEFAULT_PERLIN_LACUNARITY);
@@ -53,16 +54,13 @@ public class PerlinImage extends Image {
 	}
 	
 	@Override
-	public RectI bounds() {
-		return RectI.INFINITE;
+	public AABBI bounds() {
+		return AABBI.INFINITE;
 	}
 	
 	@Override
-	public double getVal(int x, int y) {
-		double val = perlin.get(x, y, 0.0);
-		val = val * 0.90;
-		val = MathHelper.clamp(val, 0.0, 1.0);
-		return val;
+	public double getVal(Vec3D pos) {
+		return perlin.get(pos.x(), pos.y(), pos.z());
 	}
 	
 	@Override
@@ -112,8 +110,8 @@ public class PerlinImage extends Image {
 			return this;
 		}
 		
-		public PerlinImage build(Scene scene) {
-			return new PerlinImage(scene, frequency, lacunarity, persistence, octaves, seed);
+		public PerlinHunk build(Scene scene) {
+			return new PerlinHunk(scene, frequency, lacunarity, persistence, octaves, seed);
 		}
 		
 	}

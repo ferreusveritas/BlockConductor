@@ -77,11 +77,11 @@ class AABBTest {
 	void testAABBIsPointInside() {
 		AABBI aabb = new AABBI(0, 0, 0, 10, 10, 10);
 
-		assertFalse(aabb.isPointInside(new Vec3I(-1, 0, 0)));
-		assertTrue(aabb.isPointInside(new Vec3I(5, 5, 5)));
-		assertTrue(aabb.isPointInside(new Vec3I(0, 0, 0)));
-		assertTrue(aabb.isPointInside(new Vec3I(10, 10, 10)));
-		assertFalse(aabb.isPointInside(new Vec3I(11, 11, 11)));
+		assertFalse(aabb.isInside(new Vec3I(-1, 0, 0)));
+		assertTrue(aabb.isInside(new Vec3I(5, 5, 5)));
+		assertTrue(aabb.isInside(new Vec3I(0, 0, 0)));
+		assertTrue(aabb.isInside(new Vec3I(10, 10, 10)));
+		assertFalse(aabb.isInside(new Vec3I(11, 11, 11)));
 	}
 
 	@Test

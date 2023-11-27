@@ -6,8 +6,8 @@ import com.ferreusveritas.block.mapper.BlockMapper;
 import com.ferreusveritas.block.mapper.BlockMapperFactory;
 import com.ferreusveritas.block.provider.BlockProvider;
 import com.ferreusveritas.block.provider.BlockProviderFactory;
-import com.ferreusveritas.image.Image;
-import com.ferreusveritas.image.ImageFactory;
+import com.ferreusveritas.hunk.Hunk;
+import com.ferreusveritas.hunk.HunkFactory;
 import com.ferreusveritas.model.Model;
 import com.ferreusveritas.model.ModelFactory;
 import com.ferreusveritas.shapes.Shape;
@@ -22,7 +22,7 @@ public class Scene implements Jsonable {
 	private final Map<UUID, BlockProvider> blockProviders = new HashMap<>();
 	private final Map<UUID, BlockMapper> blockMappers = new HashMap<>();
 	private final Map<UUID, Shape> shapes = new HashMap<>();
-	private final Map<UUID, Image> images = new HashMap<>();
+	private final Map<UUID, Hunk> hunks = new HashMap<>();
 	private final Map<UUID, Model> models = new HashMap<>();
 	
 	private final SceneReferences references;
@@ -88,18 +88,18 @@ public class Scene implements Jsonable {
 		return shapes.get(uuid);
 	}
 	
-	public void addImage(Image image) {
-		images.put(image.getUuid(), image);
+	public void addHunk(Hunk image) {
+		hunks.put(image.getUuid(), image);
 	}
 	
-	public Image createImage(JsonObj src) {
-		Image image = ImageFactory.create(this, src);
-		addImage(image);
+	public Hunk createHunk(JsonObj src) {
+		Hunk image = HunkFactory.create(this, src);
+		addHunk(image);
 		return image;
 	}
 	
-	public Image getImage(UUID uuid) {
-		return images.get(uuid);
+	public Hunk getHunk(UUID uuid) {
+		return hunks.get(uuid);
 	}
 	
 	public void addModel(Model model) {

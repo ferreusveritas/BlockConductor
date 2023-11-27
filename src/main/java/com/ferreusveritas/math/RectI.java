@@ -4,10 +4,10 @@ import com.ferreusveritas.support.json.JsonObj;
 import com.ferreusveritas.support.json.Jsonable;
 
 public record RectI(
-	int x1,
-	int z1,
-	int x2,
-	int z2
+	int x1, //inclusive
+	int z1, //inclusive
+	int x2, //inclusive
+	int z2  //inclusive
 ) implements Jsonable {
 	
 	public static final RectI INFINITE = new RectI(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
@@ -18,6 +18,15 @@ public record RectI(
 	
 	public RectI(int width, int height) {
 		this(0, 0, width - 1, height - 1);
+	}
+	
+	public RectI(AABBI aabb) {
+		this(
+			aabb.min().x(),
+			aabb.min().z(),
+			aabb.max().x(),
+			aabb.max().z()
+		);
 	}
 	
 	public RectI(JsonObj src) {
@@ -34,7 +43,7 @@ public record RectI(
 	}
 	
 	public boolean isInside(int x, int z) {
-		return x >= x1 && x < x2 && z >= z1 && z < z2;
+		return x >= x1 && x <= x2 && z >= z1 && z <= z2;
 	}
 	
 	public int width() {
