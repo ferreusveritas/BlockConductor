@@ -3,6 +3,7 @@ package com.ferreusveritas.hunk;
 import com.ferreusveritas.scene.Scene;
 import com.ferreusveritas.support.BiFactory;
 import com.ferreusveritas.support.json.JsonObj;
+import com.ferreusveritas.transform.Transform;
 
 public class HunkFactory {
 	
@@ -22,6 +23,7 @@ public class HunkFactory {
 		.add(SimplexHunk.TYPE, SimplexHunk::new)
 		.add(SubHunk.TYPE, SubHunk::new)
 		.add(ThresholdHunk.TYPE, ThresholdHunk::new)
+		.add(TransformHunk.TYPE, TransformHunk::new)
 		.build();
 	
 	public static Hunk create(Scene scene, JsonObj src) {
