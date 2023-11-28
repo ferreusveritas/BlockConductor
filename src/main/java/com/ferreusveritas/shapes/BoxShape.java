@@ -3,7 +3,6 @@ package com.ferreusveritas.shapes;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
 import com.ferreusveritas.scene.Scene;
-import com.ferreusveritas.support.json.InvalidJsonProperty;
 import com.ferreusveritas.support.json.JsonObj;
 
 import java.util.Optional;
@@ -11,6 +10,7 @@ import java.util.Optional;
 public class BoxShape extends Shape {
 	
 	public static final String TYPE = "box";
+	public static final String AABB = "aabb";
 	
 	private final AABBI aabb;
 	
@@ -21,7 +21,7 @@ public class BoxShape extends Shape {
 	
 	public BoxShape(Scene scene, JsonObj src) {
 		super(scene, src);
-		this.aabb = new AABBI(src.getObj("aabb").orElseThrow(() -> new InvalidJsonProperty("Missing aabb")));
+		this.aabb = new AABBI(src.getObj(AABB).orElseThrow(missing(AABB)));
 	}
 	
 	@Override
@@ -42,7 +42,7 @@ public class BoxShape extends Shape {
 	@Override
 	public JsonObj toJsonObj() {
 		return super.toJsonObj()
-			.set("aabb", aabb);
+			.set(AABB, aabb);
 	}
 	
 }

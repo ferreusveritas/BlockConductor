@@ -36,6 +36,9 @@ public record AABBD(
 	}
 	
 	public AABBI toAABBI() {
+		if(this == INFINITE) {
+			return AABBI.INFINITE;
+		}
 		return new AABBI(this);
 	}
 	
@@ -44,14 +47,23 @@ public record AABBD(
 	}
 	
 	public AABBD offset(Vec3D offset) {
+		if(this == INFINITE) {
+			return this;
+		}
 		return new AABBD(min.add(offset), max.add(offset));
 	}
 	
 	public AABBD expand(double amount) {
+		if(this == INFINITE) {
+			return this;
+		}
 		return new AABBD(min.sub(new Vec3D(amount, amount, amount)), max.add(new Vec3D(amount, amount, amount)));
 	}
 
 	public AABBD expand(Vec3D amount) {
+		if(this == INFINITE) {
+			return this;
+		}
 		return new AABBD(min.sub(amount), max.add(amount));
 	}
 
@@ -115,6 +127,10 @@ public record AABBD(
 	}
 	
 	public AABBD transform(Matrix4X4 matrix) {
+		if(this == INFINITE) {
+			return this;
+		}
+		
 		Vec3D[] vertices = new Vec3D[]{
 			new Vec3D(min.x(), max.y(), min.z()),
 			new Vec3D(max.x(), max.y(), min.z()),

@@ -3,6 +3,7 @@ package com.ferreusveritas.math;
 import com.ferreusveritas.support.json.InvalidJsonProperty;
 import com.ferreusveritas.support.json.JsonObj;
 import com.ferreusveritas.support.json.Jsonable;
+import com.ferreusveritas.support.nbt.Nbtable;
 import net.querz.nbt.tag.CompoundTag;
 
 import java.util.Optional;
@@ -14,7 +15,7 @@ import java.util.function.BiConsumer;
 public record AABBI(
 	Vec3I min,
 	Vec3I max
-) implements Jsonable {
+) implements Jsonable, Nbtable {
 	public static final AABBI NONE = new AABBI(Vec3I.ZERO, Vec3I.ZERO);
 	public static final AABBI INFINITE = new AABBI(Vec3I.MIN, Vec3I.MAX);
 	
@@ -57,10 +58,16 @@ public record AABBI(
 	}
 	
 	public AABBD toAABBD() {
+		if(this == INFINITE) {
+			return AABBD.INFINITE;
+		}
 		return new AABBD(this);
 	}
 	
 	public RectI toRectI() {
+		if(this == INFINITE) {
+			return RectI.INFINITE;
+		}
 		return new RectI(this);
 	}
 	
@@ -70,6 +77,9 @@ public record AABBI(
 	 * @return A new AABB moved by the specified amount.
 	 */
 	public AABBI offset(Vec3I pos) {
+		if(this == INFINITE) {
+			return this;
+		}
 		return new AABBI(min.add(pos), max.add(pos));
 	}
 
@@ -78,10 +88,16 @@ public record AABBI(
 	 * @return The size of this AABB.
 	 */
 	public Vec3I size() {
+		if(this == INFINITE) {
+			return Vec3I.MAX;
+		}
 		return max.sub(min).add(new Vec3I(1, 1, 1));
 	}
 
 	public int vol() {
+		if(this == INFINITE) {
+			return Integer.MAX_VALUE;
+		}
 		return size().vol();
 	}
 
@@ -136,6 +152,9 @@ public record AABBI(
 	}
 
 	public Optional<AABBI> expand(Vec3I amount) {
+		if(this == INFINITE) {
+			return Optional.of(this);
+		}
 		return badFilter(new AABBI(min.sub(amount), max.add(amount)));
 	}
 

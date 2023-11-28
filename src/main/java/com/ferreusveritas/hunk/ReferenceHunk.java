@@ -7,7 +7,9 @@ import com.ferreusveritas.support.json.JsonObj;
 
 import java.util.UUID;
 
-
+/**
+ * A Hunk that references another hunk
+ */
 public class ReferenceHunk extends Hunk {
 	
 	public static final String TYPE = "reference";

@@ -1,6 +1,7 @@
 package com.ferreusveritas.hunk;
 
 import com.ferreusveritas.math.AABBD;
+import com.ferreusveritas.math.Matrix4X4;
 import com.ferreusveritas.math.Vec3D;
 import com.ferreusveritas.scene.Scene;
 import com.ferreusveritas.support.json.JsonObj;
@@ -14,12 +15,14 @@ public class TransformHunk extends Hunk {
 	
 	private final Hunk hunk;
 	private final Transform transform;
+	private final Matrix4X4 matrix;
 	private final AABBD bounds;
 	
 	public TransformHunk(Scene scene, Hunk hunk, Transform transform) {
 		super(scene);
 		this.hunk = hunk;
 		this.transform = transform;
+		this.matrix = transform.getMatrix().invert();
 		this.bounds = hunk.bounds().transform(transform.getMatrix());
 	}
 	
@@ -27,6 +30,7 @@ public class TransformHunk extends Hunk {
 		super(scene, src);
 		this.hunk = src.getObj(HUNK).map(scene::createHunk).orElseThrow(missing(HUNK));
 		this.transform = src.getObj(TRANSFORM).map(TransformFactory::create).orElseThrow(missing(TRANSFORM));
+		this.matrix = transform.getMatrix().invert();
 		this.bounds = hunk.bounds().transform(transform.getMatrix());
 	}
 	
@@ -42,7 +46,7 @@ public class TransformHunk extends Hunk {
 	
 	@Override
 	public double getVal(Vec3D pos) {
-		Vec3D transPos = transform.getMatrix().transform(pos);
+		Vec3D transPos = matrix.transform(pos);
 		if(hunk.bounds().isInside(transPos)) {
 			return hunk.getVal(transPos);
 		}
@@ -52,8 +56,8 @@ public class TransformHunk extends Hunk {
 	@Override
 	public JsonObj toJsonObj() {
 		return super.toJsonObj()
-			.set(HUNK, hunk)
-			.set(TRANSFORM, transform);
+			.set(TRANSFORM, transform)
+			.set(HUNK, hunk);
 	}
 	
 }

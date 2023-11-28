@@ -3,7 +3,6 @@ package com.ferreusveritas.shapes;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
 import com.ferreusveritas.scene.Scene;
-import com.ferreusveritas.support.json.InvalidJsonProperty;
 import com.ferreusveritas.support.json.JsonObj;
 
 import java.util.BitSet;
@@ -17,21 +16,21 @@ public class CacheShape extends Shape {
 	
 	public static final String TYPE = "cache";
 	
-	private final Shape shape;
 	private final AABBI aabb;
+	private final Shape shape;
 	private final BitSet cache;
 	
 	public CacheShape(Scene scene, Shape shape, AABBI aabb) {
 		super(scene);
-		this.shape = shape;
 		this.aabb = determineAAABB(shape, aabb);
+		this.shape = shape;
 		this.cache = buildCache(this.aabb);
 	}
 	
 	public CacheShape(Scene scene, JsonObj src) {
 		super(scene, src);
-		this.shape = src.getObj("shape").map(scene::createShape).orElseThrow(() -> new InvalidJsonProperty("CacheShape must have a valid shape"));
-		this.aabb = src.getObj("aabb").map(AABBI::new).orElseThrow(() -> new InvalidJsonProperty("CacheShape must have a valid AABB"));
+		this.aabb = src.getObj(AABB).map(AABBI::new).orElseThrow(missing(AABB));
+		this.shape = src.getObj(SHAPE).map(scene::createShape).orElseThrow(missing(SHAPE));
 		this.cache = buildCache(this.aabb);
 	}
 	
@@ -73,8 +72,8 @@ public class CacheShape extends Shape {
 	@Override
 	public JsonObj toJsonObj() {
 		return super.toJsonObj()
-			.set("shape", shape)
-			.set("aabb", aabb);
+			.set(AABB, aabb)
+			.set(SHAPE, shape);
 	}
 	
 }

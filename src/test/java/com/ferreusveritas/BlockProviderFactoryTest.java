@@ -33,7 +33,7 @@ class BlockProviderFactoryTest extends BaseTestSupport {
 		Block dirt = scene.block(new Block("minecraft:dirt", ""));
 		
 		List<BlockProvider> providers = blockProviderTest.toImmutableList(scene::createBlockProvider);
-		assertEquals(6, providers.size());
+		assertEquals(5, providers.size());
 		
 		BlockProvider provider = providers.get(0);
 		assertTrue(provider instanceof TranslateBlockProvider);
@@ -41,37 +41,27 @@ class BlockProviderFactoryTest extends BaseTestSupport {
 		Request request = new Request("", new AABBI(0, 0, 0, 1, 1, 1));
 		
 		Blocks blocks = provider.getBlocks(request).orElseThrow();
-		assertEquals(8, blocks.size().vol());
+		assertEquals(8, blocks.getSize().vol());
 		assertEquals(stone, blocks.get(new Vec3I(0, 0, 0)));
 		
 		provider = providers.get(1);
 		assertTrue(provider instanceof CombineBlockProvider);
 		
 		blocks = provider.getBlocks(request).orElseThrow();
-		assertEquals(8, blocks.size().vol());
+		assertEquals(8, blocks.getSize().vol());
 		assertEquals(stone, blocks.get(new Vec3I(0, 0, 0)));
 		assertEquals(air, blocks.get(new Vec3I(0, 1, 0)));
 		
 		provider = providers.get(2);
-		assertTrue(provider instanceof ShapeBlockProvider);
-		request = new Request("", new AABBI(0, 0, 0, 10, 10, 10));
-		blocks = provider.getBlocks(request).orElseThrow();
-		assertEquals(bone, blocks.get(new Vec3I(0, 0, 0)));
-		assertEquals(none, blocks.get(new Vec3I(4, 2, 4)));
-		assertEquals(bone, blocks.get(new Vec3I(4, 2, 0)));
-		assertEquals(bone, blocks.get(new Vec3I(0, 4, 0)));
-		assertEquals(none, blocks.get(new Vec3I(0, 5, 0)));
-		
-		provider = providers.get(3);
 		assertTrue(provider instanceof MapperBlockProvider);
 		
-		provider = providers.get(4);
+		provider = providers.get(3);
 		assertTrue(provider instanceof MapperBlockProvider);
 		request = new Request("", new AABBI(0, 0, 0, 1, 1, 1));
 		blocks = provider.getBlocks(request).orElseThrow();
 		assertEquals(dirt, blocks.get(new Vec3I(0, 0, 0)));
 		
-		provider = providers.get(5);
+		provider = providers.get(4);
 		assertTrue(provider instanceof RoutingBlockProvider);
 		request = new Request("air", new AABBI(0, 0, 0, 1, 1, 1));
 		blocks = provider.getBlocks(request).orElseThrow();

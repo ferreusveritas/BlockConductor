@@ -5,7 +5,6 @@ import com.ferreusveritas.block.Blocks;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
 import com.ferreusveritas.scene.Scene;
-import com.ferreusveritas.support.json.InvalidJsonProperty;
 import com.ferreusveritas.support.json.JsonObj;
 
 import java.util.Optional;
@@ -13,20 +12,22 @@ import java.util.Optional;
 public class TranslateBlockProvider extends BlockProvider {
 	
 	public static final String TYPE = "translate";
+	public static final String OFFSET = "offset";
+	public static final String PROVIDER = "provider";
 	
-	private final BlockProvider provider;
 	private final Vec3I offset;
+	private final BlockProvider provider;
 	
-	public TranslateBlockProvider(Scene scene, BlockProvider provider, Vec3I offset) {
+	public TranslateBlockProvider(Scene scene, Vec3I offset, BlockProvider provider) {
 		super(scene);
-		this.provider = provider;
 		this.offset = offset;
+		this.provider = provider;
 	}
 	
 	public TranslateBlockProvider(Scene scene, JsonObj src) {
 		super(scene, src);
-		this.provider = src.getObj("provider").map(scene::createBlockProvider).orElseThrow(() -> new InvalidJsonProperty("Missing provider"));
-		this.offset = src.getObj("offset").map(Vec3I::new).orElseThrow(() -> new InvalidJsonProperty("Missing offset"));
+		this.offset = src.getObj(OFFSET).map(Vec3I::new).orElseThrow(missing(OFFSET));
+		this.provider = src.getObj(PROVIDER).map(scene::createBlockProvider).orElseThrow(missing(PROVIDER));
 	}
 	
 	@Override
@@ -40,7 +41,8 @@ public class TranslateBlockProvider extends BlockProvider {
 	
 	@Override
 	public Optional<Blocks> getBlocks(Request request) {
-		return provider.getBlocks(request.withArea(request.area().offset(offset.neg())));
+		Request newRequest = request.withArea(request.area().offset(offset.neg()));
+		return provider.getBlocks(newRequest);
 	}
 	
 	@Override
@@ -56,8 +58,8 @@ public class TranslateBlockProvider extends BlockProvider {
 	@Override
 	public JsonObj toJsonObj() {
 		return super.toJsonObj()
-			.set("provider", provider)
-			.set("offset", offset);
+			.set(OFFSET, offset)
+			.set(PROVIDER, provider);
 	}
 	
 }

@@ -9,19 +9,19 @@ import java.util.List;
 /**
  * Subtracts the values of all hunks in the list from the first hunk in the list.
  */
-public class SubHunk extends CombineHunk {
+public class SubtractHunk extends CombineHunk {
 	
-	public static final String TYPE = "add";
+	public static final String TYPE = "subtract";
 	
-	public SubHunk(Scene scene, List<Hunk> hunks) {
+	public SubtractHunk(Scene scene, List<Hunk> hunks) {
 		super(scene, hunks);
 	}
 	
-	public SubHunk(Scene scene, Hunk... hunks) {
+	public SubtractHunk(Scene scene, Hunk... hunks) {
 		this(scene, List.of(hunks));
 	}
 	
-	public SubHunk(Scene scene, JsonObj src) {
+	public SubtractHunk(Scene scene, JsonObj src) {
 		super(scene, src);
 	}
 	

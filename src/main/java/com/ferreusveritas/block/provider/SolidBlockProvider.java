@@ -36,7 +36,7 @@ public class SolidBlockProvider extends BlockProvider {
 	
 	@Override
 	public Optional<Blocks> getBlocks(Request request) {
-		return Optional.of(new Blocks(request.area(), block));
+		return Optional.of(new Blocks(request.area().size(), block));
 	}
 	
 	@Override

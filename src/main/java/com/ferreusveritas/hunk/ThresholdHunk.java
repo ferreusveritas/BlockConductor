@@ -8,8 +8,8 @@ import com.ferreusveritas.support.json.JsonObj;
 public class ThresholdHunk extends Hunk {
 	
 	public static final String TYPE = "threshold";
-	public static final double DEFAULT_THRESHOLD = 0.5;
 	public static final String THRESHOLD = "threshold";
+	public static final double DEFAULT_THRESHOLD = 0.5;
 	
 	private final Hunk hunk;
 	private final double threshold;

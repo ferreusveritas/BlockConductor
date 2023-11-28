@@ -1,67 +1,65 @@
 {
-  "type": "combine",
-  "uuid": "ec0e126b-d646-44db-baac-8fd8dbdea537",
-  "providers": [
-    {
-      "type": "shape",
-      "uuid": "df6a8608-31ba-45ce-ab89-df071f1aefc7",
-      "shape": {
-        "type": "translate",
-        "uuid": "64e64108-355c-48f1-8509-e94f66dd6968",
+  "type": "translate",
+  "offset": {
+    "x": 16,
+    "y": 56,
+    "z": 16
+  },
+  "provider": {
+    "type": "combine",
+    "providers": [
+      {
+        "type": "shape",
         "shape": {
-          "type": "mesh_model",
-          "uuid": "8e0c9b05-f9c4-4d91-88a3-809c1178db2b",
-          "model": {
-            "type": "mesh",
-            "resource": "res://dragon_skull.obj"
-          },
-          "transform": {
-            "type": "transforms",
-            "operations": [
-              {
-                "type": "scale",
-                "factor": 0.25
-              },
-              {
-                "type": "rotatex",
-                "angle": 12.0
-              },
-              {
-                "type": "rotatey",
-                "angle": 45.0
+          "type": "hunk",
+          "hunk": {
+            "type": "transform",
+            "transform": {
+              "type": "transforms",
+              "operations": [
+                {
+                  "type": "scale",
+                  "factor": 0.25
+                },
+                {
+                  "type": "rotatex",
+                  "angle": 12.0
+                },
+                {
+                  "type": "rotatey",
+                  "angle": 45.0
+                }
+              ]
+            },
+            "hunk": {
+              "type": "model",
+              "model": {
+                "type": "mesh",
+                "resource": "res://dragon_skull.obj"
               }
-            ]
+            }
           }
         },
-        "offset": {
-          "x": 16,
-          "y": 56,
-          "z": 16
+        "block": {
+          "name": "minecraft:bone_block",
+          "state": ""
         }
       },
-      "block": {
-        "name": "minecraft:bone_block",
-        "state": ""
-      }
-    },
-    {
-      "type": "shape",
-      "uuid": "427cf071-d37c-495d-8d1a-d086f8e55353",
-      "shape": {
-        "type": "cylinder",
-        "uuid": "849ef85f-2abd-4c00-9be7-0dccd529c6de",
-        "center": {
-          "x": 16.0,
-          "y": 56.0,
-          "z": 16.0
+      {
+        "type": "shape",
+        "shape": {
+          "type": "hunk",
+          "hunk": {
+            "type": "cylinder",
+            "height": 1,
+            "radius": 15.5
+          }
         },
-        "radius": 15.5,
-        "height": 1
-      },
-      "block": {
-        "name": "minecraft:blackstone",
-        "state": ""
+        "block": {
+          "name": "minecraft:blackstone",
+          "state": ""
+        }
       }
-    }
-  ]
+    ]
+  }
 }

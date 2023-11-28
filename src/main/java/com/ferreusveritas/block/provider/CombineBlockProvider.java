@@ -46,7 +46,7 @@ public class CombineBlockProvider extends BlockProvider {
 		if (!this.aabb.intersects(area)) {
 			return Optional.empty();
 		}
-		Blocks blocks = new Blocks(area);
+		Blocks blocks = new Blocks(area.size());
 		for (BlockProvider provider : providers) {
 			processProvider(provider, request, blocks);
 		}

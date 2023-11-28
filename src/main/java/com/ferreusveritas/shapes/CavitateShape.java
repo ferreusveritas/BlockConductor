@@ -3,7 +3,6 @@ package com.ferreusveritas.shapes;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
 import com.ferreusveritas.scene.Scene;
-import com.ferreusveritas.support.json.InvalidJsonProperty;
 import com.ferreusveritas.support.json.JsonObj;
 
 import java.util.Optional;
@@ -24,7 +23,7 @@ public class CavitateShape extends Shape {
 	
 	public CavitateShape(Scene scene, JsonObj src) {
 		super(scene, src);
-		this.shape = src.getObj("shape").map(scene::createShape).orElseThrow(() -> new InvalidJsonProperty("Missing shape"));
+		this.shape = src.getObj(SHAPE).map(scene::createShape).orElseThrow(missing(SHAPE));
 	}
 	
 	@Override
@@ -53,7 +52,7 @@ public class CavitateShape extends Shape {
 	@Override
 	public JsonObj toJsonObj() {
 		return super.toJsonObj()
-			.set("shape", shape);
+			.set(SHAPE, shape);
 	}
 	
 }

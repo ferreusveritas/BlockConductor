@@ -3,17 +3,18 @@ package com.ferreusveritas.shapes;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
 import com.ferreusveritas.scene.Scene;
-import com.ferreusveritas.support.json.InvalidJsonProperty;
 import com.ferreusveritas.support.json.JsonObj;
 
 import java.util.Optional;
 
 /**
- * A shape that represents a layer of blocks in the y axis.
+ * A shape that represents a layer of blocks in the y-axis.
  */
 public class LayerShape extends Shape {
 	
 	public static final String TYPE = "layer";
+	public static final String MIN = "min";
+	public static final String MAX = "max";
 	
 	private final int min;
 	private final int max;
@@ -26,8 +27,8 @@ public class LayerShape extends Shape {
 	
 	public LayerShape(Scene scene, JsonObj src) {
 		super(scene, src);
-		this.min = src.getInt("min").orElseThrow(() -> new InvalidJsonProperty("Missing min"));
-		this.max = src.getInt("max").orElseThrow(() -> new InvalidJsonProperty("Missing max"));
+		this.min = src.getInt(MIN).orElseThrow(missing(MIN));
+		this.max = src.getInt(MAX).orElseThrow(missing(MAX));
 	}
 	
 	@Override
@@ -48,8 +49,8 @@ public class LayerShape extends Shape {
 	@Override
 	public JsonObj toJsonObj() {
 		return super.toJsonObj()
-			.set("min", min)
-			.set("max", max);
+			.set(MIN, min)
+			.set(MAX, max);
 	}
 	
 }

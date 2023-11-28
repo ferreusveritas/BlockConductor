@@ -1,4 +1,4 @@
-package com.ferreusveritas.hunk;
+package com.ferreusveritas.image;
 
 public class ImageLoaderException extends RuntimeException {
 	

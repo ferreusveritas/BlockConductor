@@ -1183,6 +1183,12 @@ public class JsonObj implements Iterable<JsonObj> {
 		if(num instanceof BigInteger) {
 			return num.toString();
 		}
+		if(num instanceof Byte) {
+			return Byte.toString(num.byteValue());
+		}
+		if(num instanceof Short) {
+			return Short.toString(num.shortValue());
+		}
 		if(num instanceof Integer) {
 			return Integer.toString(num.intValue());
 		}

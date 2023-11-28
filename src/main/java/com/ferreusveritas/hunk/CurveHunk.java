@@ -14,6 +14,7 @@ import java.util.List;
 public class CurveHunk extends Hunk {
 	
 	public static final String TYPE = "curve";
+	public static final String CONTROL_POINTS = "controlPoints";
 	
 	private final Hunk hunk;
 	private final List<ControlPoint> controlPoints;
@@ -28,7 +29,7 @@ public class CurveHunk extends Hunk {
 	public CurveHunk(Scene scene, JsonObj src) {
 		super(scene, src);
 		this.hunk = src.getObj(HUNK).map(scene::createHunk).orElseThrow(missing(HUNK));
-		this.controlPoints = sort(src.getList("controlPoints").toImmutableList(ControlPoint::new));
+		this.controlPoints = sort(src.getList(CONTROL_POINTS).toImmutableList(ControlPoint::new));
 		validate();
 	}
 	
@@ -73,7 +74,7 @@ public class CurveHunk extends Hunk {
 		double input0 = controlPoints.get(index1).in;
 		double input1 = controlPoints.get(index2).in;
 		double alpha = (in - input0) / (input1 - input0);
-		return MathHelper.cubicInterp(
+		return MathHelper.cerp(
 			controlPoints.get(index0).out,
 			controlPoints.get(index1).out,
 			controlPoints.get(index2).out,
@@ -84,8 +85,8 @@ public class CurveHunk extends Hunk {
 	@Override
 	public JsonObj toJsonObj() {
 		return super.toJsonObj()
-			.set(HUNK, hunk)
-			.set("controlPoints", JsonObj.newList(controlPoints));
+			.set(CONTROL_POINTS, JsonObj.newList(controlPoints))
+			.set(HUNK, hunk);
 	}
 	
 	public record ControlPoint(

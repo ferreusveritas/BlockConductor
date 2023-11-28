@@ -6,6 +6,9 @@ import com.ferreusveritas.scene.Scene;
 import com.ferreusveritas.support.json.JsonObj;
 import org.spongepowered.noise.module.source.Perlin;
 
+/**
+ * A Hunk that returns the perlin noise value at a given position
+ */
 public class PerlinHunk extends Hunk {
 	
 	public static final String TYPE = "perlin";

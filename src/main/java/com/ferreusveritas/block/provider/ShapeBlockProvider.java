@@ -14,28 +14,28 @@ import java.util.Optional;
 public class ShapeBlockProvider extends BlockProvider {
 	
 	public static final String TYPE = "shape";
-	public static final String SHAPE = "shape";
 	public static final String BLOCK = "block";
+	public static final String SHAPE = "shape";
 	
-	private final Shape shape;
 	private final Block block;
+	private final Shape shape;
 	
 	public ShapeBlockProvider(Scene scene, Shape shape, Block block) {
 		super(scene);
-		this.shape = shape;
 		this.block = scene.block(block);
-		if(shape == null) {
-			throw new IllegalArgumentException("shape cannot be null");
-		}
+		this.shape = shape;
 		if(block == null) {
 			throw new IllegalArgumentException("block cannot be null");
+		}
+		if(shape == null) {
+			throw new IllegalArgumentException("shape cannot be null");
 		}
 	}
 	
 	public ShapeBlockProvider(Scene scene, JsonObj src) {
 		super(scene, src);
-		this.shape = src.getObj(SHAPE).map(scene::createShape).orElseThrow(missing(SHAPE));
 		this.block = src.getObj(BLOCK).map(scene::block).orElseThrow(missing(BLOCK));
+		this.shape = src.getObj(SHAPE).map(scene::createShape).orElseThrow(missing(SHAPE));
 	}
 	
 	@Override
@@ -54,7 +54,7 @@ public class ShapeBlockProvider extends BlockProvider {
 		if(bounds == null) {
 			return Optional.empty();
 		}
-		Blocks blocks = new Blocks(area);
+		Blocks blocks = new Blocks(area.size());
 		bounds.forEach((abs,rel) -> processBlock(blocks, abs, abs.sub(area.min())));
 		return Optional.of(blocks);
 	}
@@ -73,8 +73,8 @@ public class ShapeBlockProvider extends BlockProvider {
 	@Override
 	public JsonObj toJsonObj() {
 		return super.toJsonObj()
-			.set(SHAPE, shape)
-			.set(BLOCK, block);
+			.set(BLOCK, block)
+			.set(SHAPE, shape);
 	}
 	
 }

@@ -3,7 +3,6 @@ package com.ferreusveritas.shapes;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
 import com.ferreusveritas.scene.Scene;
-import com.ferreusveritas.support.json.InvalidJsonProperty;
 import com.ferreusveritas.support.json.JsonObj;
 
 import java.util.Optional;
@@ -14,6 +13,8 @@ import java.util.Optional;
 public class TranslateShape extends Shape {
 	
 	public static final String TYPE = "translate";
+	public static final String SHAPE = "shape";
+	public static final String OFFSET = "offset";
 	
 	private final Shape shape;
 	private final Vec3I offset;
@@ -26,8 +27,8 @@ public class TranslateShape extends Shape {
 	
 	public TranslateShape(Scene scene, JsonObj src) {
 		super(scene, src);
-		this.shape = src.getObj("shape").map(scene::createShape).orElseThrow(() -> new InvalidJsonProperty("Missing shape"));
-		this.offset = src.getObj("offset").map(Vec3I::new).orElseThrow(() -> new InvalidJsonProperty("Missing offset"));
+		this.shape = src.getObj(SHAPE).map(scene::createShape).orElseThrow(missing(SHAPE));
+		this.offset = src.getObj(OFFSET).map(Vec3I::new).orElseThrow(missing(OFFSET));
 	}
 	
 	@Override
@@ -48,8 +49,8 @@ public class TranslateShape extends Shape {
 	@Override
 	public JsonObj toJsonObj() {
 		return super.toJsonObj()
-			.set("shape", shape)
-			.set("offset", offset);
+			.set(OFFSET, offset)
+			.set(SHAPE, shape);
 	}
 	
 }

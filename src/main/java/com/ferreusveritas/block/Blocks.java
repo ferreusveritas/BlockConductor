@@ -1,8 +1,9 @@
 package com.ferreusveritas.block;
 
-import com.ferreusveritas.math.AABBI;
-import com.ferreusveritas.math.Vec3I;
 import com.ferreusveritas.api.hashlist.HashList;
+import com.ferreusveritas.math.Vec3I;
+import com.ferreusveritas.support.json.JsonObj;
+import com.ferreusveritas.support.json.Jsonable;
 import com.ferreusveritas.support.nbt.Nbtable;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.ListTag;
@@ -11,38 +12,38 @@ import net.querz.nbt.tag.StringTag;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
+import java.util.stream.IntStream;
 
 /**
- * A 3D array of blocks with a fixed AABB.
- * The AABB is used to determine the size of the array and the position of the blocks within it.
- * @param aabb The AABB of the blocks.
- * @param size The size of the block area.
- * @param blockMap A mapping of all the blocks used in the array to block ids.
- * @param blockData An array of block ids.
+ * A 3D array of blocks
  */
-public record Blocks(
-	AABBI aabb,
-	Vec3I size,
-	HashList<Block> blockMap,
-	short[] blockData
-) implements Nbtable {
-
-	public Blocks(AABBI aabb) {
-		this(aabb, aabb.size(), new HashList<>(), new short[aabb.size().vol()]);
+public class Blocks implements Nbtable, Jsonable {
+	
+	private final Vec3I size;
+	private final HashList<Block> blockMap;
+	private final short[] blockData;
+	
+	public Blocks(Vec3I size) {
+		this.size = size;
+		this.blockMap = new HashList<>();
+		this.blockData = new short[size.vol()];
 		setDefaultBlocks();
 	}
-
-	public Blocks(AABBI aabb, Block block) {
-		this(aabb);
+	
+	public Blocks(Vec3I size, Block block) {
+		this(size);
 		fill(block);
 	}
-
+	
 	private void setDefaultBlocks() {
 		this.blockMap.add(BlockCache.NONE);
 		this.blockMap.add(BlockCache.AIR);
 	}
-
+	
+	public Vec3I getSize() {
+		return size;
+	}
+	
 	private int calcIndex(Vec3I pos) {
 		return pos.calcIndex(size);
 	}
@@ -89,36 +90,7 @@ public record Blocks(
 	}
 	
 	@Override
-	public boolean equals(Object obj) {
-		if(obj == null) {
-			return false;
-		}
-		if(obj == this) {
-			return true;
-		}
-		if(obj instanceof Blocks blocks) {
-			return size.equals(blocks.size) && blockMap.equals(blocks.blockMap) && Arrays.equals(blockData, blocks.blockData);
-		}
-		return false;
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(size, blockMap, Arrays.hashCode(blockData));
-	}
-
-	@Override
-	public String toString() {
-		return "Blocks{" +
-			"size=" + size +
-			", blockMap=" + blockMap +
-			", blockData=" + Arrays.toString(blockData) +
-			'}';
-	}
-	
-	@Override
 	public CompoundTag toNBT() {
-		CompoundTag aabbTag = aabb.toNBT();
 		CompoundTag sizeTag = size.toNBT();
 		
 		ListTag<StringTag> blockMapTag = new ListTag<>(StringTag.class);
@@ -133,11 +105,23 @@ public record Blocks(
 		}
 		
 		CompoundTag main = new CompoundTag();
-		main.put("aabb", aabbTag);
 		main.put("size", sizeTag);
 		main.put("blockMap", blockMapTag);
 		main.put("blockData", blockDataTag);
 		return main;
+	}
+	
+	@Override
+	public JsonObj toJsonObj() {
+		return JsonObj.newMap()
+			.set("size", size)
+			.set("blockMap", JsonObj.newList(blockMap.getList()))
+			.set("blockData", JsonObj.newList(IntStream.range(0, blockData.length).mapToObj(s -> blockData[s]).toList()));
+	}
+	
+	@Override
+	public String toString() {
+		return toJsonObj().toString();
 	}
 	
 }

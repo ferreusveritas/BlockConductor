@@ -11,6 +11,7 @@ import java.util.Optional;
 public class CheckerShape extends Shape {
 	
 	public static final String TYPE = "checker";
+	public static final String AXIS = "axis";
 	
 	private final Axis axis; // null means all axes(3D checker block)
 	
@@ -25,7 +26,7 @@ public class CheckerShape extends Shape {
 	
 	public CheckerShape(Scene scene, JsonObj src) {
 		super(scene, src);
-		this.axis = src.getString("axis").flatMap(Axis::of).orElse(null);
+		this.axis = src.getString(AXIS).flatMap(Axis::of).orElse(null);
 	}
 	
 	@Override
@@ -53,7 +54,7 @@ public class CheckerShape extends Shape {
 	@Override
 	public JsonObj toJsonObj() {
 		return super.toJsonObj()
-			.set("axis", axis);
+			.set(AXIS, axis);
 	}
 	
 }

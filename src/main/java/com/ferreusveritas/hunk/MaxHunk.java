@@ -6,6 +6,9 @@ import com.ferreusveritas.support.json.JsonObj;
 
 import java.util.List;
 
+/**
+ * A Hunk that returns the maximum value of a list of hunks
+ */
 public class MaxHunk extends CombineHunk {
 	
 	public static final String TYPE = "max";

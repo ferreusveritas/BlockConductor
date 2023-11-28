@@ -53,7 +53,7 @@ public class MapperBlockProvider extends BlockProvider {
 		if(blocks == null) {
 			return Optional.empty();
 		}
-		Blocks mappedBlocks = new Blocks(area);
+		Blocks mappedBlocks = new Blocks(area.size());
 		area.forEach((abs, rel) -> {
 			Block block = blocks.get(rel);
 			Block mapped = mapper.map(block);

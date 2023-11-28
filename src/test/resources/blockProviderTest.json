@@ -49,23 +49,6 @@
     ]
   },
   {
-    "type": "shape",
-    "shape": {
-      "type": "cylinder",
-      "center": {
-        "x": 0.5,
-        "y": 0,
-        "z": 0.5
-      },
-      "radius": 4,
-      "height": 5
-    },
-    "block": {
-      "name": "minecraft:bone_block",
-      "state": ""
-    }
-  },
-  {
     "type": "mapper",
     "mapper": {
         "type": "identity"

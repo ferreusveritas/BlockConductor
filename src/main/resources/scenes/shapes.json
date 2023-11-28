@@ -1,13 +1,10 @@
 {
   "type": "combine",
-  "uuid": "7a65c108-e2ca-4485-84aa-ebaa9a9ac4ea",
   "providers": [
     {
       "type": "shape",
-      "uuid": "7d77101a-a04d-49f2-af87-3a23d258e26e",
       "shape": {
         "type": "box",
-        "uuid": "2b0aeb81-20f3-4ee6-8247-2ef9b134be72",
         "aabb": {
           "min": {
             "x": 4,
@@ -28,14 +25,11 @@
     },
     {
       "type": "shape",
-      "uuid": "95f058c3-1ee9-432f-8e7e-ac04bb658f10",
       "shape": {
         "type": "difference",
-        "uuid": "d1ceb248-d3c1-444d-971a-21bd6ed14169",
         "shapes": [
           {
             "type": "surface",
-            "uuid": "6272b197-eb48-41e7-a032-baa5af89f27b",
             "dir": {
               "x": 1,
               "y": 0,
@@ -45,10 +39,8 @@
           },
           {
             "type": "translate",
-            "uuid": "268737ec-297b-4429-866a-21fa425b6153",
             "shape": {
               "type": "sphere",
-              "uuid": "2acaab70-057b-4b0e-b563-d13aa62a351d",
               "center": {
                 "x": 8.0,
                 "y": 64.0,
@@ -71,16 +63,12 @@
     },
     {
       "type": "shape",
-      "uuid": "f3aa43af-c6ea-4c74-881b-885e3cfd79eb",
       "shape": {
         "type": "cavitate",
-        "uuid": "20f3bd1b-0044-4e5c-a86c-4e076cf98b6d",
         "shape": {
           "type": "translate",
-          "uuid": "268737ec-297b-4429-866a-21fa425b6153",
           "shape": {
             "type": "sphere",
-            "uuid": "2acaab70-057b-4b0e-b563-d13aa62a351d",
             "center": {
               "x": 8.0,
               "y": 64.0,

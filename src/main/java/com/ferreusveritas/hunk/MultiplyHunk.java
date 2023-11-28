@@ -6,19 +6,22 @@ import com.ferreusveritas.support.json.JsonObj;
 
 import java.util.List;
 
-public class MulHunk extends CombineHunk {
+/**
+ * A Hunk that returns the product of a list of hunks
+ */
+public class MultiplyHunk extends CombineHunk {
 	
-	public static final String TYPE = "mul";
+	public static final String TYPE = "multiply";
 	
-	public MulHunk(Scene scene, List<Hunk> hunks) {
+	public MultiplyHunk(Scene scene, List<Hunk> hunks) {
 		super(scene, hunks);
 	}
 	
-	public MulHunk(Scene scene, Hunk... hunks) {
+	public MultiplyHunk(Scene scene, Hunk... hunks) {
 		this(scene, List.of(hunks));
 	}
 	
-	public MulHunk(Scene scene, JsonObj src) {
+	public MultiplyHunk(Scene scene, JsonObj src) {
 		super(scene, src);
 	}
 	

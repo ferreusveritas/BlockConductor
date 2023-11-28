@@ -4,7 +4,6 @@ import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3D;
 import com.ferreusveritas.math.Vec3I;
 import com.ferreusveritas.scene.Scene;
-import com.ferreusveritas.support.json.InvalidJsonProperty;
 import com.ferreusveritas.support.json.JsonObj;
 
 import java.util.Optional;
@@ -12,6 +11,8 @@ import java.util.Optional;
 public class SphereShape extends Shape {
 	
 	public static final String TYPE = "sphere";
+	public static final String CENTER = "center";
+	public static final String RADIUS = "radius";
 	
 	private final Vec3D center;
 	private final double radius;
@@ -27,8 +28,8 @@ public class SphereShape extends Shape {
 	
 	public SphereShape(Scene scene, JsonObj src) {
 		super(scene, src);
-		this.center = src.getObj("center").map(Vec3D::new).orElseThrow(() -> new InvalidJsonProperty("Missing center property"));
-		this.radius = src.getDouble("radius").orElse(0.0);
+		this.center = src.getObj(CENTER).map(Vec3D::new).orElseThrow(missing(CENTER));
+		this.radius = src.getDouble(RADIUS).orElse(0.0);
 		Vec3I v = center.toVecI();
 		this.aabb = new AABBI(v, v).expand((int)Math.ceil(radius)).orElseThrow();
 	}
@@ -51,8 +52,8 @@ public class SphereShape extends Shape {
 	@Override
 	public JsonObj toJsonObj() {
 		return super.toJsonObj()
-			.set("center", center)
-			.set("radius", radius);
+			.set(CENTER, center)
+			.set(RADIUS, radius);
 	}
 	
 }

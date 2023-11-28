@@ -1,4 +1,4 @@
-package com.ferreusveritas.hunk;
+package com.ferreusveritas.image;
 
 import com.ferreusveritas.support.storage.Storage;
 

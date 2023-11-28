@@ -1,5 +1,6 @@
 package com.ferreusveritas.hunk;
 
+import com.ferreusveritas.image.ImageLoader;
 import com.ferreusveritas.math.*;
 import com.ferreusveritas.scene.Scene;
 import com.ferreusveritas.support.json.JsonObj;
@@ -11,7 +12,7 @@ import java.awt.image.BufferedImage;
  */
 public class ImageHunk extends Hunk {
 	
-	public static final String TYPE = "buffer";
+	public static final String TYPE = "image";
 	public static final String RESOURCE = "resource";
 	public static final String CHANNEL = "channel";
 	

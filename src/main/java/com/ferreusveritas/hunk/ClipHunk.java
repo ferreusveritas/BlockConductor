@@ -45,7 +45,7 @@ public class ClipHunk extends Hunk {
 	@Override
 	public JsonObj toJsonObj() {
 		return super.toJsonObj()
-			.set(HUNK, hunk)
-			.set(BOUNDS, bounds);
+			.set(BOUNDS, bounds)
+			.set(HUNK, hunk);
 	}
 }

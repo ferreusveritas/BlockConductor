@@ -3,13 +3,19 @@ package com.ferreusveritas.shapes;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
 import com.ferreusveritas.scene.Scene;
+import com.ferreusveritas.support.json.InvalidJsonProperty;
 import com.ferreusveritas.support.json.JsonObj;
 import com.ferreusveritas.support.json.Jsonable;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 public abstract class Shape implements Jsonable {
+	
+	public static final String SHAPE = "shape";
+	public static final String SHAPES = "shapes";
+	public static final String AABB = "aabb";
 	
 	private final Scene scene;
 	private final UUID uuid;
@@ -50,6 +56,10 @@ public abstract class Shape implements Jsonable {
 	 * @return true if the shape intersects
 	 */
 	public abstract boolean isInside(Vec3I pos);
+	
+	protected Supplier<InvalidJsonProperty> missing(String name) {
+		return () -> new InvalidJsonProperty("Missing " + name);
+	}
 	
 	@Override
 	public JsonObj toJsonObj() {

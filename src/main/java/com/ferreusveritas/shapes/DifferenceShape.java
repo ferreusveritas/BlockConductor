@@ -14,6 +14,7 @@ import java.util.Optional;
 public class DifferenceShape extends Shape {
 	
 	public static final String TYPE = "difference";
+	public static final String SHAPES = "shapes";
 	
 	private final List<Shape> shapes;
 	
@@ -29,7 +30,7 @@ public class DifferenceShape extends Shape {
 	
 	public DifferenceShape(Scene scene, JsonObj src) {
 		super(scene, src);
-		this.shapes = src.getList("shapes").toImmutableList(scene::createShape);
+		this.shapes = src.getList(SHAPES).toImmutableList(scene::createShape);
 	}
 	
 	private void validate() {
@@ -64,7 +65,7 @@ public class DifferenceShape extends Shape {
 	@Override
 	public JsonObj toJsonObj() {
 		return super.toJsonObj()
-			.set("shapes", JsonObj.newList(shapes));
+			.set(SHAPES, JsonObj.newList(shapes));
 	}
 	
 }

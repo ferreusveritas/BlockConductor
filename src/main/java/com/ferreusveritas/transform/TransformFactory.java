@@ -12,6 +12,7 @@ public class TransformFactory {
 		.add(RotateZ.TYPE, RotateZ::new)
 		.add(Scale.TYPE, Scale::new)
 		.add(Transforms.TYPE, Transforms::new)
+		.add(Translate.TYPE, Translate::new)
 		.build();
 	
 	public static Transform create(JsonObj src) {

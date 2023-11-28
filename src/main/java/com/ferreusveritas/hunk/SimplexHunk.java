@@ -5,6 +5,9 @@ import com.ferreusveritas.scene.Scene;
 import com.ferreusveritas.support.json.JsonObj;
 import org.spongepowered.noise.module.source.Simplex;
 
+/**
+ * A Hunk that returns the simplex noise value at a given position
+ */
 public class SimplexHunk extends Hunk {
 	
 	public static final String TYPE = "perlin";

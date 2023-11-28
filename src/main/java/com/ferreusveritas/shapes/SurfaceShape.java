@@ -10,6 +10,8 @@ import java.util.Optional;
 public class SurfaceShape extends Shape {
 	
 	public static final String TYPE = "surface";
+	public static final String DIR = "dir";
+	public static final String OFFSET = "offset";
 	
 	private final Vec3I dir;
 	private final int offset;
@@ -24,8 +26,8 @@ public class SurfaceShape extends Shape {
 	
 	public SurfaceShape(Scene scene, JsonObj src) {
 		super(scene, src);
-		this.dir = src.getObj("dir").map(Vec3I::new).orElse(Vec3I.UP);
-		this.offset = src.getInt("offset").orElse(0);
+		this.dir = src.getObj(DIR).map(Vec3I::new).orElse(Vec3I.UP);
+		this.offset = src.getInt(OFFSET).orElse(0);
 		this.aabb = createAABB(dir.mul(offset), dir);
 	}
 	
@@ -69,8 +71,8 @@ public class SurfaceShape extends Shape {
 	@Override
 	public JsonObj toJsonObj() {
 		return super.toJsonObj()
-			.set("dir", dir)
-			.set("offset", offset);
+			.set(DIR, dir)
+			.set(OFFSET, offset);
 	}
 	
 }
