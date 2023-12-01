@@ -1,6 +1,7 @@
 package com.ferreusveritas.block;
 
 import com.ferreusveritas.api.hashlist.HashList;
+import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
 import com.ferreusveritas.support.json.JsonObj;
 import com.ferreusveritas.support.json.Jsonable;
@@ -12,6 +13,7 @@ import net.querz.nbt.tag.StringTag;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.IntStream;
 
 /**
@@ -22,17 +24,13 @@ public class Blocks implements Nbtable, Jsonable {
 	private final Vec3I size;
 	private final HashList<Block> blockMap;
 	private final short[] blockData;
+	private AABBI active = null;
 	
 	public Blocks(Vec3I size) {
 		this.size = size;
 		this.blockMap = new HashList<>();
 		this.blockData = new short[size.vol()];
 		setDefaultBlocks();
-	}
-	
-	public Blocks(Vec3I size, Block block) {
-		this(size);
-		fill(block);
 	}
 	
 	private void setDefaultBlocks() {
@@ -54,6 +52,9 @@ public class Blocks implements Nbtable, Jsonable {
 
 	public void set(Vec3I pos, Block block) {
 		if(isValid(pos)) {
+			if(block != BlockCache.NONE) {
+				active = active == null ? pos.toAABBI() : active.union(pos);
+			}
 			blockData[calcIndex(pos)] = (short) blockMap.add(block);
 		}
 	}
@@ -65,28 +66,35 @@ public class Blocks implements Nbtable, Jsonable {
 		return BlockCache.NONE;
 	}
 	
-	public int getIndex(Vec3I pos) {
-		if(isValid(pos)) {
-			return blockData[calcIndex(pos)];
-		}
-		return 0;
-	}
-	
 	public void fill(Block block) {
 		Arrays.fill(blockData, (short) blockMap.add(block));
+		active = getAABB();
 	}
 	
-	public void print(StringBuilder builder) {
-		for(int y = 0; y < size.y(); y++) {
-			builder.append("Layer ").append(y).append("\n");
-			for(int z = 0; z < size.z(); z++) {
-				for(int x = 0; x < size.x(); x++) {
-					builder.append(getIndex(new Vec3I(x, y, z))).append(" ");
-				}
-				builder.append("\n");
-			}
-			builder.append("\n");
+	public AABBI getAABB() {
+		return new AABBI(Vec3I.ZERO, size.sub(Vec3I.ONE));
+	}
+	
+	/**
+	 * Crop this block array to the given area.
+	 * User is responsible for updating the request area.
+	 *
+	 * @param area The area to crop to. Must be inside the block array.
+	 * @return The cropped block array.
+	 */
+	public Optional<Blocks> crop(AABBI area) {
+		AABBI aabb = getAABB();
+		if(!aabb.isInside(area)) {
+			throw new IllegalArgumentException("Area must be completely contained within the block array");
 		}
+		area = aabb.intersect(area).orElseThrow();
+		Blocks cropped = new Blocks(area.size());
+		area.forEach((abs, rel) -> cropped.set(rel, get(abs)));
+		return Optional.of(cropped);
+	}
+	
+	public Optional<AABBI> getActive() {
+		return Optional.ofNullable(active);
 	}
 	
 	@Override

@@ -11,6 +11,7 @@ public record Vec3D(
 ) implements Jsonable {
 	public static final double EPSILON = 0.0000000001;
 	public static final Vec3D ZERO = new Vec3D(0, 0, 0);
+	public static final Vec3D ONE = new Vec3D(1, 1, 1);
 	public static final Vec3D DOWN = ZERO.withY(-1);
 	public static final Vec3D UP = ZERO.withY(1);
 	public static final Vec3D NORTH = ZERO.withZ(-1);

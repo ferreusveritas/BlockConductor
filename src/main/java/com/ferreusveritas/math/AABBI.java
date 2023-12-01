@@ -8,6 +8,7 @@ import net.querz.nbt.tag.CompoundTag;
 
 import java.util.Optional;
 import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
 /**
  * An axis-aligned bounding box.
@@ -18,6 +19,8 @@ public record AABBI(
 ) implements Jsonable, Nbtable {
 	public static final AABBI NONE = new AABBI(Vec3I.ZERO, Vec3I.ZERO);
 	public static final AABBI INFINITE = new AABBI(Vec3I.MIN, Vec3I.MAX);
+	public static final String MIN = "min";
+	public static final String MAX = "max";
 	
 	public AABBI(int x1, int y1, int z1, int x2, int y2, int z2) {
 		this(new Vec3I(x1, y1, z1), new Vec3I(x2, y2, z2));
@@ -42,6 +45,10 @@ public record AABBI(
 		);
 	}
 	
+	public AABBI(Vec3I vec) {
+		this(vec, vec);
+	}
+	
 	private static int convMin(double v) {
 		return (Double.isInfinite(v) && v < 0) ? Integer.MIN_VALUE : (int)Math.floor(v);
 	}
@@ -52,9 +59,13 @@ public record AABBI(
 	
 	public AABBI(JsonObj src) {
 		this(
-			src.getObj("min").map(Vec3I::new).orElseThrow(() -> new InvalidJsonProperty("Missing min")),
-			src.getObj("max").map(Vec3I::new).orElseThrow(() -> new InvalidJsonProperty("Missing max"))
+			src.getObj(MIN).map(Vec3I::new).orElseThrow(missing(MIN)),
+			src.getObj(MAX).map(Vec3I::new).orElseThrow(missing(MAX))
 		);
+	}
+	
+	private static Supplier<InvalidJsonProperty> missing(String name) {
+		return () -> new InvalidJsonProperty("Missing " + name);
 	}
 	
 	public AABBD toAABBD() {
@@ -123,6 +134,18 @@ public record AABBI(
 	}
 	
 	/**
+	 * Returns whether another AABB is inside this AABB.
+	 * @param aabb The other AABB
+	 * @return Whether the other AABB is inside this AABB.
+	 */
+	public boolean isInside(AABBI aabb) {
+		return
+			aabb.min.x() >= min.x() && aabb.max.x() <= max.x() &&
+			aabb.min.y() >= min.y() && aabb.max.y() <= max.y() &&
+			aabb.min.z() >= min.z() && aabb.max.z() <= max.z();
+	}
+	
+	/**
 	 * Returns whether this AABB intersects another AABB.
 	 * @param aabb The other AABB
 	 * @return Whether this AABB intersects the other AABB.
@@ -177,6 +200,10 @@ public record AABBI(
 		return a != null ? a : b;
 	}
 	
+	public AABBI union(Vec3I pos) {
+		return new AABBI(min.min(pos), max.max(pos));
+	}
+	
 	/**
 	 * Iterates over all positions in this AABB.
 	 * @param func A function that accepts the absolute position and the relative position respectively.
@@ -198,8 +225,8 @@ public record AABBI(
 	
 	public CompoundTag toNBT() {
 		CompoundTag tag = new CompoundTag();
-		tag.put("min", min().toNBT());
-		tag.put("max", max().toNBT());
+		tag.put(MIN, min().toNBT());
+		tag.put(MAX, max().toNBT());
 		return tag;
 	}
 	
@@ -212,8 +239,8 @@ public record AABBI(
 	@Override
 	public JsonObj toJsonObj() {
 		return JsonObj.newMap()
-			.set("min", min)
-			.set("max", max);
+			.set(MIN, min)
+			.set(MAX, max);
 	}
 	
 	@Override

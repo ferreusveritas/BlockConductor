@@ -11,6 +11,7 @@ public record Vec3I(
 ) implements Jsonable {
 	
 	public static final Vec3I ZERO = new Vec3I(0, 0, 0);
+	public static final Vec3I ONE = new Vec3I(1, 1, 1);
 	public static final Vec3I MIN = new Vec3I(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
 	public static final Vec3I MAX = new Vec3I(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
 	public static final Vec3I DOWN = ZERO.withY(-1);
@@ -34,6 +35,10 @@ public record Vec3I(
 	
 	public Vec3D toVecD() {
 		return new Vec3D(x + 0.5, y + 0.5, z + 0.5);
+	}
+	
+	public AABBI toAABBI() {
+		return new AABBI(this);
 	}
 	
 	public Vec3I withX(int x) {

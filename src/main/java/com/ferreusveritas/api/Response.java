@@ -7,15 +7,10 @@ import com.ferreusveritas.support.json.Jsonable;
 import com.ferreusveritas.support.nbt.Nbtable;
 import net.querz.nbt.tag.CompoundTag;
 
-public class Response implements Jsonable, Nbtable {
-	
-	private final AABBI area;
-	private final Blocks blocks;
-	
-	public Response(AABBI area, Blocks blocks) {
-		this.area = area;
-		this.blocks = blocks;
-	}
+public record Response(
+	AABBI area,
+	Blocks blocks
+) implements Jsonable, Nbtable {
 	
 	@Override
 	public JsonObj toJsonObj() {
