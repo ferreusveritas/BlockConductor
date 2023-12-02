@@ -7,17 +7,36 @@ import com.ferreusveritas.support.json.JsonObj;
 public class Scale extends Transform {
 
 	public static final String TYPE = "scale";
+	public static final String SIZE = "size";
 	
-	private final double factor;
+	private final Vec3D size;
 	private final Matrix4X4 matrix;
 	
-	public Scale(double factor) {
-		this.factor = factor;
-		this.matrix = Matrix4X4.IDENTITY.scale(new Vec3D(factor, factor, factor));
+	public Scale(double size) {
+		this.size = new Vec3D(size, size, size);
+		this.matrix = Matrix4X4.IDENTITY.scale(new Vec3D(size, size, size));
+	}
+	
+	public Scale(Vec3D size) {
+		this.size = size;
+		this.matrix = Matrix4X4.IDENTITY.scale(size);
 	}
 	
 	public Scale(JsonObj src) {
-		this(src.getDouble("factor").orElse(1.0));
+		JsonObj factorObj = src.getObj(SIZE).orElse(JsonObj.emptyVal());
+		this.size = getSize(factorObj);
+		this.matrix = Matrix4X4.IDENTITY.scale(size);
+	}
+	
+	private static Vec3D getSize(JsonObj src) {
+		if(src.isMap()) {
+			return new Vec3D(src);
+		}
+		if(src.isNumber()) {
+			double s = src.asDouble().orElse(1.0);
+			return new Vec3D(s, s, s);
+		}
+		return Vec3D.ONE;
 	}
 	
 	@Override
@@ -33,7 +52,14 @@ public class Scale extends Transform {
 	@Override
 	public JsonObj toJsonObj() {
 		return super.toJsonObj()
-			.set("factor", factor);
+			.set(SIZE, getSizeJsonObj(size));
+	}
+	
+	private static JsonObj getSizeJsonObj(Vec3D factor) {
+		if(factor.x() == factor.y() && factor.y() == factor.z()) {
+			return new JsonObj(factor.x());
+		}
+		return factor.toJsonObj();
 	}
 	
 }
