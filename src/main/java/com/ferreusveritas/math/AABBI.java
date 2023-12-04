@@ -102,7 +102,7 @@ public record AABBI(
 		if(this == INFINITE) {
 			return Vec3I.MAX;
 		}
-		return max.sub(min).add(new Vec3I(1, 1, 1));
+		return max.sub(min).add(Vec3I.ONE);
 	}
 
 	public int vol() {

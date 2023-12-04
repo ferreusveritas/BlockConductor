@@ -10,8 +10,6 @@ import com.ferreusveritas.shapes.HunkShape;
 import com.ferreusveritas.shapes.Shape;
 import com.ferreusveritas.shapes.TranslateShape;
 import com.ferreusveritas.support.storage.Storage;
-import com.ferreusveritas.transform.RotateX;
-import com.ferreusveritas.transform.RotateZ;
 import com.ferreusveritas.transform.Transforms;
 import com.ferreusveritas.transform.Translate;
 
@@ -59,7 +57,11 @@ public class MainScene {
 		Hunk multiplyHunk = new MultiplyHunk(scene, simplexHunk, gradientHunk);
 		Shape hunkShape = new HunkShape(scene, multiplyHunk, 0.4);
 		Shape translateShape = new TranslateShape(scene, hunkShape, new Vec3I(0, 56, 0));
-		return new ShapeBlockProvider(scene, translateShape, new Block("minecraft:stone"));
+		return new TerrainBlockProvider(scene, translateShape,
+			new Block("minecraft:stone"),
+			new Block("minecraft:grass_block"),
+			new Block("minecraft:dirt")
+		);
 	}
 	
 	private static BlockProvider createPyramidTest(Scene scene) {

@@ -12,6 +12,7 @@ public class BlockProviderFactory {
 		.add(RoutingBlockProvider.TYPE, RoutingBlockProvider::new)
 		.add(ShapeBlockProvider.TYPE, ShapeBlockProvider::new)
 		.add(SolidBlockProvider.TYPE, SolidBlockProvider::new)
+		.add(TerrainBlockProvider.TYPE, TerrainBlockProvider::new)
 		.add(TranslateBlockProvider.TYPE, TranslateBlockProvider::new)
 		.add(ReferenceBlockProvider.TYPE, ReferenceBlockProvider::new)
 		.build();

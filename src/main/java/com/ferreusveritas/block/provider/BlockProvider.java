@@ -4,6 +4,7 @@ import com.ferreusveritas.api.Request;
 import com.ferreusveritas.block.Blocks;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.scene.Scene;
+import com.ferreusveritas.shapes.Shape;
 import com.ferreusveritas.support.json.InvalidJsonProperty;
 import com.ferreusveritas.support.json.JsonObj;
 import com.ferreusveritas.support.json.Jsonable;
@@ -17,6 +18,7 @@ public abstract class BlockProvider implements Jsonable {
 	
 	private final Scene scene;
 	private final UUID uuid;
+	public final String SHAPE = Shape.SHAPE;
 	
 	BlockProvider(Scene scene) {
 		this.scene = scene;

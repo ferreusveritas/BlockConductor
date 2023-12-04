@@ -9,6 +9,7 @@ public class BlockCache {
 	
 	public static final Block NONE = new Block("", "");
 	public static final Block AIR = new Block("minecraft:air", "");
+	public static final Block TERRAIN = new Block("common:terrain", "");
 	
 	private Map<Block, Block> blocks = new HashMap<>();
 	
