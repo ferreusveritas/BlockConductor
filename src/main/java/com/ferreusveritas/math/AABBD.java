@@ -4,14 +4,16 @@ import com.ferreusveritas.support.json.InvalidJsonProperty;
 import com.ferreusveritas.support.json.JsonObj;
 
 public record AABBD(
-	Vec3D min,
-	Vec3D max
+	Vec3D min, // inclusive
+	Vec3D max // exclusive
 ) {
 	
 	public static AABBD INFINITE = new AABBD(
 		new Vec3D(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY),
 		new Vec3D(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY)
 	);
+	
+	public static AABBD EMPTY = new AABBD(Vec3I.ZERO, Vec3I.ZERO);
 	
 	public AABBD(AABBI aabb) {
 		this(aabb.min().toVecD(), aabb.max().toVecD());
@@ -75,11 +77,11 @@ public record AABBD(
 		return expand(amount.neg());
 	}
 	
-	public boolean isInside(Vec3D pos) {
+	public boolean contains(Vec3D pos) {
 		return
-			pos.x() >= min.x() && pos.x() <= max.x() &&
-			pos.y() >= min.y() && pos.y() <= max.y() &&
-			pos.z() >= min.z() && pos.z() <= max.z();
+			pos.x() >= min.x() && pos.x() < max.x() &&
+			pos.y() >= min.y() && pos.y() < max.y() &&
+			pos.z() >= min.z() && pos.z() < max.z();
 	}
 	
 	public boolean intersects(AABBD other) {
@@ -124,6 +126,13 @@ public record AABBD(
 				Math.min(max.z(), other.max.z())
 			)
 		);
+	}
+	
+	public static AABBD intersect(AABBD a, AABBD b) {
+		if(a != null && b != null) {
+			return a.intersect(b);
+		}
+		return null;
 	}
 	
 	public AABBD transform(Matrix4X4 matrix) {

@@ -84,7 +84,7 @@ public class Blocks implements Nbtable, Jsonable {
 	 */
 	public Optional<Blocks> crop(AABBI area) {
 		AABBI aabb = getAABB();
-		if(!aabb.isInside(area)) {
+		if(!aabb.contains(area)) {
 			throw new IllegalArgumentException("Area must be completely contained within the block array");
 		}
 		area = aabb.intersect(area).orElseThrow();

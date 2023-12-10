@@ -8,14 +8,11 @@
   "provider": {
     "type": "shape",
     "shape": {
-      "type": "hunk",
-      "hunk": {
-        "type": "heightmap",
-        "height": 16,
-        "hunk": {
-          "type": "image",
-          "resource": "res://skull.png"
-        }
+      "type": "heightmap",
+      "height": 16,
+      "shape": {
+        "type": "image",
+        "resource": "res://skull.png"
       }
     },
     "block": {

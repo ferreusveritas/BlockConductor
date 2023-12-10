@@ -13,7 +13,7 @@ public class Collision2D {
 	
 	public static boolean rectIntersectsTriangle(RectD rect, Vec2D[] triangle) {
 		for(Vec2D vertex : triangle) {
-			if(rect.isInside(vertex)) {
+			if(rect.contains(vertex)) {
 				return true; // Any triangle vertex inside the rect is a collision
 			}
 		}

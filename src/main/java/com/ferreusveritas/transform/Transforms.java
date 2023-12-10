@@ -8,6 +8,7 @@ import java.util.List;
 public class Transforms extends Transform {
 	
 	public static final String TYPE = "transforms";
+	public static final String OPERATIONS = "operations";
 	
 	private final List<Transform> operations;
 	private final Matrix4X4 matrix;
@@ -22,7 +23,7 @@ public class Transforms extends Transform {
 	}
 	
 	public Transforms(JsonObj src) {
-		this(src.getList("operations").toImmutableList(TransformFactory::create));
+		this(src.getList(OPERATIONS).toImmutableList(TransformFactory::create));
 	}
 	
 	private Matrix4X4 createMatrix(List<Transform> transforms) {
@@ -46,7 +47,7 @@ public class Transforms extends Transform {
 	@Override
 	public JsonObj toJsonObj() {
 		return super.toJsonObj()
-			.set("operations", operations);
+			.set(OPERATIONS, operations);
 	}
 	
 }

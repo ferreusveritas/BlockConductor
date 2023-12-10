@@ -31,12 +31,12 @@ public record RectD(
 		return new Vec3D(x2 - x1, 0, z2 - z1);
 	}
 	
-	public boolean isInside(double x, double z) {
+	public boolean contains(double x, double z) {
 		return x >= x1 && x < x2 && z >= z1 && z < z2;
 	}
 	
-	public boolean isInside(Vec2D vec) {
-		return isInside(vec.x(), vec.z());
+	public boolean contains(Vec2D vec) {
+		return contains(vec.x(), vec.z());
 	}
 	
 	public boolean intersects(RectD o) {

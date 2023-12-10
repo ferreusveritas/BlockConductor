@@ -126,7 +126,7 @@ public record AABBI(
 	 * @param pos The point
 	 * @return Whether the point is inside this AABB.
 	 */
-	public boolean isInside(Vec3I pos) {
+	public boolean contains(Vec3I pos) {
 		return
 			pos.x() >= min.x() && pos.x() <= max.x() &&
 			pos.y() >= min.y() && pos.y() <= max.y() &&
@@ -138,7 +138,7 @@ public record AABBI(
 	 * @param aabb The other AABB
 	 * @return Whether the other AABB is inside this AABB.
 	 */
-	public boolean isInside(AABBI aabb) {
+	public boolean contains(AABBI aabb) {
 		return
 			aabb.min.x() >= min.x() && aabb.max.x() <= max.x() &&
 			aabb.min.y() >= min.y() && aabb.max.y() <= max.y() &&

@@ -1,92 +1,49 @@
 {
-  "type": "combine",
-  "providers": [
-    {
-      "type": "shape",
-      "shape": {
-        "type": "box",
-        "aabb": {
-          "min": {
-            "x": 4,
-            "y": 1,
-            "z": 4
-          },
-          "max": {
-            "x": 8,
-            "y": 84,
-            "z": 8
-          }
-        }
-      },
-      "block": {
-        "name": "minecraft:dirt",
-        "state": ""
-      }
-    },
-    {
-      "type": "shape",
-      "shape": {
-        "type": "difference",
-        "shapes": [
-          {
-            "type": "surface",
-            "dir": {
-              "x": 1,
-              "y": 0,
-              "z": 0
-            },
-            "offset": 15
-          },
-          {
-            "type": "translate",
-            "shape": {
-              "type": "sphere",
-              "center": {
-                "x": 8.0,
-                "y": 64.0,
-                "z": 8.0
-              },
-              "radius": 12.0
-            },
-            "offset": {
-              "x": 4,
-              "y": 3,
-              "z": 4
-            }
-          }
-        ]
-      },
-      "block": {
-        "name": "minecraft:sandstone",
-        "state": ""
-      }
-    },
-    {
-      "type": "shape",
-      "shape": {
-        "type": "cavitate",
-        "shape": {
-          "type": "translate",
-          "shape": {
-            "type": "sphere",
-            "center": {
-              "x": 8.0,
-              "y": 64.0,
-              "z": 8.0
-            },
-            "radius": 12.0
-          },
-          "offset": {
-            "x": 4,
-            "y": 3,
-            "z": 4
-          }
-        }
-      },
-      "block": {
-        "name": "minecraft:stone",
-        "state": ""
-      }
-    }
-  ]
+	"type": "combine",
+	"providers": [
+		{
+			"type": "shape",
+			"shape": {
+				"type": "box",
+				"bounds": {
+					"min": {
+						"x": 4,
+						"y": 1,
+						"z": 4
+					},
+					"max": {
+						"x": 8,
+						"y": 84,
+						"z": 8
+					}
+				}
+			},
+			"block": {
+				"name": "minecraft:dirt",
+				"state": ""
+			}
+		},
+		{
+			"type": "shape",
+			"shape": {
+				"type": "cavitate",
+				"shape": {
+					"type": "translate",
+					"shape": {
+						"type": "sphere",
+						"radius": 12.0
+					},
+					"offset": {
+						"x": 12,
+						"y": 67,
+						"z": 12
+					}
+				}
+			},
+			"block": {
+				"name": "minecraft:stone",
+				"state": ""
+			}
+		}
+	]
 }

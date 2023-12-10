@@ -11,7 +11,7 @@ class RectTest {
 	@Test
 	void test() {
 		RectD rect1 = new RectD(-43.1779, 10.2503, 0.0746, 97.759);
-		assertTrue(rect1.isInside(new Vec2D(-43.1779, 10.2503)));
+		assertTrue(rect1.contains(new Vec2D(-43.1779, 10.2503)));
 	}
 	
 }

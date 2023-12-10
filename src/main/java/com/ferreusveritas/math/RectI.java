@@ -38,11 +38,11 @@ public record RectI(
 		);
 	}
 	
-	public boolean isInside(Vec3I vec) {
-		return isInside(vec.x(), vec.y());
+	public boolean contains(Vec3I vec) {
+		return contains(vec.x(), vec.y());
 	}
 	
-	public boolean isInside(int x, int z) {
+	public boolean contains(int x, int z) {
 		return x >= x1 && x <= x2 && z >= z1 && z <= z2;
 	}
 	

@@ -34,7 +34,7 @@ class QSPModel {
 	}
 	
 	public boolean pointIsInside(Vec3D pos) {
-		if(!aabb.isInside(pos)) {
+		if(!aabb.contains(pos)) {
 			return false;
 		}
 		int count = 0;

@@ -6,7 +6,7 @@ import com.ferreusveritas.block.Blocks;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
 import com.ferreusveritas.scene.Scene;
-import com.ferreusveritas.shapes.Shape;
+import com.ferreusveritas.shape.Shape;
 import com.ferreusveritas.support.json.JsonObj;
 
 import java.util.Optional;
@@ -67,7 +67,7 @@ public class ShapeBlockProvider extends BlockProvider {
 	
 	@Override
 	public Optional<AABBI> getAABB() {
-		return shape.getAABB();
+		return Optional.ofNullable(shape.bounds().toAABBI());
 	}
 	
 	@Override
