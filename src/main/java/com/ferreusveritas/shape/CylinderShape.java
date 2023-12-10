@@ -14,17 +14,27 @@ public class CylinderShape extends Shape {
 	
 	private final double height;
 	private final double radius;
+	private final AABBD bounds;
 	
 	public CylinderShape(Scene scene, double height, double radius) {
 		super(scene);
 		this.height = height;
 		this.radius = radius;
+		this.bounds = calculateBounds();
 	}
 	
 	public CylinderShape(Scene scene, JsonObj src) {
 		super(scene, src);
 		this.height = src.getDouble("height").orElse(DEFAULT_HEIGHT);
 		this.radius = src.getDouble("radius").orElse(DEFAULT_RADIUS);
+		this.bounds = calculateBounds();
+	}
+	
+	private AABBD calculateBounds() {
+		return new AABBD(
+			new Vec3D(-radius, 0, -radius),
+			new Vec3D(radius, height, radius)
+		);
 	}
 	
 	@Override
@@ -34,7 +44,7 @@ public class CylinderShape extends Shape {
 	
 	@Override
 	public AABBD bounds() {
-		return new AABBD(new Vec3D(-radius, 0, -radius), new Vec3D(radius, height, radius));
+		return bounds;
 	}
 	
 	@Override

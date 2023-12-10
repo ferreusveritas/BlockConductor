@@ -31,7 +31,7 @@ public class HeightMapShape extends Shape {
 		this.shape = shape;
 		this.height = height;
 		this.minY = minY;
-		this.bounds = calcBounds(height);
+		this.bounds = calculateBounds(height);
 		validate();
 	}
 	
@@ -40,7 +40,7 @@ public class HeightMapShape extends Shape {
 		this.shape = src.getObj(SHAPE).map(scene::createShape).orElseThrow(missing(SHAPE));
 		this.height = src.getDouble(HEIGHT).orElse(DEFAULT_HEIGHT);
 		this.minY = src.getDouble(MIN_Y).orElse(DEFAULT_MIN_Y);
-		this.bounds = calcBounds(height);
+		this.bounds = calculateBounds(height);
 		validate();
 	}
 	
@@ -50,7 +50,7 @@ public class HeightMapShape extends Shape {
 		}
 	}
 	
-	public AABBD calcBounds(double height) {
+	public AABBD calculateBounds(double height) {
 		AABBD shapeBounds = shape.bounds();
 		Vec3D min = shapeBounds.min().withY(Double.NEGATIVE_INFINITY);
 		Vec3D max = shapeBounds.max().withY(height);
@@ -69,6 +69,9 @@ public class HeightMapShape extends Shape {
 	
 	@Override
 	public double getVal(Vec3D pos) {
+		if(!bounds.contains(pos)) {
+			return 0.0;
+		}
 		if(pos.y() < minY) {
 			return 1.0;
 		}

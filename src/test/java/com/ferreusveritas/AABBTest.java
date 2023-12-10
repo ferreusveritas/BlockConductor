@@ -35,8 +35,8 @@ class AABBTest {
 	@Test
 	void testAABBGrow() {
 		AABBI aabb = new AABBI(0, 0, 0, 10, 10, 10);
-		AABBI grown = aabb.expand(new Vec3I(1, 3, 5)).orElseThrow();
-		AABBI grown2 = aabb.expand(1).orElseThrow();
+		AABBI grown = aabb.expand(new Vec3I(1, 3, 5));
+		AABBI grown2 = aabb.expand(1);
 
 		assertEquals(new Vec3I(-1, -3, -5), grown.min());
 		assertEquals(new Vec3I(11, 13, 15), grown.max());
@@ -47,7 +47,7 @@ class AABBTest {
 	@Test
 	void testAABBShrink() {
 		AABBI aabb = new AABBI(0, 0, 0, 100, 100, 100);
-		AABBI shrunk = aabb.shrink(new Vec3I(1, 3, 5)).orElseThrow();
+		AABBI shrunk = aabb.shrink(new Vec3I(1, 3, 5));
 
 		assertEquals(new Vec3I(1, 3, 5), shrunk.min());
 		assertEquals(new Vec3I(99, 97, 95), shrunk.max());
@@ -69,8 +69,8 @@ class AABBTest {
 		AABBI aabb2 = new AABBI(5, 5, 5, 15, 15, 15);
 		AABBI aabb3 = new AABBI(11, 11, 11, 20, 20, 20);
 
-		assertEquals(new AABBI(5, 5, 5, 10, 10, 10), aabb.intersect(aabb2).orElseThrow());
-		assertFalse(aabb.intersect(aabb3).isPresent());
+		assertEquals(new AABBI(5, 5, 5, 10, 10, 10), aabb.intersect(aabb2));
+		assertEquals(AABBI.EMPTY, aabb.intersect(aabb3));
 	}
 
 	@Test

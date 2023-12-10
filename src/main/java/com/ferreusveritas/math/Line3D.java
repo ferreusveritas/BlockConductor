@@ -8,10 +8,13 @@ public record Line3D(
 	Vec3D end
 ) implements Jsonable {
 	
+	public static final String START = "start";
+	public static final String END = "end";
+	
 	public Line3D(JsonObj src) {
 		this(
-			src.getObj("start").map(Vec3D::new).orElseThrow(),
-			src.getObj("end").map(Vec3D::new).orElseThrow()
+			src.getObj(START).map(Vec3D::new).orElseThrow(),
+			src.getObj(END).map(Vec3D::new).orElseThrow()
 		);
 	}
 	
@@ -33,8 +36,8 @@ public record Line3D(
 	
 	public JsonObj toJsonObj() {
 		return JsonObj.newMap()
-			.set("start", start)
-			.set("end", end);
+			.set(START, start)
+			.set(END, end);
 	}
 	
 }

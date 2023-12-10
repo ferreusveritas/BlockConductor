@@ -9,15 +9,23 @@ public record Vec3D(
 	double y,
 	double z
 ) implements Jsonable {
+	
 	public static final double EPSILON = 0.0000000001;
-	public static final Vec3D ZERO = new Vec3D(0, 0, 0);
-	public static final Vec3D ONE = new Vec3D(1, 1, 1);
+	public static final Vec3D ZERO = new Vec3D(0);
+	public static final Vec3D ONE = new Vec3D(1);
+	public static final Vec3D INFINITY = new Vec3D(Double.POSITIVE_INFINITY);
+	public static final Vec3D NEG_INFINITY = new Vec3D(Double.NEGATIVE_INFINITY);
+	public static final Vec3D NAN = new Vec3D(Double.NaN);
 	public static final Vec3D DOWN = ZERO.withY(-1);
 	public static final Vec3D UP = ZERO.withY(1);
 	public static final Vec3D NORTH = ZERO.withZ(-1);
 	public static final Vec3D SOUTH = ZERO.withZ(1);
 	public static final Vec3D WEST = ZERO.withX(-1);
 	public static final Vec3D EAST = ZERO.withX(1);
+	
+	public Vec3D(double value) {
+		this(value, value, value);
+	}
 	
 	public Vec3D(Vec3I vec) {
 		this(vec.x() + 0.5, vec.y() + 0.5, vec.z() + 0.5);
@@ -181,12 +189,34 @@ public record Vec3D(
 		return equalsEpsilon(pos, EPSILON);
 	}
 	
+	public Vec3D resolve() {
+		if(this == INFINITY || this == NEG_INFINITY || this == NAN || this == ZERO) {
+			return this;
+		}
+		if(Double.isInfinite(x) && Double.isInfinite(y) && Double.isInfinite(z)) {
+			if(x > 0 && y > 0 && z > 0) {
+				return INFINITY;
+			}
+			if(x < 0 && y < 0 && z < 0) {
+				return NEG_INFINITY;
+			}
+			return this;
+		}
+		if(Double.isNaN(x) || Double.isNaN(y) || Double.isNaN(z)) {
+			return NAN;
+		}
+		if(x == 0 && y == 0 && z == 0) {
+			return ZERO;
+		}
+		return this;
+	}
+	
 	@Override
 	public JsonObj toJsonObj() {
 		return JsonObj.newMap()
-			.set("x", x)
-			.set("y", y)
-			.set("z", z);
+			.set("x", MathHelper.dbl(x))
+			.set("y", MathHelper.dbl(y))
+			.set("z", MathHelper.dbl(z));
 	}
 	
 	@Override

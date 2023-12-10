@@ -11,6 +11,7 @@ public record RectI(
 ) implements Jsonable {
 	
 	public static final RectI INFINITE = new RectI(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
+	public static final RectI EMPTY = new RectI(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
 	
 	public RectI(Vec3I size) {
 		this(size.x(), size.z());
@@ -31,10 +32,10 @@ public record RectI(
 	
 	public RectI(JsonObj src) {
 		this(
-			src.getInt("x1").orElse(Integer.MIN_VALUE),
-			src.getInt("z1").orElse(Integer.MIN_VALUE),
-			src.getInt("x2").orElse(Integer.MAX_VALUE),
-			src.getInt("z2").orElse(Integer.MAX_VALUE)
+			src.getInt("x1").orElse(0),
+			src.getInt("z1").orElse(0),
+			src.getInt("x2").orElse(0),
+			src.getInt("z2").orElse(0)
 		);
 	}
 	
@@ -43,10 +44,19 @@ public record RectI(
 	}
 	
 	public boolean contains(int x, int z) {
+		if(this == INFINITE) {
+			return true;
+		}
+		if(this == EMPTY) {
+			return false;
+		}
 		return x >= x1 && x <= x2 && z >= z1 && z <= z2;
 	}
 	
 	public int width() {
+		if(this == EMPTY) {
+			return 0;
+		}
 		if(x1 == Integer.MIN_VALUE || x2 == Integer.MAX_VALUE) {
 			return Integer.MAX_VALUE;
 		}
@@ -54,6 +64,9 @@ public record RectI(
 	}
 	
 	public int height() {
+		if(this == EMPTY) {
+			return 0;
+		}
 		if(z1 == Integer.MIN_VALUE || z2 == Integer.MAX_VALUE) {
 			return Integer.MAX_VALUE;
 		}
@@ -61,26 +74,38 @@ public record RectI(
 	}
 	
 	public RectI offset(int x, int z) {
+		if(this == INFINITE || this == EMPTY) {
+			return this;
+		}
 		int x1n = x1;
 		int z1n = z1;
 		int x2n = x2;
 		int z2n = z2;
-		if(x1n != Integer.MIN_VALUE || x1n != Integer.MAX_VALUE) {
+		if(x1n != Integer.MIN_VALUE && x1n != Integer.MAX_VALUE) {
 			x1n += x;
 		}
-		if(z1n != Integer.MIN_VALUE || z1n != Integer.MAX_VALUE) {
+		if(z1n != Integer.MIN_VALUE && z1n != Integer.MAX_VALUE) {
 			z1n += z;
 		}
-		if(x2n != Integer.MIN_VALUE || x2n != Integer.MAX_VALUE) {
+		if(x2n != Integer.MIN_VALUE && x2n != Integer.MAX_VALUE) {
 			x2n += x;
 		}
-		if(z2n != Integer.MIN_VALUE || z2n != Integer.MAX_VALUE) {
+		if(z2n != Integer.MIN_VALUE && z2n != Integer.MAX_VALUE) {
 			z2n += z;
 		}
 		return new RectI(x1n, z1n, x2n, z2n);
 	}
 	
 	public RectI intersect(RectI o) {
+		if(this == INFINITE) {
+			return o;
+		}
+		if(o == INFINITE) {
+			return this;
+		}
+		if(this == EMPTY || o == EMPTY) {
+			return EMPTY;
+		}
 		return new RectI(
 			Math.max(x1, o.x1),
 			Math.max(z1, o.z1),
@@ -90,6 +115,15 @@ public record RectI(
 	}
 	
 	public RectI union(RectI o) {
+		if(this == INFINITE || o == INFINITE) {
+			return INFINITE;
+		}
+		if(this == EMPTY) {
+			return o;
+		}
+		if(o == EMPTY) {
+			return this;
+		}
 		return new RectI(
 			Math.min(x1, o.x1),
 			Math.min(z1, o.z1),
@@ -99,10 +133,13 @@ public record RectI(
 	}
 	
 	public static RectI union(RectI a, RectI b) {
-		if(a == null) {
+		if(a == INFINITE || b == INFINITE) {
+			return INFINITE;
+		}
+		if(a == EMPTY) {
 			return b;
 		}
-		if(b == null) {
+		if(b == EMPTY) {
 			return a;
 		}
 		return a.union(b);

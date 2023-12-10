@@ -29,7 +29,7 @@ public class CacheShape extends Shape {
 	public CacheShape(Scene scene, JsonObj src) {
 		super(scene, src);
 		this.shape = src.getObj(SHAPE).map(scene::createShape).orElseThrow(missing(SHAPE));
-		this.bounds = src.getObj(BOUNDS).map(AABBD::new).orElseThrow(missing(BOUNDS));
+		this.bounds = src.getObj(BOUNDS).map(AABBD::fromJson).orElseThrow(missing(BOUNDS));
 		this.aabb = bounds.toAABBI();
 		this.cache = buildCache(this.aabb);
 	}
@@ -62,7 +62,7 @@ public class CacheShape extends Shape {
 	
 	@Override
 	public double getVal(Vec3D pos) {
-		return (bounds.contains(pos) && inside(pos.toVecI())) ? 1.0 : 0.0;
+		return bounds.contains(pos) && inside(pos.toVecI()) ? 1.0 : 0.0;
 	}
 	
 	private boolean inside(Vec3I pos) {

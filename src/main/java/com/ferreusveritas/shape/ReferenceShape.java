@@ -16,16 +16,23 @@ public class ReferenceShape extends Shape {
 	public static final String REF = "ref";
 	
 	private final Shape ref;
+	private final AABBD bounds;
 	
 	public ReferenceShape(Scene scene, Shape ref) {
 		super(scene);
 		this.ref = ref;
+		this.bounds = calculateBounds();
 	}
 	
 	public ReferenceShape(Scene scene, JsonObj src) {
 		super(scene, src);
 		UUID uuid = src.getString(REF).map(UUID::fromString).orElseThrow(missing(REF));
 		this.ref = scene.getShape(uuid);
+		this.bounds = calculateBounds();
+	}
+	
+	private AABBD calculateBounds() {
+		return ref.bounds();
 	}
 	
 	@Override
@@ -35,7 +42,7 @@ public class ReferenceShape extends Shape {
 	
 	@Override
 	public AABBD bounds() {
-		return ref.bounds();
+		return bounds;
 	}
 	
 	@Override

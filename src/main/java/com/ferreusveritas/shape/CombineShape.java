@@ -29,17 +29,17 @@ public class CombineShape extends Shape {
 		super(scene);
 		this.operation = operation;
 		this.shapes = shapes;
-		this.bounds = createBounds(shapes);
+		this.bounds = calculateBounds(shapes);
 	}
 	
 	public CombineShape(Scene scene, JsonObj src) {
 		super(scene, src);
 		this.operation = src.getString(OPERATION).flatMap(CombineOperation::of).orElseThrow(() -> new IllegalArgumentException("operation is required"));
 		this.shapes = src.getList(SHAPES).toImmutableList(scene::createShape);
-		this.bounds = createBounds(shapes);
+		this.bounds = calculateBounds(shapes);
 	}
 	
-	private AABBD createBounds(List<Shape> shapes) {
+	private AABBD calculateBounds(List<Shape> shapes) {
 		return shapes.stream()
 			.map(Shape::bounds)
 			.reduce(operation::apply)
@@ -58,6 +58,9 @@ public class CombineShape extends Shape {
 	
 	@Override
 	public double getVal(Vec3D pos) {
+		if(!bounds.contains(pos)) {
+			return 0.0;
+		}
 		int size = shapes.size();
 		double accum = size > 0 ? shapes.get(0).getVal(pos) : 0.0;
 		if(size == 1) {

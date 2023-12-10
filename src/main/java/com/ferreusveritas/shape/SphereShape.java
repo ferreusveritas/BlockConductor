@@ -15,16 +15,16 @@ public class SphereShape extends Shape {
 	public SphereShape(Scene scene, double radius) {
 		super(scene);
 		this.radius = radius;
-		this.bounds = calcBounds(radius);
+		this.bounds = calculateBounds(radius);
 	}
 	
 	public SphereShape(Scene scene, JsonObj src) {
 		super(scene, src);
 		this.radius = src.getDouble("radius").orElse(1.0);
-		this.bounds = calcBounds(radius);
+		this.bounds = calculateBounds(radius);
 	}
 	
-	private static AABBD calcBounds(double radius) {
+	private static AABBD calculateBounds(double radius) {
 		if(radius <= 0) {
 			throw new IllegalArgumentException("radius must be greater than zero");
 		}

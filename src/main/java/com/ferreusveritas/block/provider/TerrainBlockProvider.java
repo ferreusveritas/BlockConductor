@@ -92,8 +92,8 @@ public class TerrainBlockProvider extends BlockProvider {
 	}
 	
 	@Override
-	public Optional<AABBI> getAABB() {
-		return Optional.ofNullable(shape.bounds().toAABBI());
+	public AABBI getAABB() {
+		return shape.bounds().toAABBI();
 	}
 	
 	@Override

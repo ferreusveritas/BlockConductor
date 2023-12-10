@@ -61,6 +61,10 @@ public class MathHelper {
 		return p * a * a * a + q * a * a + r * a + n1;
 	}
 	
+	public static Object dbl(Double d) {
+		return Double.isInfinite(d) || Double.isNaN(d) ? Double.toString(d) : d;
+	}
+	
 	private MathHelper() {
 		throw new IllegalStateException("Utility class");
 	}

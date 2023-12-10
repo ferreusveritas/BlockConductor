@@ -44,8 +44,8 @@ public class RoutingBlockProvider extends BlockProvider {
 	}
 	
 	@Override
-	public Optional<AABBI> getAABB() {
-		return Optional.of(aabb);
+	public AABBI getAABB() {
+		return aabb;
 	}
 	
 	@Override

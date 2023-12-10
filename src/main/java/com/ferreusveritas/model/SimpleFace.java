@@ -35,7 +35,7 @@ public class SimpleFace {
 	}
 	
 	private AABBD calculateAABB() {
-		AABBD tempAABB = null;
+		AABBD tempAABB = AABBD.EMPTY;
 		for(int i = 0; i < 3; i++) {
 			Vec3D vertex = vertices[i];
 			AABBD vertAABB = new AABBD(vertex, vertex);

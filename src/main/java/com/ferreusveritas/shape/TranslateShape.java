@@ -13,6 +13,7 @@ public class TranslateShape extends Shape {
 	
 	private final Shape shape;
 	private final Vec3D offset;
+	private final AABBD bounds;
 	
 	public TranslateShape(Scene scene, Shape shape, Vec3I offset) {
 		this(scene, shape, offset.toVecD());
@@ -22,12 +23,18 @@ public class TranslateShape extends Shape {
 		super(scene);
 		this.shape = shape;
 		this.offset = offset;
+		this.bounds = calculateBounds(shape);
 	}
 	
 	public TranslateShape(Scene scene, JsonObj src) {
 		super(scene, src);
 		this.shape = src.getObj(SHAPE).map(scene::createShape).orElseThrow(missing(SHAPE));
 		this.offset = src.getObj(OFFSET).map(Vec3D::new).orElseThrow(missing(OFFSET));
+		this.bounds = calculateBounds(shape);
+	}
+	
+	private AABBD calculateBounds(Shape shape) {
+		return shape.bounds().offset(offset);
 	}
 	
 	@Override
@@ -37,11 +44,14 @@ public class TranslateShape extends Shape {
 	
 	@Override
 	public AABBD bounds() {
-		return shape.bounds().offset(offset);
+		return bounds;
 	}
 	
 	@Override
 	public double getVal(Vec3D pos) {
+		if(!bounds.contains(pos)) {
+			return 0.0;
+		}
 		return shape.getVal(pos.sub(offset));
 	}
 	

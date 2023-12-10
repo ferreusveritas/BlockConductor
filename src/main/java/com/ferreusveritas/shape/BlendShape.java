@@ -24,7 +24,7 @@ public class BlendShape extends Shape {
 		this.shape1 = shape1;
 		this.shape2 = shape2;
 		this.blend = blend;
-		this.bounds = AABBD.union(shape1.bounds(), shape2.bounds());
+		this.bounds = calculateBounds();
 	}
 	
 	public BlendShape(Scene scene, JsonObj src) {
@@ -32,7 +32,11 @@ public class BlendShape extends Shape {
 		this.shape1 = src.getObj(SHAPE_1).map(scene::createShape).orElseThrow(missing(SHAPE_1));
 		this.shape2 = src.getObj(SHAPE_2).map(scene::createShape).orElseThrow(missing(SHAPE_2));
 		this.blend = src.getObj(BLEND).map(scene::createShape).orElseThrow(missing(BLEND));
-		this.bounds = AABBD.union(shape1.bounds(), shape2.bounds());
+		this.bounds = calculateBounds();
+	}
+	
+	private AABBD calculateBounds() {
+		return AABBD.union(shape1.bounds(), shape2.bounds());
 	}
 	
 	@Override
@@ -47,6 +51,9 @@ public class BlendShape extends Shape {
 	
 	@Override
 	public double getVal(Vec3D pos) {
+		if(!bounds.contains(pos)){
+			return 0.0;
+		}
 		double blendVal = blend.getVal(pos);
 		if(blendVal < 0.0){
 			return shape1.getVal(pos);

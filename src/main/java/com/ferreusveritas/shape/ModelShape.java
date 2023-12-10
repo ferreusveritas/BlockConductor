@@ -15,18 +15,18 @@ public class ModelShape extends Shape {
 	public static final String MODEL = "model";
 	
 	private final Model model;
-	private final AABBD aabb;
+	private final AABBD bounds;
 	
 	public ModelShape(Scene scene, Model model) {
 		super(scene);
 		this.model = model;
-		this.aabb = model.getAABB();
+		this.bounds = model.getAABB();
 	}
 	
 	public ModelShape(Scene scene, JsonObj src) {
 		super(scene, src);
 		this.model = src.getObj(MODEL).map(scene::createModel).orElseThrow(missing(MODEL));
-		this.aabb = model.getAABB();
+		this.bounds = model.getAABB();
 	}
 	
 	@Override
@@ -36,12 +36,12 @@ public class ModelShape extends Shape {
 	
 	@Override
 	public AABBD bounds() {
-		return aabb;
+		return bounds;
 	}
 	
 	@Override
 	public double getVal(Vec3D pos) {
-		return model.pointIsInside(pos) ? 1.0 : 0.0;
+		return bounds.contains(pos) && model.pointIsInside(pos) ? 1.0 : 0.0;
 	}
 	
 	@Override

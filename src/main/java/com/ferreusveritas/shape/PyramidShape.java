@@ -23,17 +23,17 @@ public class PyramidShape extends Shape {
 		super(scene);
 		this.height = height;
 		this.base = base;
-		this.bounds = calcBounds(height, base);
+		this.bounds = calculateBounds(height, base);
 	}
 	
 	public PyramidShape(Scene scene, JsonObj src) {
 		super(scene, src);
 		this.height = src.getDouble("height").orElse(DEFAULT_HEIGHT);
 		this.base = src.getDouble("base").orElse(DEFAULT_BASE);
-		this.bounds = calcBounds(height, base);
+		this.bounds = calculateBounds(height, base);
 	}
 	
-	private AABBD calcBounds(double height, double base) {
+	private AABBD calculateBounds(double height, double base) {
 		double halfBase = base / 2.0;
 		return new AABBD(
 			new Vec3D(-halfBase, 0, -halfBase),
@@ -53,16 +53,17 @@ public class PyramidShape extends Shape {
 	
 	@Override
 	public double getVal(Vec3D pos) {
-		if(bounds.contains(pos)) {
-			double halfBase = base / 2.0;
-			double x = Math.abs(pos.x());
-			double z = Math.abs(pos.z());
-			double y = pos.y();
-			double slope = height / halfBase;
-			double heightAtPos = slope * (halfBase - Math.max(x, z));
-			if(y < heightAtPos) {
-				return 1.0;
-			}
+		if(!bounds.contains(pos)) {
+			return 0.0;
+		}
+		double halfBase = base / 2.0;
+		double x = Math.abs(pos.x());
+		double z = Math.abs(pos.z());
+		double y = pos.y();
+		double slope = height / halfBase;
+		double heightAtPos = slope * (halfBase - Math.max(x, z));
+		if(y < heightAtPos) {
+			return 1.0;
 		}
 		return 0.0;
 	}

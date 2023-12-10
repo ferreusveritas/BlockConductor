@@ -5,34 +5,27 @@ import com.ferreusveritas.math.Vec3D;
 import com.ferreusveritas.scene.Scene;
 import com.ferreusveritas.support.json.JsonObj;
 
-/**
- * A Shape that slices another Shape along Y = 0 and infinitely extrudes the result in the Y direction.
- */
-public class SliceShape extends Shape {
-
-	public static final String TYPE = "slice";
+public class GrowShape extends Shape {
+	
+	public static final String TYPE = "grow";
 	
 	private final Shape shape;
 	private final AABBD bounds;
 	
-	public SliceShape(Scene scene, Shape shape) {
+	public GrowShape(Scene scene, Shape shape) {
 		super(scene);
 		this.shape = shape;
-		this.bounds = calculateBounds(shape);
+		this.bounds = calculateBounds();
 	}
 	
-	public SliceShape(Scene scene, JsonObj src) {
+	public GrowShape(Scene scene, JsonObj src) {
 		super(scene, src);
 		this.shape = src.getObj(SHAPE).map(scene::createShape).orElseThrow(missing(SHAPE));
-		this.bounds = calculateBounds(shape);
+		this.bounds = calculateBounds();
 	}
 	
-	private AABBD calculateBounds(Shape shape) {
-		AABBD aabb = shape.bounds();
-		return new AABBD(
-			aabb.min().withY(Double.NEGATIVE_INFINITY),
-			aabb.max().withY(Double.POSITIVE_INFINITY)
-		);
+	private AABBD calculateBounds() {
+		return shape.bounds().expand(1.0);
 	}
 	
 	@Override
@@ -47,13 +40,23 @@ public class SliceShape extends Shape {
 	
 	@Override
 	public double getVal(Vec3D pos) {
-		return shape.getVal(pos.withY(0));
+		if(!bounds.contains(pos)){
+			return 0.0;
+		}
+		return
+			isInside(pos.down()) ||
+			isInside(pos.up()) ||
+			isInside(pos.north()) ||
+			isInside(pos.south()) ||
+			isInside(pos.west()) ||
+			isInside(pos.east())
+			? 1.0 : 0.0;
 	}
 	
 	@Override
 	public JsonObj toJsonObj() {
 		return super.toJsonObj()
-			.set(SHAPE, shape);
+			.set(SHAPE, shape.toJsonObj());
 	}
 	
 }

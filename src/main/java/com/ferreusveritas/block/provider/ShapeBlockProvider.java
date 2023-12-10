@@ -50,8 +50,8 @@ public class ShapeBlockProvider extends BlockProvider {
 	@Override
 	public Optional<Blocks> getBlocks(Request request) {
 		AABBI area = request.area();
-		AABBI bounds = intersect(area).orElse(null);
-		if(bounds == null) {
+		AABBI bounds = intersect(area);
+		if(bounds == AABBI.EMPTY) {
 			return Optional.empty();
 		}
 		Blocks blocks = new Blocks(area.size());
@@ -66,8 +66,8 @@ public class ShapeBlockProvider extends BlockProvider {
 	}
 	
 	@Override
-	public Optional<AABBI> getAABB() {
-		return Optional.ofNullable(shape.bounds().toAABBI());
+	public AABBI getAABB() {
+		return shape.bounds().toAABBI();
 	}
 	
 	@Override

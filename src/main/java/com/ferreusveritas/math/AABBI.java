@@ -17,7 +17,8 @@ public record AABBI(
 	Vec3I min,
 	Vec3I max
 ) implements Jsonable, Nbtable {
-	public static final AABBI NONE = new AABBI(Vec3I.ZERO, Vec3I.ZERO);
+	
+	public static final AABBI EMPTY = new AABBI(Vec3I.MIN, Vec3I.MIN);
 	public static final AABBI INFINITE = new AABBI(Vec3I.MIN, Vec3I.MAX);
 	public static final String MIN = "min";
 	public static final String MAX = "max";
@@ -57,11 +58,37 @@ public record AABBI(
 		return (Double.isInfinite(v) && v > 0) ? Integer.MAX_VALUE : (int)Math.ceil(v);
 	}
 	
-	public AABBI(JsonObj src) {
-		this(
-			src.getObj(MIN).map(Vec3I::new).orElseThrow(missing(MIN)),
-			src.getObj(MAX).map(Vec3I::new).orElseThrow(missing(MAX))
-		);
+	public static AABBI fromJson(JsonObj src) {
+		if(src == null) {
+			throw new InvalidJsonProperty("Null JsonObj");
+		}
+		if(src.isString()) {
+			String str = src.asString().orElseThrow();
+			if(str.equalsIgnoreCase("INFINITE")) {
+				return INFINITE;
+			}
+			if (str.equalsIgnoreCase("EMPTY")) {
+				return EMPTY;
+			}
+			throw new InvalidJsonProperty("Invalid AABBI String: " + src);
+		}
+		if(src.isMap()) {
+			Vec3I min = src.getObj(MIN).map(Vec3I::new).orElseThrow(missing(MIN));
+			Vec3I max = src.getObj(MAX).map(Vec3I::new).orElseThrow(missing(MAX));
+			return new AABBI(min.resolve(), max.resolve()).resolve();
+		}
+		if(src.isList()) {
+			if(src.size() < 6) {
+				throw new InvalidJsonProperty("List must have at least 6 elements: " + src);
+			}
+			int[] v = new int[6];
+			for (int i = 0; i < 6; i++) {
+				final int j = i;
+				v[i] = src.getObj(i).flatMap(JsonObj::asInteger).orElseThrow(() -> new InvalidJsonProperty("Could not parse element " + j + " as integer"));
+			}
+			return new AABBI(new Vec3I(v[0], v[1], v[2]), new Vec3I(v[3], v[4], v[5])).resolve();
+		}
+		throw new InvalidJsonProperty("Invalid AABBI Json: " + src);
 	}
 	
 	private static Supplier<InvalidJsonProperty> missing(String name) {
@@ -72,12 +99,18 @@ public record AABBI(
 		if(this == INFINITE) {
 			return AABBD.INFINITE;
 		}
+		if(this == EMPTY) {
+			return AABBD.EMPTY;
+		}
 		return new AABBD(this);
 	}
 	
 	public RectI toRectI() {
 		if(this == INFINITE) {
 			return RectI.INFINITE;
+		}
+		if(this == EMPTY) {
+			return RectI.EMPTY;
 		}
 		return new RectI(this);
 	}
@@ -91,6 +124,9 @@ public record AABBI(
 		if(this == INFINITE) {
 			return this;
 		}
+		if(this == EMPTY) {
+			return this;
+		}
 		return new AABBI(min.add(pos), max.add(pos));
 	}
 
@@ -102,12 +138,18 @@ public record AABBI(
 		if(this == INFINITE) {
 			return Vec3I.MAX;
 		}
+		if(this == EMPTY) {
+			return Vec3I.ZERO;
+		}
 		return max.sub(min).add(Vec3I.ONE);
 	}
 
 	public int vol() {
 		if(this == INFINITE) {
 			return Integer.MAX_VALUE;
+		}
+		if(this == EMPTY) {
+			return 0;
 		}
 		return size().vol();
 	}
@@ -117,8 +159,8 @@ public record AABBI(
 		return size.x() <= 0 || size.y() <= 0 || size.z() <= 0;
 	}
 
-	private static Optional<AABBI> badFilter(AABBI in) {
-		return in.badSize() ? Optional.empty() : Optional.of(in);
+	private static AABBI badFilter(AABBI in) {
+		return in.badSize() ? EMPTY : in;
 	}
 
 	/**
@@ -127,6 +169,12 @@ public record AABBI(
 	 * @return Whether the point is inside this AABB.
 	 */
 	public boolean contains(Vec3I pos) {
+		if(this == INFINITE) {
+			return true;
+		}
+		if(this == EMPTY) {
+			return false;
+		}
 		return
 			pos.x() >= min.x() && pos.x() <= max.x() &&
 			pos.y() >= min.y() && pos.y() <= max.y() &&
@@ -139,6 +187,12 @@ public record AABBI(
 	 * @return Whether the other AABB is inside this AABB.
 	 */
 	public boolean contains(AABBI aabb) {
+		if(this == INFINITE) {
+			return true;
+		}
+		if(this == EMPTY) {
+			return false;
+		}
 		return
 			aabb.min.x() >= min.x() && aabb.max.x() <= max.x() &&
 			aabb.min.y() >= min.y() && aabb.max.y() <= max.y() &&
@@ -151,8 +205,13 @@ public record AABBI(
 	 * @return Whether this AABB intersects the other AABB.
 	 */
 	public boolean intersects(AABBI aabb) {
+		if(this == INFINITE || aabb == INFINITE) {
+			return true;
+		}
+		if(this == EMPTY || aabb == EMPTY) {
+			return false;
+		}
 		return
-			aabb != null &&
 			min.x() <= aabb.max.x() && max.x() >= aabb.min.x() &&
 			min.y() <= aabb.max.y() && max.y() >= aabb.min.y() &&
 			min.z() <= aabb.max.z() && max.z() >= aabb.min.z();
@@ -163,44 +222,77 @@ public record AABBI(
 	 * @param aabb The other AABB
 	 * @return The intersection of this AABB with the other AABB, or {@link Optional#empty()} if there is no intersection.
 	 */
-	public Optional<AABBI> intersect(AABBI aabb) {
-		if(!intersects(aabb)) {
-			return Optional.empty();
+	public AABBI intersect(AABBI aabb) {
+		if(this == INFINITE) {
+			return aabb;
 		}
-		return Optional.of(new AABBI(min.max(aabb.min), max.min(aabb.max)));
+		if(aabb == INFINITE) {
+			return this;
+		}
+		if(this == EMPTY || aabb == EMPTY) {
+			return EMPTY;
+		}
+		if(!intersects(aabb)) {
+			return EMPTY;
+		}
+		return new AABBI(min.max(aabb.min), max.min(aabb.max));
 	}
 
-	public Optional<AABBI> expand(int amount) {
+	public AABBI expand(int amount) {
+		if(this == INFINITE) {
+			return this;
+		}
+		if(this == EMPTY) {
+			return this;
+		}
 		return expand(new Vec3I(amount, amount, amount));
 	}
 
-	public Optional<AABBI> expand(Vec3I amount) {
+	public AABBI expand(Vec3I amount) {
 		if(this == INFINITE) {
-			return Optional.of(this);
+			return this;
+		}
+		if(this == EMPTY) {
+			return this;
 		}
 		return badFilter(new AABBI(min.sub(amount), max.add(amount)));
 	}
 
-	public Optional<AABBI> shrink(int amount) {
+	public AABBI shrink(int amount) {
 		return expand(-amount);
 	}
 
-	public Optional<AABBI> shrink(Vec3I amount) {
+	public AABBI shrink(Vec3I amount) {
 		return expand(amount.neg());
 	}
-
+	
 	public AABBI union(AABBI aabb) {
+		if(this == INFINITE || aabb == INFINITE) {
+			return INFINITE;
+		}
+		if(this == EMPTY) {
+			return aabb;
+		}
+		if(aabb == EMPTY) {
+			return this;
+		}
 		return new AABBI(min.min(aabb.min), max.max(aabb.max));
 	}
 	
 	public static AABBI union(AABBI a, AABBI b) {
-		if (a != null && b != null) {
+		if (a != EMPTY && b != EMPTY) {
 			return a.union(b);
 		}
-		return a != null ? a : b;
+		return a != EMPTY ? a : b;
 	}
 	
 	public AABBI union(Vec3I pos) {
+		if(this == INFINITE) {
+			return this;
+		}
+		if(this == EMPTY) {
+			return new AABBI(pos, pos);
+		}
 		return new AABBI(min.min(pos), max.max(pos));
 	}
 	
@@ -209,6 +301,12 @@ public record AABBI(
 	 * @param func A function that accepts the absolute position and the relative position respectively.
 	 */
 	public void forEach(BiConsumer<Vec3I, Vec3I> func) {
+		if(this == INFINITE) {
+			throw new UnsupportedOperationException("Cannot iterate over infinite AABB");
+		}
+		if(this == EMPTY) {
+			return;
+		}
 		Vec3I size = size();
 		int maxX = size.x();
 		int maxY = size.y();
@@ -223,6 +321,18 @@ public record AABBI(
 		}
 	}
 	
+	public AABBI resolve() {
+		Vec3I rMin = min.resolve();
+		Vec3I rMax = max.resolve();
+		if(rMin == Vec3I.MIN && rMax == Vec3I.MAX) {
+			return INFINITE;
+		}
+		if(rMin == Vec3I.MIN && rMax == Vec3I.MIN) {
+			return EMPTY;
+		}
+		return badFilter(this);
+	}
+	
 	public CompoundTag toNBT() {
 		CompoundTag tag = new CompoundTag();
 		tag.put(MIN, min().toNBT());
@@ -230,17 +340,18 @@ public record AABBI(
 		return tag;
 	}
 	
-	public AABBI fromChunk(Vec3I chunkPos) {
-		Vec3I blockPos = chunkPos.mul(16);
-		Vec3I chunkSize = new Vec3I(16, 16, 16);
-		return new AABBI(blockPos, blockPos.add(chunkSize));
-	}
-	
 	@Override
 	public JsonObj toJsonObj() {
+		AABBI resolved = resolve();
+		if(resolved == INFINITE) {
+			return new JsonObj("INFINITE");
+		}
+		if(resolved == EMPTY) {
+			return new JsonObj("EMPTY");
+		}
 		return JsonObj.newMap()
-			.set(MIN, min)
-			.set(MAX, max);
+			.set(MIN, resolved.min)
+			.set(MAX, resolved.max);
 	}
 	
 	@Override

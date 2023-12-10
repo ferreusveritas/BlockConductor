@@ -51,8 +51,8 @@ public class TranslateBlockProvider extends BlockProvider {
 	}
 	
 	@Override
-	public Optional<AABBI> getAABB() {
-		return provider.getAABB().map(a -> a.offset(offset.neg()));
+	public AABBI getAABB() {
+		return provider.getAABB().offset(offset.neg());
 	}
 	
 	@Override

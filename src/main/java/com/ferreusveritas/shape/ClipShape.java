@@ -21,7 +21,7 @@ public class ClipShape extends Shape {
 	public ClipShape(Scene scene, JsonObj src) {
 		super(scene, src);
 		this.shape = src.getObj(SHAPE).map(scene::createShape).orElseThrow(missing(SHAPE));
-		this.bounds = src.getObj(BOUNDS).map(AABBD::new).orElseThrow(missing(BOUNDS));
+		this.bounds = src.getObj(BOUNDS).map(AABBD::fromJson).orElseThrow(missing(BOUNDS));
 	}
 	
 	@Override
@@ -39,7 +39,7 @@ public class ClipShape extends Shape {
 		if(bounds.contains(pos)) {
 			return shape.getVal(pos);
 		}
-		return 0;
+		return 0.0;
 	}
 	
 	@Override

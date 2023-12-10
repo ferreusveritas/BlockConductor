@@ -40,7 +40,7 @@ public class ResourceBlockProvider extends BlockProvider {
 	}
 	
 	@Override
-	public Optional<AABBI> getAABB() {
+	public AABBI getAABB() {
 		return provider.getAABB();
 	}
 	

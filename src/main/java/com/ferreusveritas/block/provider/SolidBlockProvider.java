@@ -47,8 +47,8 @@ public class SolidBlockProvider extends BlockProvider {
 	}
 	
 	@Override
-	public Optional<AABBI> getAABB() {
-		return Optional.of(AABBI.INFINITE);
+	public AABBI getAABB() {
+		return AABBI.INFINITE;
 	}
 	
 	@Override

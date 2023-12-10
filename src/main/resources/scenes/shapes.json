@@ -4,17 +4,18 @@
 		{
 			"type": "shape",
 			"shape": {
-				"type": "box",
-				"bounds": {
-					"min": {
+				"type": "translate",
+				"offset": {
+					"x": 3,
+					"y": 58,
+					"z": 3
+				},
+				"shape": {
+					"type": "cube",
+					"size": {
 						"x": 4,
-						"y": 1,
+						"y": 16,
 						"z": 4
-					},
-					"max": {
-						"x": 8,
-						"y": 84,
-						"z": 8
 					}
 				}
 			},

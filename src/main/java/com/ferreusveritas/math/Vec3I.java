@@ -10,16 +10,21 @@ public record Vec3I(
 	int z
 ) implements Jsonable {
 	
-	public static final Vec3I ZERO = new Vec3I(0, 0, 0);
-	public static final Vec3I ONE = new Vec3I(1, 1, 1);
-	public static final Vec3I MIN = new Vec3I(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
-	public static final Vec3I MAX = new Vec3I(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
+	public static final Vec3I ZERO = new Vec3I(0);
+	public static final Vec3I ONE = new Vec3I(1);
+	public static final Vec3I MIN = new Vec3I(Integer.MIN_VALUE);
+	public static final Vec3I MAX = new Vec3I(Integer.MAX_VALUE);
 	public static final Vec3I DOWN = ZERO.withY(-1);
 	public static final Vec3I UP = ZERO.withY(1);
 	public static final Vec3I NORTH = ZERO.withZ(-1);
 	public static final Vec3I SOUTH = ZERO.withZ(1);
 	public static final Vec3I WEST = ZERO.withX(-1);
 	public static final Vec3I EAST = ZERO.withX(1);
+	public static final Vec3I CHUNK = new Vec3I(16, 16, 16);
+	
+	public Vec3I(int value) {
+		this(value, value, value);
+	}
 	
 	public Vec3I(Vec3D vec) {
 		this((int)Math.floor(vec.x()), (int)Math.floor(vec.y()), (int)Math.floor(vec.z()));
@@ -187,6 +192,28 @@ public record Vec3I(
 		int y = index / (size.x * size.y);
 		int z = (index / size.x) % size.y;
 		return new Vec3I(x, y, z);
+	}
+	
+	public Vec3I resolve() {
+		if(this == MIN) {
+			return MIN;
+		}
+		if(this == MAX) {
+			return MAX;
+		}
+		if(this == ZERO) {
+			return ZERO;
+		}
+		if(x == Integer.MIN_VALUE && y == Integer.MIN_VALUE && z == Integer.MIN_VALUE) {
+			return MIN;
+		}
+		if(x == Integer.MAX_VALUE && y == Integer.MAX_VALUE && z == Integer.MAX_VALUE) {
+			return MAX;
+		}
+		if(x == 0 && y == 0 && z == 0) {
+			return ZERO;
+		}
+		return this;
 	}
 	
 	@Override

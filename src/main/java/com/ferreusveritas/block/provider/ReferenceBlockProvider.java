@@ -41,7 +41,7 @@ public class ReferenceBlockProvider extends BlockProvider {
 	}
 	
 	@Override
-	public Optional<AABBI> getAABB() {
+	public AABBI getAABB() {
 		return ref.getAABB();
 	}
 	

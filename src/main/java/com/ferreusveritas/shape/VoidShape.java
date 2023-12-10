@@ -19,7 +19,7 @@ public class VoidShape extends Shape {
 	
 	@Override
 	public String getType() {
-		return null;
+		return TYPE;
 	}
 	
 	@Override
@@ -29,7 +29,7 @@ public class VoidShape extends Shape {
 	
 	@Override
 	public double getVal(Vec3D pos) {
-		return 0;
+		return 0.0;
 	}
 	
 }

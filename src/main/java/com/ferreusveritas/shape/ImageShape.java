@@ -34,10 +34,7 @@ public class ImageShape extends Shape {
 		BufferedImage image = ImageLoader.load(resource);
 		this.data = createData(image, channel);
 		this.dataWidth = image.getWidth();
-		this.bounds = new AABBD(
-			new Vec3D(0.0, Double.NEGATIVE_INFINITY, 0.0),
-			new Vec3D(image.getWidth(), Double.POSITIVE_INFINITY, image.getHeight())
-		);
+		this.bounds = calculateBounds(image);
 	}
 	
 	public ImageShape(Scene scene, JsonObj src) {
@@ -47,7 +44,11 @@ public class ImageShape extends Shape {
 		BufferedImage image = ImageLoader.load(resource);
 		this.data = createData(image, channel);
 		this.dataWidth = image.getWidth();
-		this.bounds = new AABBD(
+		this.bounds = calculateBounds(image);
+	}
+	
+	private AABBD calculateBounds(BufferedImage image) {
+		return new AABBD(
 			new Vec3D(0.0, Double.NEGATIVE_INFINITY, 0.0),
 			new Vec3D(image.getWidth(), Double.POSITIVE_INFINITY, image.getHeight())
 		);
@@ -79,7 +80,7 @@ public class ImageShape extends Shape {
 	
 	@Override
 	public double getVal(Vec3D pos) {
-		if(bounds().contains(pos)) {
+		if(bounds.contains(pos)) {
 			Vec3I vec = pos.toVecI();
 			return data[vec.z() * dataWidth + vec.x()];
 		}

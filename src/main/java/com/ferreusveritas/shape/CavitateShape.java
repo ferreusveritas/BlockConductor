@@ -10,15 +10,22 @@ public class CavitateShape extends Shape {
 	public static final String TYPE = "cavitate";
 	
 	private final Shape shape;
+	private final AABBD bounds;
 	
 	public CavitateShape(Scene scene, Shape shape) {
 		super(scene);
 		this.shape = shape;
+		this.bounds = calculateBounds();
 	}
 	
 	public CavitateShape(Scene scene, JsonObj src) {
 		super(scene, src);
 		this.shape = src.getObj(SHAPE).map(scene::createShape).orElseThrow(missing(SHAPE));
+		this.bounds = calculateBounds();
+	}
+	
+	private AABBD calculateBounds() {
+		return shape.bounds();
 	}
 	
 	@Override
@@ -28,12 +35,12 @@ public class CavitateShape extends Shape {
 	
 	@Override
 	public AABBD bounds() {
-		return shape.bounds();
+		return bounds;
 	}
 	
 	@Override
 	public double getVal(Vec3D pos) {
-		return inside(pos) ? 1.0 : 0.0;
+		return bounds.contains(pos) && inside(pos) ? 1.0 : 0.0;
 	}
 	
 	private boolean inside(Vec3D pos) {

@@ -18,11 +18,13 @@ public class CurveShape extends Shape {
 	
 	private final Shape shape;
 	private final List<ControlPoint> controlPoints;
+	private final AABBD bounds;
 	
 	public CurveShape(Scene scene, Shape shape, List<ControlPoint> controlPoints) {
 		super(scene);
 		this.shape = shape;
 		this.controlPoints = sort(controlPoints);
+		this.bounds = calculateBounds();
 		validate();
 	}
 	
@@ -30,7 +32,12 @@ public class CurveShape extends Shape {
 		super(scene, src);
 		this.shape = src.getObj(SHAPE).map(scene::createShape).orElseThrow(missing(SHAPE));
 		this.controlPoints = sort(src.getList(CONTROL_POINTS).toImmutableList(ControlPoint::new));
+		this.bounds = calculateBounds();
 		validate();
+	}
+	
+	private AABBD calculateBounds() {
+		return shape.bounds();
 	}
 	
 	private static List<ControlPoint> sort(List<ControlPoint> controlPoints) {
@@ -50,11 +57,14 @@ public class CurveShape extends Shape {
 	
 	@Override
 	public AABBD bounds() {
-		return shape.bounds();
+		return bounds;
 	}
 	
 	@Override
 	public double getVal(Vec3D pos) {
+		if (!bounds.contains(pos)) {
+			return 0.0;
+		}
 		return process(shape.getVal(pos));
 	}
 	

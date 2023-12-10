@@ -45,8 +45,8 @@ public class MapperBlockProvider extends BlockProvider {
 	@Override
 	public Optional<Blocks> getBlocks(Request request) {
 		AABBI area = request.area();
-		AABBI bounds = intersect(area).orElse(null);
-		if(bounds == null) {
+		AABBI bounds = intersect(area);
+		if(bounds == AABBI.EMPTY) {
 			return Optional.empty();
 		}
 		Blocks blocks = provider.getBlocks(request).orElse(null);
@@ -63,7 +63,7 @@ public class MapperBlockProvider extends BlockProvider {
 	}
 	
 	@Override
-	public Optional<AABBI> getAABB() {
+	public AABBI getAABB() {
 		return provider.getAABB();
 	}
 	

@@ -49,22 +49,22 @@ public abstract class BlockProvider implements Jsonable {
 	 * @return True if the area intersects with this block provider, false otherwise.
 	 */
 	public boolean intersects(AABBI area) {
-		return getAABB().map(a -> a.intersects(area)).orElse(false);
+		return getAABB().intersects(area);
 	}
 	
 	/**
 	 * Get the AABB for this block provider.
-	 * @return The AABB for this block provider.
+	 * @return The AABB for this block provider. Never null.
 	 */
-	public abstract Optional<AABBI> getAABB();
+	public abstract AABBI getAABB();
 	
 	/**
 	 * Get the AABB for this block provider, intersected with the given area.
 	 * @param area The area to intersect with.
 	 * @return The AABB for this block provider, intersected with the given area.
 	 */
-	protected Optional<AABBI> intersect(AABBI area) {
-		return getAABB().flatMap(a -> a.intersect(area));
+	protected AABBI intersect(AABBI area) {
+		return getAABB().intersect(area);
 	}
 	
 	/**
@@ -73,9 +73,9 @@ public abstract class BlockProvider implements Jsonable {
 	 * @return The AABB for the given block providers.
 	 */
 	protected AABBI unionProviders(Collection<BlockProvider> providers) {
-		AABBI aabb = null;
+		AABBI aabb = AABBI.EMPTY;
 		for (BlockProvider provider : providers) {
-			aabb = AABBI.union(aabb, provider.getAABB().orElse(null));
+			aabb = AABBI.union(aabb, provider.getAABB());
 		}
 		return aabb;
 	}

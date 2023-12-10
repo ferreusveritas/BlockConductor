@@ -15,6 +15,9 @@ public abstract class Shape implements Jsonable {
 	
 	public static final String SHAPE = "shape";
 	public static final String BOUNDS = "bounds";
+	public static final String TYPE = "type";
+	public static final String UID = "uuid";
+	private static final double THRESHOLD = 0.5;
 	
 	private final Scene scene;
 	private final UUID uuid;
@@ -26,7 +29,7 @@ public abstract class Shape implements Jsonable {
 	
 	protected Shape(Scene scene, JsonObj src) {
 		this.scene = scene;
-		this.uuid = src.getString("uuid").map(UUID::fromString).orElse(UUID.randomUUID());
+		this.uuid = src.getString(UID).map(UUID::fromString).orElse(UUID.randomUUID());
 	}
 	
 	public UUID getUuid() {
@@ -40,7 +43,7 @@ public abstract class Shape implements Jsonable {
 	public abstract double getVal(Vec3D pos);
 	
 	public boolean isInside(Vec3D pos) {
-		return getVal(pos) >= 0.5;
+		return getVal(pos) >= THRESHOLD;
 	}
 	
 	public boolean isInside(Vec3I pos) {
@@ -50,8 +53,8 @@ public abstract class Shape implements Jsonable {
 	@Override
 	public JsonObj toJsonObj() {
 		return JsonObj.newMap()
-			.set("type", getType())
-			.set("uuid", uuid.toString());
+			.set(TYPE, getType())
+			.set(UID, uuid.toString());
 	}
 	
 	@Override

@@ -14,6 +14,7 @@ public class RadialGradientShape extends Shape {
 	public static final double DEFAULT_RADIUS = 1.0;
 	
 	private final double radius;
+	private final AABBD bounds;
 	
 	public RadialGradientShape(Scene scene) {
 		this(scene, DEFAULT_RADIUS);
@@ -22,24 +23,33 @@ public class RadialGradientShape extends Shape {
 	public RadialGradientShape(Scene scene, double radius) {
 		super(scene);
 		this.radius = radius;
+		this.bounds = calculateBounds(radius);
 	}
 	
 	public RadialGradientShape(Scene scene, JsonObj src) {
 		super(scene, src);
 		this.radius = src.getDouble("radius").orElse(DEFAULT_RADIUS);
+		this.bounds = calculateBounds(radius);
 	}
 	
-	@Override
-	public String getType() {
-		return null;
-	}
-	
-	@Override
-	public AABBD bounds() {
+	private AABBD calculateBounds(double radius) {
+		if(radius <= 0) {
+			throw new IllegalArgumentException("radius must be greater than zero");
+		}
 		return new AABBD(
 			new Vec3D(-radius, -radius, -radius),
 			new Vec3D(radius, radius, radius)
 		);
+	}
+	
+	@Override
+	public String getType() {
+		return TYPE;
+	}
+	
+	@Override
+	public AABBD bounds() {
+		return bounds;
 	}
 	
 	@Override

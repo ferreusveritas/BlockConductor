@@ -23,7 +23,7 @@ public class TransformShape extends Shape {
 		this.shape = shape;
 		this.transform = transform;
 		this.matrix = transform.getMatrix().invert();
-		this.bounds = shape.bounds().transform(transform.getMatrix());
+		this.bounds = calculateBounds(shape);
 	}
 	
 	public TransformShape(Scene scene, JsonObj src) {
@@ -31,7 +31,11 @@ public class TransformShape extends Shape {
 		this.shape = src.getObj(SHAPE).map(scene::createShape).orElseThrow(missing(SHAPE));
 		this.transform = src.getObj(TRANSFORM).map(TransformFactory::create).orElseThrow(missing(TRANSFORM));
 		this.matrix = transform.getMatrix().invert();
-		this.bounds = shape.bounds().transform(transform.getMatrix());
+		this.bounds = calculateBounds(shape);
+	}
+	
+	private AABBD calculateBounds(Shape shape) {
+		return shape.bounds().transform(transform.getMatrix());
 	}
 	
 	@Override

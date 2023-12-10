@@ -9,7 +9,6 @@ public class ShapeFactory {
 	
 	private static final BiFactory<Shape> FACTORY = new BiFactory.Builder<Shape>()
 		.add(BlendShape.TYPE, BlendShape::new)
-		.add(BoxShape.TYPE, BoxShape::new)
 		.add(CacheShape.TYPE, CacheShape::new)
 		.add(CavitateShape.TYPE, CavitateShape::new)
 		.add(CheckerShape.TYPE, CheckerShape::new)
