@@ -14,14 +14,26 @@ public class MeshModel extends Model {
 	public static final String TYPE = "mesh";
 	
 	private final String resource;
+	private final String object;
 	private final List<SimpleFace> faces;
 	private final AABBD aabb;
 	private final QSPModel qsp;
 	
+	public MeshModel(Scene scene, String resource, String object) {
+		super(scene);
+		this.resource = resource;
+		this.object = object;
+		ObjModel objModel = ObjModelLoader.load(resource, object).orElseThrow(() -> new InvalidJsonProperty("Unable to load model: " + resource));
+		this.faces = objModel.getFaces().stream().map(FullFace::toSimpleFace).toList();
+		this.aabb = calculateAABB().orElseThrow(() -> new InvalidJsonProperty("SimpleMeshModel AABB is null"));
+		this.qsp = calculateQSP();
+	}
+	
 	public MeshModel(Scene scene, JsonObj src) {
 		super(scene, src);
 		this.resource = src.getString("resource").orElseThrow(() -> new InvalidJsonProperty("Missing resource"));
-		ObjModel objModel = ObjModelLoader.load(resource).orElseThrow(() -> new InvalidJsonProperty("Unable to load model: " + resource));
+		this.object = src.getString("object").orElse(null);
+		ObjModel objModel = ObjModelLoader.load(resource, object).orElseThrow(() -> new InvalidJsonProperty("Unable to load model: " + resource));
 		this.faces = objModel.getFaces().stream().map(FullFace::toSimpleFace).toList();
 		this.aabb = calculateAABB().orElseThrow(() -> new InvalidJsonProperty("SimpleMeshModel AABB is null"));
 		this.qsp = calculateQSP();
@@ -67,6 +79,13 @@ public class MeshModel extends Model {
 	@Override
 	public boolean pointIsInside(Vec3D point) {
 		return qsp.pointIsInside(point);
+	}
+	
+	@Override
+	public JsonObj toJsonObj() {
+		return super.toJsonObj()
+			.set("resource", resource)
+			.set("object", object);
 	}
 	
 }

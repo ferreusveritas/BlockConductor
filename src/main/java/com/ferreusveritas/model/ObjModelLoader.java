@@ -7,9 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class ObjModelLoader {
 	
@@ -17,29 +15,35 @@ public class ObjModelLoader {
 	private static final boolean INVERT_Z = true;
 	private static final boolean SWAP_YZ = false;
 	
-	private List<Vec3D> vertices = new ArrayList<>();
-	private List<Vec2D> textureCoordinates = new ArrayList<>();
-	private List<Vec3D> normals = new ArrayList<>();
-	private final List<FullFace> faces = new ArrayList<>();
+	final List<Vec3D> vertices = new ArrayList<>();
+	final List<Vec2D> textureCoordinates = new ArrayList<>();
+	final List<Vec3D> normals = new ArrayList<>();
 	
-	public static Optional<ObjModel> load(String path) {
+	private static class O {
+		final List<FullFace> faces = new ArrayList<>();
+	}
+	
+	private final Map<String, O> objects = new HashMap<>();
+	private O currentObject = new O();
+	
+	public static Optional<ObjModel> load(String path, String objectName) {
 		try {
 			InputStream stream = Storage.getInputStream(path);
-			return load(stream);
+			return load(stream, objectName);
 		} catch (Exception e) {
 			LOG.error("Failed to load model: {}", path, e);
 			return Optional.empty();
 		}
 	}
 	
-	public static Optional<ObjModel> load(InputStream stream) {
+	public static Optional<ObjModel> load(InputStream stream, String objectName) {
 		InputStreamReader reader = new InputStreamReader(stream);
-		return load(reader);
+		return load(reader, objectName);
 	}
 	
-	public static Optional<ObjModel> load(Reader reader) {
+	public static Optional<ObjModel> load(Reader reader, String objectName) {
 		ObjModelLoader loader = new ObjModelLoader(reader);
-		ObjModel model = new ObjModel(loader.getFaces());
+		ObjModel model = new ObjModel(loader.getFaces(objectName));
 		return Optional.of(model);
 	}
 	
@@ -53,10 +57,14 @@ public class ObjModelLoader {
 		} catch (IOException e) {
 			LOG.error("Error reading model data", e);
 		} finally {
-			vertices = null;
-			textureCoordinates = null;
-			normals = null;
+			cleanup();
 		}
+	}
+	
+	private void cleanup() {
+		vertices.clear();
+		textureCoordinates.clear();
+		normals.clear();
 	}
 	
 	private void processLine(String[] lineParts) {
@@ -72,6 +80,11 @@ public class ObjModelLoader {
 				break;
 			case "f":
 				processFace(lineParts);
+				break;
+			case "o":
+				currentObject = new O();
+				String name = lineParts[1];
+				objects.put(name, currentObject);
 				break;
 			default:
 				break;
@@ -126,7 +139,7 @@ public class ObjModelLoader {
 			normalTemp[i] = getIndexOrZero(vertexParts[2], normals, Vec3D.ZERO);
 		}
 		FullFace face = new FullFace(faceVertices, textureTemp, normalTemp);
-		faces.add(face);
+		currentObject.faces.add(face);
 	}
 	
 	private static <T> T getIndexOrZero(String strIndex, List<T> coordinates, T zero) {
@@ -153,8 +166,12 @@ public class ObjModelLoader {
 		return new Vec3D(vec.x(), vec.y(), -vec.z());
 	}
 	
-	public List<FullFace> getFaces() {
-		return faces;
+	public List<FullFace> getFaces(String objectName) {
+		O o = objects.get(objectName);
+		if(o == null) {
+			return currentObject.faces;
+		}
+		return o.faces;
 	}
 	
 }
