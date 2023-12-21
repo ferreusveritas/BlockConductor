@@ -3,6 +3,7 @@ package com.ferreusveritas.scene;
 import com.ferreusveritas.api.Request;
 import com.ferreusveritas.api.Response;
 import com.ferreusveritas.block.Blocks;
+import com.ferreusveritas.node.provider.BlockProvider;
 import com.ferreusveritas.math.AABBI;
 
 public class BlockSystem {
@@ -12,7 +13,7 @@ public class BlockSystem {
 	private final Scene scene = MainScene.getScene();
 	
 	public Response process(Request request) {
-		Blocks blocks = scene.getRoot().getBlocks(request).orElse(null);
+		Blocks blocks = scene.getRoot(BlockProvider.class).orElseThrow().getBlocks(request).orElse(null);
 		Response response = new Response(request.area(), blocks);
 		response = optimize(response);
 		return response;

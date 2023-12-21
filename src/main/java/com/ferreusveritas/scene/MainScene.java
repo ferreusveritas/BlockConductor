@@ -2,17 +2,17 @@ package com.ferreusveritas.scene;
 
 import com.ferreusveritas.block.Block;
 import com.ferreusveritas.block.BlockCache;
-import com.ferreusveritas.block.provider.*;
-import com.ferreusveritas.model.MeshModel;
-import com.ferreusveritas.shape.*;
-import com.ferreusveritas.shape.support.CombineOperation;
+import com.ferreusveritas.node.model.MeshModel;
+import com.ferreusveritas.node.provider.*;
+import com.ferreusveritas.node.shape.*;
+import com.ferreusveritas.node.shape.support.CombineOperation;
 import com.ferreusveritas.math.Vec3D;
 import com.ferreusveritas.math.Vec3I;
 import com.ferreusveritas.support.storage.Storage;
-import com.ferreusveritas.transform.RotateY;
-import com.ferreusveritas.transform.Scale;
-import com.ferreusveritas.transform.Transforms;
-import com.ferreusveritas.transform.Translate;
+import com.ferreusveritas.node.transform.RotateY;
+import com.ferreusveritas.node.transform.Scale;
+import com.ferreusveritas.node.transform.Transforms;
+import com.ferreusveritas.node.transform.Translate;
 
 import java.util.Map;
 
@@ -22,17 +22,17 @@ public class MainScene {
 	
 	private static Scene createScene() {
 		Scene scene = new Scene();
-		BlockProvider air = new SolidBlockProvider(scene, BlockCache.AIR);
-		BlockProvider shapeTest = BlockProviderFactory.create(scene, Storage.getJson("res://scenes/shapes.json"));
-		BlockProvider cylinderTest = BlockProviderFactory.create(scene, Storage.getJson("res://scenes/cylinder.json"));
-		BlockProvider heightMapTest = BlockProviderFactory.create(scene, Storage.getJson("res://scenes/heightmap.json"));
-		BlockProvider modelTest = BlockProviderFactory.create(scene, Storage.getJson("res://scenes/dragon.json"));
-		BlockProvider noiseTest = createNoiseTest(scene);
-		BlockProvider noiseTest2 = createNoiseTest2(scene);
-		BlockProvider pyramidTest = createPyramidTest(scene);
-		BlockProvider shyGuyTest = createShyGuyTest(scene);
+		BlockProvider air = new SolidBlockProvider(BlockCache.AIR);
+		BlockProvider shapeTest = new Scene(Storage.getJson("res://scenes/shapes.json")).getRoot(BlockProvider.class).orElseThrow();
+		BlockProvider cylinderTest = new Scene(Storage.getJson("res://scenes/cylinder.json")).getRoot(BlockProvider.class).orElseThrow();
+		BlockProvider heightMapTest = new Scene(Storage.getJson("res://scenes/heightmap.json")).getRoot(BlockProvider.class).orElseThrow();
+		BlockProvider modelTest = new Scene(Storage.getJson("res://scenes/dragon.json")).getRoot(BlockProvider.class).orElseThrow();
+		BlockProvider noiseTest = createNoiseTest();
+		BlockProvider noiseTest2 = createNoiseTest2();
+		BlockProvider pyramidTest = createPyramidTest();
+		BlockProvider shyGuyTest = createShyGuyTest();
 		
-		BlockProvider root = new RoutingBlockProvider(scene, Map.of(
+		BlockProvider root = new RoutingBlockProvider.Builder().add(Map.of(
 			"a", air,
 			"", shapeTest,
 			"c", cylinderTest,
@@ -42,68 +42,71 @@ public class MainScene {
 			"n2", noiseTest2,
 			"p", pyramidTest,
 			"s", shyGuyTest
-		));
+		)).build();
 		scene.setRoot(root);
 		return scene;
 	}
 	
-	private static BlockProvider createNoiseTest(Scene scene) {
-		Shape simplexShape = new SimplexShape.Builder().frequency(0.005).build(scene);
-		Shape heightMapShape = new HeightMapShape(scene, simplexShape, 32.0);
-		Shape translateShape = new TranslateShape(scene, heightMapShape, new Vec3I(0, 56, 0));
-		return new ShapeBlockProvider(scene, translateShape, new Block("minecraft:stone"));
+	private static BlockProvider createNoiseTest() {
+		Shape simplexShape = new SimplexShape.Builder().frequency(0.005).build();
+		Shape heightMapShape = new HeightMapShape.Builder().shape(simplexShape).height(32.0).build();
+		Shape translateShape = new TranslateShape.Builder().shape(heightMapShape).offset(new Vec3I(0, 56, 0)).build();
+		return new ShapeBlockProvider.Builder().shape(translateShape).block(new Block("minecraft:stone")).build();
 	}
 	
-	private static BlockProvider createNoiseTest2(Scene scene) {
-		Shape simplexShape = new SimplexShape.Builder().frequency(0.005).build(scene);
-		Shape gradientShape = new GradientShape(scene, 0.0, 64.0);
-		Shape multiplyShape = new CombineShape(scene, CombineOperation.MUL, simplexShape, gradientShape);
-		Shape translateShape = new TranslateShape(scene, multiplyShape, new Vec3I(0, 56, 0));
-		return new TerrainBlockProvider(scene, translateShape,
-			new Block("minecraft:stone"),
-			new Block("minecraft:grass_block"),
-			new Block("minecraft:dirt")
-		);
+	private static BlockProvider createNoiseTest2() {
+		Shape simplexShape = new SimplexShape.Builder().frequency(0.005).build();
+		Shape gradientShape = new GradientShape.Builder().minY(0.0).maxY(64.0).build();
+		Shape multiplyShape = new CombineShape.Builder().operation(CombineOperation.MUL).add(simplexShape, gradientShape).build();
+		Shape translateShape = new TranslateShape.Builder().shape(multiplyShape).offset(new Vec3I(0, 56, 0)).build();
+		return new TerrainBlockProvider.Builder()
+			.shape(translateShape)
+			.fill(new Block("minecraft:stone"))
+			.surface(new Block("minecraft:grass_block"))
+			.subSurface(new Block("minecraft:dirt"))
+			.build();
 	}
 	
-	private static BlockProvider createPyramidTest(Scene scene) {
-		Shape pyramidShape = new PyramidShape(scene, 16.0, 32.0);
-		Shape translateShape = new TransformShape(scene, pyramidShape,
-			new Transforms(
+	private static BlockProvider createPyramidTest() {
+		Shape pyramidShape = new PyramidShape.Builder().height(16.0).base(32.0).build();
+		Shape translateShape = new TransformShape.Builder().shape(pyramidShape).transform(
+			new Transforms.Builder().add(
 				//new RotateX(25.0),
 				//new RotateZ(45.0),
-				new Translate(new Vec3D(20.5, 56, 20.5))
-			)
-		);
-		return new ShapeBlockProvider(scene, translateShape, new Block("minecraft:sandstone"));
+				new Translate.Builder().offset(new Vec3D(20.5, 56, 20.5)).build()
+			).build()
+		).build();
+		return new ShapeBlockProvider.Builder()
+			.shape(translateShape)
+			.block(new Block("minecraft:sandstone"))
+			.build();
 	}
 	
-	public static BlockProvider createShyGuyTest(Scene scene) {
-		BlockProvider body = loadShyPart(scene, "body", "red_concrete");
-		BlockProvider face = loadShyPart(scene, "face", "black_concrete");
-		BlockProvider strap = loadShyPart(scene, "strap", "brown_concrete");
-		BlockProvider mask = loadShyPart(scene, "mask", "white_concrete");
-		BlockProvider shoes = loadShyPart(scene, "shoes", "blue_concrete");
-		BlockProvider soles = loadShyPart(scene, "soles", "brown_concrete");
-		BlockProvider belt = loadShyPart(scene, "belt", "black_concrete");
-		BlockProvider buckle = loadShyPart(scene, "buckle", "yellow_concrete");
+	public static BlockProvider createShyGuyTest() {
+		BlockProvider body = loadShyPart("body", "red_concrete");
+		BlockProvider face = loadShyPart("face", "black_concrete");
+		BlockProvider strap = loadShyPart("strap", "brown_concrete");
+		BlockProvider mask = loadShyPart("mask", "white_concrete");
+		BlockProvider shoes = loadShyPart("shoes", "blue_concrete");
+		BlockProvider soles = loadShyPart("soles", "brown_concrete");
+		BlockProvider belt = loadShyPart("belt", "black_concrete");
+		BlockProvider buckle = loadShyPart("buckle", "yellow_concrete");
 		
-		BlockProvider combined = new CombineBlockProvider(scene, body, face, strap, mask, shoes, soles, belt, buckle);
-		return combined;
+		return new CombineBlockProvider.Builder().add(body, face, strap, mask, shoes, soles, belt, buckle).build();
 	}
 	
-	private static BlockProvider loadShyPart(Scene scene, String part, String material) {
+	private static BlockProvider loadShyPart(String part, String material) {
 		String modelPath = "res://models/shyguy.obj";
-		MeshModel model = new MeshModel(scene, modelPath, part);
-		Shape modelShape = new ModelShape(scene, model);
-		Shape translateShape = new TransformShape(scene, modelShape,
-			new Transforms(
-				new RotateY(-45.0),
-				new Scale(1.25),
-				new Translate(new Vec3D(32.0, 56, 32.0))
-			)
-		);
-		return new ShapeBlockProvider(scene, translateShape, new Block("minecraft:" + material));
+		MeshModel model = new MeshModel.Builder().resource(modelPath).part(part).build();
+		Shape modelShape = new ModelShape.Builder().model(model).build();
+		Shape translateShape = new TransformShape.Builder().shape(modelShape).transform(
+			new Transforms.Builder().add(
+				new RotateY.Builder().degrees(-45.0).build(),
+				new Scale.Builder().size(1.25).build(),
+				new Translate.Builder().offset(new Vec3D(32.0, 56, 32.0)).build()
+			).build()
+		).build();
+		return new ShapeBlockProvider.Builder().shape(translateShape).block(new Block("minecraft:" + material)).build();
 	}
 	
 	

@@ -5,9 +5,12 @@ import com.ferreusveritas.api.Request;
 import com.ferreusveritas.block.Block;
 import com.ferreusveritas.block.BlockCache;
 import com.ferreusveritas.block.Blocks;
-import com.ferreusveritas.block.provider.*;
+import com.ferreusveritas.factory.NodeFactory;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
+import com.ferreusveritas.node.NodeLoader;
+import com.ferreusveritas.node.provider.*;
+import com.ferreusveritas.scene.LoaderSystem;
 import com.ferreusveritas.scene.Scene;
 import com.ferreusveritas.support.json.JsonObj;
 import org.junit.jupiter.api.Test;
@@ -25,14 +28,18 @@ class BlockProviderFactoryTest extends BaseTestSupport {
 		String blockProviderTestString = readResourceAsString("blockProviderTest.json");
 		JsonObj blockProviderTest = JsonObj.fromJsonString(blockProviderTestString);
 		
-		Scene scene = new Scene();
-		Block none = scene.block(BlockCache.NONE);
-		Block air = scene.block(BlockCache.AIR);
-		Block stone = scene.block(new Block("minecraft:stone", ""));
-		Block bone = scene.block(new Block("minecraft:bone_block", ""));
-		Block dirt = scene.block(new Block("minecraft:dirt", ""));
+		NodeFactory nodeFactory = new NodeFactory();
+		LoaderSystem loaderSystem = new LoaderSystem(nodeFactory);
 		
-		List<BlockProvider> providers = blockProviderTest.toImmutableList(scene::createBlockProvider);
+		Scene scene = new Scene();
+		Block none = loaderSystem.block(BlockCache.NONE);
+		Block air = loaderSystem.block(BlockCache.AIR);
+		Block stone = loaderSystem.block(new Block("minecraft:stone", ""));
+		Block bone = loaderSystem.block(new Block("minecraft:bone_block", ""));
+		Block dirt = loaderSystem.block(new Block("minecraft:dirt", ""));
+		
+		List<NodeLoader> loaders = blockProviderTest.toImmutableList(loaderSystem::createLoader);
+		List<BlockProvider> providers = loaders.stream().map(l -> l.load(loaderSystem, BlockProvider.class).orElseThrow()).toList();
 		assertEquals(5, providers.size());
 		
 		BlockProvider provider = providers.get(0);

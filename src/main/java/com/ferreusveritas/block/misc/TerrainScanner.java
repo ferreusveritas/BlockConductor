@@ -1,6 +1,6 @@
 package com.ferreusveritas.block.misc;
 
-import com.ferreusveritas.shape.Shape;
+import com.ferreusveritas.node.shape.Shape;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
 

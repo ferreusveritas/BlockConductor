@@ -1,15 +1,8 @@
 package com.ferreusveritas.scene;
 
-import com.ferreusveritas.block.Block;
-import com.ferreusveritas.block.BlockCache;
-import com.ferreusveritas.block.mapper.BlockMapper;
-import com.ferreusveritas.block.mapper.BlockMapperFactory;
-import com.ferreusveritas.block.provider.BlockProvider;
-import com.ferreusveritas.block.provider.BlockProviderFactory;
-import com.ferreusveritas.shape.Shape;
-import com.ferreusveritas.shape.support.ShapeFactory;
-import com.ferreusveritas.model.Model;
-import com.ferreusveritas.model.ModelFactory;
+import com.ferreusveritas.factory.NodeFactory;
+import com.ferreusveritas.node.Node;
+import com.ferreusveritas.node.NodeLoader;
 import com.ferreusveritas.support.json.JsonObj;
 import com.ferreusveritas.support.json.Jsonable;
 
@@ -17,101 +10,44 @@ import java.util.*;
 
 public class Scene implements Jsonable {
 	
-	private final Map<UUID, BlockProvider> blockProviders = new HashMap<>();
-	private final Map<UUID, BlockMapper> blockMappers = new HashMap<>();
-	private final Map<UUID, Shape> shapes = new HashMap<>();
-	private final Map<UUID, Model> models = new HashMap<>();
+	public static final String DEFS = "defs";
+	public static final String ROOT = "root";
 	
-	private final SceneReferences references;
-	private BlockProvider root;
-	private final BlockCache blockCache = new BlockCache();
+	private static final NodeFactory nodeFactory = new NodeFactory();
+	
+	private final Map<UUID, Node> nodes = new HashMap<>();
+	private final Map<UUID, Node> defs = new HashMap<>();
+	private Node root;
 	
 	public Scene() {
-		this.references = new SceneReferences();
 	}
 	
 	public Scene(JsonObj src) {
-		this.references = new SceneReferences(this, src);
-		this.root = src.getObj("root").map(this::createBlockProvider).orElse(null);
+		LoaderSystem loaderSystem = new LoaderSystem(nodeFactory);
+		List<NodeLoader> defLoaders = src.getObj(DEFS).orElseGet(JsonObj::newList).toImmutableList(loaderSystem::createLoader);
+		NodeLoader rootLoader = src.getObj(ROOT).map(loaderSystem::createLoader).orElseThrow();
+		defLoaders.stream().map(loader -> loader.load(loaderSystem, Node.class).orElseThrow()).forEach(node -> defs.put(node.getUuid(), node));
+		this.root = rootLoader.load(loaderSystem, Node.class).orElseThrow();
+		this.nodes.putAll(loaderSystem.getNodes());
 	}
 	
-	public void setRoot(BlockProvider root) {
+	public void setRoot(Node root) {
 		this.root = root;
 	}
 	
-	public BlockProvider getRoot() {
+	public Node getRoot() {
 		return root;
 	}
 	
-	public void addBlockProvider(BlockProvider blockProvider) {
-		blockProviders.put(blockProvider.getUuid(), blockProvider);
-	}
-	
-	public BlockProvider createBlockProvider(JsonObj src) {
-		BlockProvider blockProvider = BlockProviderFactory.create(this, src);
-		addBlockProvider(blockProvider);
-		return blockProvider;
-	}
-	
-	public BlockProvider getBlockProvider(UUID uuid) {
-		return blockProviders.get(uuid);
-	}
-	
-	public void addBlockMapper(BlockMapper blockMapper) {
-		blockMappers.put(blockMapper.getUuid(), blockMapper);
-	}
-	
-	public BlockMapper createBlockMapper(JsonObj src) {
-		BlockMapper blockMapper = BlockMapperFactory.create(this, src);
-		addBlockMapper(blockMapper);
-		return blockMapper;
-	}
-	
-	public BlockMapper getBlockMapper(UUID uuid) {
-		return blockMappers.get(uuid);
-	}
-	
-	public void addShape(Shape image) {
-		shapes.put(image.getUuid(), image);
-	}
-	
-	public Shape createShape(JsonObj src) {
-		Shape image = ShapeFactory.create(this, src);
-		addShape(image);
-		return image;
-	}
-	
-	public Shape getShape(UUID uuid) {
-		return shapes.get(uuid);
-	}
-	
-	public void addModel(Model model) {
-		models.put(model.getUuid(), model);
-	}
-	
-	public Model createModel(JsonObj src) {
-		Model model = ModelFactory.create(this, src);
-		addModel(model);
-		return model;
-	}
-	
-	public Model getModel(UUID uuid) {
-		return models.get(uuid);
-	}
-	
-	public Block block(Block block) {
-		return blockCache.resolve(block);
-	}
-	
-	public Block block(JsonObj src) {
-		return blockCache.resolve(src);
+	public <T extends Node> Optional<T> getRoot(Class<T> clazz) {
+		return Optional.ofNullable(root).filter(clazz::isInstance).map(clazz::cast);
 	}
 	
 	@Override
 	public JsonObj toJsonObj() {
 		return JsonObj.newMap()
-			.set("references", references)
-			.set("root", root);
+			.set(DEFS, defs)
+			.set(ROOT, root);
 	}
 	
 }

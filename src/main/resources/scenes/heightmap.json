@@ -1,23 +1,29 @@
 {
-  "type": "translate",
-  "offset": {
-    "x": 0,
-    "y": 55,
-    "z": 0
-  },
-  "provider": {
-    "type": "shape",
-    "shape": {
-      "type": "heightmap",
-      "height": 16,
-      "shape": {
-        "type": "image",
-        "resource": "res://skull.png"
-      }
-    },
-    "block": {
-      "name": "minecraft:bone_block",
-      "state": ""
-    }
-  }
+	"root": {
+		"class": "blockProvider",
+		"type": "translate",
+		"offset": {
+			"x": 0,
+			"y": 55,
+			"z": 0
+		},
+		"provider": {
+			"class": "blockProvider",
+			"type": "shape",
+			"shape": {
+				"class": "shape",
+				"type": "heightmap",
+				"height": 16,
+				"shape": {
+					"class": "shape",
+					"type": "image",
+					"resource": "res://skull.png"
+				}
+			},
+			"block": {
+				"name": "minecraft:bone_block",
+				"state": ""
+			}
+		}
+	}
 }

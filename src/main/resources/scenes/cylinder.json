@@ -1,54 +1,66 @@
 {
-	"type": "translate",
-	"offset": {
-		"x": 16,
-		"y": 56,
-		"z": 25
-	},
-	"provider": {
-		"type": "shape",
-		"shape": {
-			"type": "transform",
-			"transform": {
-				"type": "transforms",
-				"operations": [
-					{
-						"type": "rotatex",
-						"angle": 45.0
-					},
-					{
-						"type": "rotatey",
-						"angle": 22.5
-					},
-					{
-						"type": "translate",
-						"offset": {
-							"x": 0,
-							"y": 8,
-							"z": 0
-						}
-					}
-				]
-			},
-			"shape": {
-				"type": "combine",
-				"operation": "SUB",
-				"shapes": [
-					{
-						"type": "cylinder",
-						"height": 20,
-						"radius": 10
-					},
-					{
-						"type": "cylinder",
-						"height": 20,
-						"radius": 8
-					}
-				]
-			}
+	"root": {
+		"class": "blockProvider",
+		"type": "translate",
+		"offset": {
+			"x": 16,
+			"y": 56,
+			"z": 25
 		},
-		"block": {
-			"name": "minecraft:stone_bricks"
+		"provider": {
+			"class": "blockProvider",
+			"type": "shape",
+			"shape": {
+				"class": "shape",
+				"type": "transform",
+				"transform": {
+					"class": "transform",
+					"type": "transforms",
+					"operations": [
+						{
+							"class": "transform",
+							"type": "rotatex",
+							"angle": 45.0
+						},
+						{
+							"class": "transform",
+							"type": "rotatey",
+							"angle": 22.5
+						},
+						{
+							"class": "transform",
+							"type": "translate",
+							"offset": {
+								"x": 0,
+								"y": 8,
+								"z": 0
+							}
+						}
+					]
+				},
+				"shape": {
+					"class": "shape",
+					"type": "combine",
+					"operation": "SUB",
+					"shapes": [
+						{
+							"class": "shape",
+							"type": "cylinder",
+							"height": 20,
+							"radius": 10
+						},
+						{
+							"class": "shape",
+							"type": "cylinder",
+							"height": 20,
+							"radius": 8
+						}
+					]
+				}
+			},
+			"block": {
+				"name": "minecraft:stone_bricks"
+			}
 		}
 	}
 }
