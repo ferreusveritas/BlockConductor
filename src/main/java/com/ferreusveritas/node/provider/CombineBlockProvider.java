@@ -135,8 +135,8 @@ public class CombineBlockProvider extends BlockProvider {
 		
 		private final List<NodeLoader> providers;
 		
-		public Loader(LoaderSystem loaderSystem, UUID uuid, JsonObj src) {
-			super(uuid);
+		public Loader(LoaderSystem loaderSystem, JsonObj src) {
+			super(loaderSystem, src);
 			this.providers = src.getList(PROVIDERS).toImmutableList(loaderSystem::createLoader);
 		}
 		

@@ -135,8 +135,8 @@ public class SimplexShape extends Shape {
 		private final int octaves;
 		private final int seed;
 		
-		public Loader(LoaderSystem loaderSystem, UUID uuid, JsonObj src) {
-			super(uuid);
+		public Loader(LoaderSystem loaderSystem, JsonObj src) {
+			super(loaderSystem, src);
 			this.frequency = src.getDouble(FREQUENCY).orElse(Simplex.DEFAULT_SIMPLEX_FREQUENCY);
 			this.lacunarity = src.getDouble(LACUNARITY).orElse(Simplex.DEFAULT_SIMPLEX_LACUNARITY);
 			this.persistence = src.getDouble(PERSISTENCE).orElse(Simplex.DEFAULT_SIMPLEX_PERSISTENCE);

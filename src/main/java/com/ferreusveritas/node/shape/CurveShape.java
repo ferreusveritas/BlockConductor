@@ -63,10 +63,19 @@ public class CurveShape extends Shape {
 		return process(shape.getVal(pos));
 	}
 	
+	private int findStartIndex(double in) {
+		int size = controlPoints.size();
+		for(int i = 0; i < size; ++i) {
+			if (in <= (controlPoints.get(i)).in) {
+				return i;
+			}
+		}
+		return size - 1;
+	}
+	
 	private double process(double in) {
 		int size = controlPoints.size();
-		int indexPos;
-		for(indexPos = 0; indexPos < size && (in >= (controlPoints.get(indexPos)).in); ++indexPos) {}
+		int indexPos = findStartIndex(in);
 		
 		int lastIndex = size - 1;
 		int index0 = MathHelper.clamp(indexPos - 2, 0, lastIndex);
@@ -122,7 +131,7 @@ public class CurveShape extends Shape {
 	public static class Builder {
 		
 		private UUID uuid = null;
-		private Shape shape = VoidShape.VOID;
+		private Shape shape = null;
 		private final List<ControlPoint> controlPoints = new ArrayList<>();
 		
 		public Builder uuid(UUID uuid) {
@@ -146,6 +155,9 @@ public class CurveShape extends Shape {
 		}
 		
 		public CurveShape build() {
+			if(shape == null) {
+				throw new IllegalStateException("shape cannot be null");
+			}
 			return new CurveShape(uuid, shape, controlPoints);
 		}
 		
@@ -161,8 +173,8 @@ public class CurveShape extends Shape {
 		private final NodeLoader shape;
 		private final List<ControlPoint> controlPoints;
 		
-		public Loader(LoaderSystem loaderSystem, UUID uuid, JsonObj src) {
-			super(uuid);
+		public Loader(LoaderSystem loaderSystem, JsonObj src) {
+			super(loaderSystem, src);
 			this.shape = loaderSystem.loader(src, SHAPE);
 			this.controlPoints = sort(src.getList(CONTROL_POINTS).toImmutableList(ControlPoint::new));
 		}

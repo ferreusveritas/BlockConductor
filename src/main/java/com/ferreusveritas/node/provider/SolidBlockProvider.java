@@ -96,8 +96,8 @@ public class SolidBlockProvider extends BlockProvider {
 		
 		private final Block block;
 		
-		public Loader(LoaderSystem loaderSystem, UUID uuid, JsonObj src) {
-			super(uuid);
+		public Loader(LoaderSystem loaderSystem, JsonObj src) {
+			super(loaderSystem, src);
 			this.block = loaderSystem.blockLoader(src, BLOCK);
 		}
 		

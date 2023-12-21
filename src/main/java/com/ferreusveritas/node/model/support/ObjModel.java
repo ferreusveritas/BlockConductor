@@ -1,7 +1,5 @@
 package com.ferreusveritas.node.model.support;
 
-import com.ferreusveritas.node.model.support.FullFace;
-
 import java.util.List;
 
 public class ObjModel {

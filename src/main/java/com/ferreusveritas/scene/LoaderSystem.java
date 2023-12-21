@@ -27,6 +27,10 @@ public class LoaderSystem {
 		nodes.put(uuid, obj);
 	}
 	
+	public Optional<Node> get(UUID uuid) {
+		return Optional.ofNullable(nodes.get(uuid));
+	}
+	
 	public <T extends Node> Optional<T> get(UUID uuid, Class<T> clazz) {
 		return Optional.ofNullable(nodes.get(uuid)).filter(clazz::isInstance).map(clazz::cast);
 	}

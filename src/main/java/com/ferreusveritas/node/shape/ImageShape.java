@@ -129,8 +129,8 @@ public class ImageShape extends Shape {
 		private final String resource;
 		private final ColorChannel channel;
 		
-		public Loader(LoaderSystem loaderSystem, UUID uuid, JsonObj src) {
-			super(uuid);
+		public Loader(LoaderSystem loaderSystem, JsonObj src) {
+			super(loaderSystem, src);
 			this.resource = src.getString(RESOURCE).orElseThrow(missing(RESOURCE));
 			this.channel = src.getString(CHANNEL).flatMap(ColorChannel::of).orElse(ColorChannel.G);
 		}

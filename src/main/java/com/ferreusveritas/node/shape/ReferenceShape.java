@@ -84,8 +84,8 @@ public class ReferenceShape extends Shape {
 		
 		private final UUID ref;
 		
-		public Loader(LoaderSystem loaderSystem, UUID uuid, JsonObj src) {
-			super(uuid);
+		public Loader(LoaderSystem loaderSystem, JsonObj src) {
+			super(loaderSystem, src);
 			this.ref = src.getString(REF).map(UUID::fromString).orElseThrow(missing(REF));
 		}
 		

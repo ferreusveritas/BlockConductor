@@ -22,7 +22,7 @@ public class Translate extends Transform {
 	}
 	
 	@Override
-	public Matrix4X4 getMatrix() {
+	public Matrix4X4 getData() {
 		return matrix;
 	}
 	
@@ -72,8 +72,8 @@ public class Translate extends Transform {
 		
 		private final Vec3D offset;
 		
-		public Loader(LoaderSystem loaderSystem, UUID uuid, JsonObj src) {
-			super(uuid);
+		public Loader(LoaderSystem loaderSystem, JsonObj src) {
+			super(loaderSystem, src);
 			this.offset = src.getObj("offset").map(Vec3D::new).orElse(Vec3D.ZERO);
 		}
 		

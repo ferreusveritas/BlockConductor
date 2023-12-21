@@ -78,7 +78,7 @@ public class CacheShape extends Shape {
 	public static class Builder {
 		
 		private UUID uuid = null;
-		private Shape shape = VoidShape.VOID;
+		private Shape shape = null;
 		private AABBD bounds = AABBD.EMPTY;
 		
 		public Builder uuid(UUID uuid) {
@@ -97,6 +97,9 @@ public class CacheShape extends Shape {
 		}
 		
 		public CacheShape build() {
+			if(shape == null) {
+				throw new IllegalStateException("shape cannot be null");
+			}
 			return new CacheShape(uuid, shape, bounds);
 		}
 		
@@ -112,8 +115,8 @@ public class CacheShape extends Shape {
 		private final NodeLoader shape;
 		private final AABBD bounds;
 		
-		public Loader(LoaderSystem loaderSystem, UUID uuid, JsonObj src) {
-			super(uuid);
+		public Loader(LoaderSystem loaderSystem, JsonObj src) {
+			super(loaderSystem, src);
 			this.shape = loaderSystem.loader(src, SHAPE);
 			this.bounds = src.getObj(BOUNDS).map(AABBD::fromJson).orElseThrow(missing(BOUNDS));
 		}

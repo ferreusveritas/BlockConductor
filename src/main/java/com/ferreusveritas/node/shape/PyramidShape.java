@@ -111,8 +111,8 @@ public class PyramidShape extends Shape {
 		private final double height;
 		private final double base;
 		
-		public Loader(LoaderSystem loaderSystem, UUID uuid, JsonObj src) {
-			super(uuid);
+		public Loader(LoaderSystem loaderSystem, JsonObj src) {
+			super(loaderSystem, src);
 			this.height = src.getDouble(HEIGHT).orElse(DEFAULT_HEIGHT);
 			this.base = src.getDouble(BASE).orElse(DEFAULT_BASE);
 		}

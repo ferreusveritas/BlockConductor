@@ -23,7 +23,7 @@ public class Scale extends Transform {
 	}
 	
 	@Override
-	public Matrix4X4 getMatrix() {
+	public Matrix4X4 getData() {
 		return matrix;
 	}
 	
@@ -85,8 +85,8 @@ public class Scale extends Transform {
 		
 		private final Vec3D size;
 		
-		public Loader(LoaderSystem loaderSystem, UUID uuid, JsonObj src) {
-			super(uuid);
+		public Loader(LoaderSystem loaderSystem, JsonObj src) {
+			super(loaderSystem, src);
 			JsonObj sizeObj = src.getObj(SIZE).orElse(JsonObj.emptyVal());
 			this.size = getSize(sizeObj);
 		}

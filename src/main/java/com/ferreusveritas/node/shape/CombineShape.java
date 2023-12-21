@@ -119,8 +119,8 @@ public class CombineShape extends Shape {
 		private final CombineOperation operation;
 		private final List<NodeLoader> shapes;
 		
-		public Loader(LoaderSystem loaderSystem, UUID uuid, JsonObj src) {
-			super(uuid);
+		public Loader(LoaderSystem loaderSystem, JsonObj src) {
+			super(loaderSystem, src);
 			this.operation = src.getString(OPERATION).flatMap(CombineOperation::of).orElseThrow(() -> new IllegalArgumentException("operation is required"));
 			this.shapes = src.getList(SHAPES).toImmutableList(loaderSystem::createLoader);
 		}

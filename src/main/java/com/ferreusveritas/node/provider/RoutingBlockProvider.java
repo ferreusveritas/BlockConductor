@@ -92,8 +92,8 @@ public class RoutingBlockProvider extends BlockProvider {
 		
 		private final Map<String, NodeLoader> providers;
 		
-		public Loader(LoaderSystem loaderSystem, UUID uuid, JsonObj src) {
-			super(uuid);
+		public Loader(LoaderSystem loaderSystem, JsonObj src) {
+			super(loaderSystem, src);
 			this.providers = src.getMap(PROVIDERS).toImmutableMap(loaderSystem::createLoader);
 		}
 		

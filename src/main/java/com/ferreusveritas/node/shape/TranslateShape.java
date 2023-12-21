@@ -62,7 +62,7 @@ public class TranslateShape extends Shape {
 	public static class Builder {
 		
 		private UUID uuid = null;
-		private Shape shape = VoidShape.VOID;
+		private Shape shape = null;
 		private Vec3D offset = Vec3D.ZERO;
 		
 		public Builder uuid(UUID uuid) {
@@ -85,6 +85,12 @@ public class TranslateShape extends Shape {
 		}
 		
 		public TranslateShape build() {
+			if(shape == null) {
+				throw new IllegalStateException("shape cannot be null");
+			}
+			if(offset == null) {
+				throw new IllegalStateException("offset cannot be null");
+			}
 			return new TranslateShape(uuid, shape, offset);
 		}
 		
@@ -100,8 +106,8 @@ public class TranslateShape extends Shape {
 		private final NodeLoader shape;
 		private final Vec3D offset;
 		
-		public Loader(LoaderSystem loaderSystem, UUID uuid, JsonObj src) {
-			super(uuid);
+		public Loader(LoaderSystem loaderSystem, JsonObj src) {
+			super(loaderSystem, src);
 			this.shape = loaderSystem.loader(src, SHAPE);
 			this.offset = src.getObj(OFFSET).map(Vec3D::new).orElseThrow(missing(OFFSET));
 		}

@@ -19,6 +19,7 @@ import java.util.Map;
 public class MainScene {
 	
 	private static final Scene scene = createScene();
+	public static final String SHYGUY_OBJ = "res://models/shyguy.obj";
 	
 	private static Scene createScene() {
 		Scene scene = new Scene();
@@ -96,8 +97,7 @@ public class MainScene {
 	}
 	
 	private static BlockProvider loadShyPart(String part, String material) {
-		String modelPath = "res://models/shyguy.obj";
-		MeshModel model = new MeshModel.Builder().resource(modelPath).part(part).build();
+		MeshModel model = new MeshModel.Builder().resource(SHYGUY_OBJ).part(part).build();
 		Shape modelShape = new ModelShape.Builder().model(model).build();
 		Shape translateShape = new TransformShape.Builder().shape(modelShape).transform(
 			new Transforms.Builder().add(

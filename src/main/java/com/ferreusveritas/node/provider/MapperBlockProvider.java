@@ -118,8 +118,8 @@ public class MapperBlockProvider extends BlockProvider {
 		private final NodeLoader mapper;
 		private final NodeLoader provider;
 		
-		public Loader(LoaderSystem loaderSystem, UUID uuid, JsonObj src) {
-			super(uuid);
+		public Loader(LoaderSystem loaderSystem, JsonObj src) {
+			super(loaderSystem, src);
 			this.mapper = loaderSystem.loader(src, MAPPER);
 			this.provider = loaderSystem.loader(src, PROVIDER);
 		}

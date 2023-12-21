@@ -135,8 +135,8 @@ public class PerlinShape extends Shape {
 		private final int octaves;
 		private final int seed;
 		
-		public Loader(LoaderSystem loaderSystem, UUID uuid, JsonObj src) {
-			super(uuid);
+		public Loader(LoaderSystem loaderSystem, JsonObj src) {
+			super(loaderSystem, src);
 			this.frequency = src.getDouble(FREQUENCY).orElse(Perlin.DEFAULT_PERLIN_FREQUENCY);
 			this.lacunarity = src.getDouble(LACUNARITY).orElse(Perlin.DEFAULT_PERLIN_LACUNARITY);
 			this.persistence = src.getDouble(PERSISTENCE).orElse(Perlin.DEFAULT_PERLIN_PERSISTENCE);

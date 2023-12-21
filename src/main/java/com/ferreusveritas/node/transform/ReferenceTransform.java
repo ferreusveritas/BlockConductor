@@ -18,11 +18,11 @@ public class ReferenceTransform extends Transform {
 	private ReferenceTransform(UUID uuid, Transform ref) {
 		super(uuid);
 		this.ref = ref;
-		this.matrix = ref.getMatrix();
+		this.matrix = ref.getData();
 	}
 	
 	@Override
-	public Matrix4X4 getMatrix() {
+	public Matrix4X4 getData() {
 		return matrix;
 	}
 	
@@ -71,8 +71,8 @@ public class ReferenceTransform extends Transform {
 		
 		private final UUID ref;
 		
-		public Loader(LoaderSystem loaderSystem, UUID uuid, JsonObj src) {
-			super(uuid);
+		public Loader(LoaderSystem loaderSystem, JsonObj src) {
+			super(loaderSystem, src);
 			this.ref = src.getString(REF).map(UUID::fromString).orElseThrow(missing(REF));
 		}
 		

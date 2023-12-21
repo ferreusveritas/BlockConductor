@@ -1,5 +1,7 @@
 package com.ferreusveritas.factory;
 
+import com.ferreusveritas.node.Node;
+import com.ferreusveritas.node.NodeLoader;
 import com.ferreusveritas.node.mapper.BlockMapper;
 import com.ferreusveritas.node.mapper.IdentityBlockMapper;
 import com.ferreusveritas.node.mapper.ReferenceBlockMapper;
@@ -7,8 +9,6 @@ import com.ferreusveritas.node.mapper.SimpleBlockMapper;
 import com.ferreusveritas.node.model.MeshModel;
 import com.ferreusveritas.node.model.Model;
 import com.ferreusveritas.node.model.ReferenceModel;
-import com.ferreusveritas.node.Node;
-import com.ferreusveritas.node.NodeLoader;
 import com.ferreusveritas.node.provider.*;
 import com.ferreusveritas.node.shape.*;
 import com.ferreusveritas.node.transform.*;
@@ -18,7 +18,6 @@ import com.ferreusveritas.support.json.JsonObj;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 public class NodeFactory {
 	
@@ -33,13 +32,12 @@ public class NodeFactory {
 	public NodeLoader create(LoaderSystem loaderSystem, JsonObj src) {
 		String type = src.getString("type").orElseThrow(() -> new RuntimeException("Missing type: " + src));
 		String className = src.getString("class").map(String::toLowerCase).orElseThrow(() -> new RuntimeException("Missing class for type: " + type + ", src:" + src));
-		UUID uuid = src.getString("uuid").map(UUID::fromString).orElseGet(UUID::randomUUID);
 		
 		NodeTypeFactory factory = factoryMap.get(className);
 		if(factory == null) {
 			throw new InvalidJsonProperty("Unknown class: " + className);
 		}
-		return factory.create(loaderSystem, uuid, src);
+		return factory.create(loaderSystem, src);
 	}
 	
 	private NodeTypeFactory createShapeFactory() {

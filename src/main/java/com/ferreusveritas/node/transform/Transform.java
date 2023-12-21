@@ -11,7 +11,7 @@ public abstract class Transform extends Node {
 		super(uuid);
 	}
 	
-	public abstract Matrix4X4 getMatrix();
+	public abstract Matrix4X4 getData();
 	
 	@Override
 	public Class<? extends Node> getNodeClass() {

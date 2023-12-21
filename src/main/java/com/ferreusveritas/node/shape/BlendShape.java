@@ -80,9 +80,9 @@ public class BlendShape extends Shape {
 	public static class Builder {
 		
 		private UUID uuid = null;
-		private Shape shape1 = VoidShape.VOID;
-		private Shape shape2 = VoidShape.VOID;
-		private Shape blend = VoidShape.VOID;
+		private Shape shape1 = null;
+		private Shape shape2 = null;
+		private Shape blend = null;
 		
 		public Builder uuid(UUID uuid) {
 			this.uuid = uuid;
@@ -105,6 +105,15 @@ public class BlendShape extends Shape {
 		}
 		
 		public BlendShape build() {
+			if(shape1 == null) {
+				throw new IllegalStateException("shape1 cannot be null");
+			}
+			if(shape2 == null) {
+				throw new IllegalStateException("shape2 cannot be null");
+			}
+			if(blend == null) {
+				throw new IllegalStateException("blend cannot be null");
+			}
 			return new BlendShape(uuid, shape1, shape2, blend);
 		}
 		
@@ -121,8 +130,8 @@ public class BlendShape extends Shape {
 		private final NodeLoader shape2;
 		private final NodeLoader blend;
 		
-		public Loader(LoaderSystem loaderSystem, UUID uuid, JsonObj src) {
-			super(uuid);
+		public Loader(LoaderSystem loaderSystem, JsonObj src) {
+			super(loaderSystem, src);
 			this.shape1 = loaderSystem.loader(src, SHAPE_1);
 			this.shape2 = loaderSystem.loader(src, SHAPE_2);
 			this.blend = loaderSystem.loader(src, BLEND);

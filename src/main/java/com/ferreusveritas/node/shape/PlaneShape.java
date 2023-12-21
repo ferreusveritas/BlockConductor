@@ -13,8 +13,6 @@ import java.util.UUID;
  */
 public class PlaneShape extends Shape {
 	
-	public static final UUID PLANE_UUID = UUID.fromString("4f3c3b7e-5b7a-4b7a-8c7a-7a7a7a7a7a7a");
-	public static final PlaneShape PLANE = new PlaneShape(PLANE_UUID);
 	public static final String TYPE = "plane";
 	
 	private PlaneShape(UUID uuid) {
@@ -43,13 +41,13 @@ public class PlaneShape extends Shape {
 	
 	public static class Loader extends NodeLoader {
 		
-		public Loader(LoaderSystem loaderSystem, UUID uuid, JsonObj src) {
-			super(uuid);
+		public Loader(LoaderSystem loaderSystem, JsonObj src) {
+			super(loaderSystem, src);
 		}
 		
 		@Override
 		public Shape load(LoaderSystem loaderSystem) {
-			return PLANE;
+			return new PlaneShape(getUuid());
 		}
 		
 	}

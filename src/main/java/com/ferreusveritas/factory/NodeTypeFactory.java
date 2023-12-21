@@ -7,7 +7,6 @@ import com.ferreusveritas.support.json.JsonObj;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 public class NodeTypeFactory {
 	
@@ -17,7 +16,7 @@ public class NodeTypeFactory {
 		this.factoryMap = Map.copyOf(builder.factoryMap);
 	}
 	
-	public NodeLoader create(LoaderSystem loaderSystem, UUID uuid, JsonObj src) {
+	public NodeLoader create(LoaderSystem loaderSystem, JsonObj src) {
 		String type = src.getString("type").orElseThrow(
 			() -> new InvalidJsonProperty("Missing type")
 		);
@@ -26,7 +25,7 @@ public class NodeTypeFactory {
 			throw new InvalidJsonProperty("Unknown type: " + type);
 		}
 		
-		return press.press(loaderSystem, uuid, src);
+		return press.press(loaderSystem, src);
 	}
 	
 	

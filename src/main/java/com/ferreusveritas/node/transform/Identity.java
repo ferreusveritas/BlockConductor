@@ -10,15 +10,13 @@ import java.util.UUID;
 public class Identity extends Transform {
 
 	public static final String TYPE = "identity";
-	public static final UUID IDENTITY_UUID = UUID.fromString("67854e7e-9b7a-4b7a-9e1a-9b7a4b7a9e1a");
-	public static final Identity INSTANCE = new Identity(IDENTITY_UUID);
 	
 	private Identity(UUID uuid) {
 		super(uuid);
 	}
 	
 	@Override
-	public Matrix4X4 getMatrix() {
+	public Matrix4X4 getData() {
 		return Matrix4X4.IDENTITY;
 	}
 	
@@ -29,18 +27,38 @@ public class Identity extends Transform {
 	
 	
 	////////////////////////////////////////////////////////////////
+	// Builder
+	////////////////////////////////////////////////////////////////
+	
+	public static class Builder {
+		
+		private UUID uuid = null;
+		
+		public Builder uuid(UUID uuid) {
+			this.uuid = uuid;
+			return this;
+		}
+		
+		public Identity build() {
+			return new Identity(uuid);
+		}
+		
+	}
+	
+	
+	////////////////////////////////////////////////////////////////
 	// Loader
 	////////////////////////////////////////////////////////////////
 	
 	public static class Loader extends NodeLoader {
 		
-		public Loader(LoaderSystem loaderSystem, UUID uuid, JsonObj src) {
-			super(uuid);
+		public Loader(LoaderSystem loaderSystem, JsonObj src) {
+			super(loaderSystem, src);
 		}
 		
 		@Override
 		public Identity load(LoaderSystem loaderSystem) {
-			return INSTANCE;
+			return new Identity(getUuid());
 		}
 		
 	}

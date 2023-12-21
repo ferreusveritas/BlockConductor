@@ -43,7 +43,7 @@ public class ReferenceBlockMapper extends BlockMapper {
 	public static class Builder {
 		
 		private UUID uuid = null;
-		private BlockMapper ref = IdentityBlockMapper.IDENTITY;
+		private BlockMapper ref = null;
 		
 		public Builder uuid(UUID uuid) {
 			this.uuid = uuid;
@@ -56,6 +56,9 @@ public class ReferenceBlockMapper extends BlockMapper {
 		}
 		
 		public ReferenceBlockMapper build() {
+			if(ref == null) {
+				throw new IllegalStateException("ref cannot be null");
+			}
 			return new ReferenceBlockMapper(uuid, ref);
 		}
 		
@@ -70,8 +73,8 @@ public class ReferenceBlockMapper extends BlockMapper {
 		
 		private final UUID ref;
 		
-		public Loader(LoaderSystem loaderSystem, UUID uuid, JsonObj src) {
-			super(uuid);
+		public Loader(LoaderSystem loaderSystem, JsonObj src) {
+			super(loaderSystem, src);
 			this.ref = src.getString(REF).map(UUID::fromString).orElseThrow(() -> new IllegalArgumentException("ReferenceBlockMapper requires a ref"));
 		}
 		

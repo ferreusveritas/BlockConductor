@@ -61,7 +61,7 @@ public class SliceShape extends Shape {
 	public static class Builder {
 		
 		private UUID uuid = null;
-		private Shape shape = VoidShape.VOID;
+		private Shape shape = null;
 		
 		public Builder uuid(UUID uuid) {
 			this.uuid = uuid;
@@ -74,6 +74,9 @@ public class SliceShape extends Shape {
 		}
 		
 		public SliceShape build() {
+			if(shape == null) {
+				throw new IllegalStateException("shape cannot be null");
+			}
 			return new SliceShape(uuid, shape);
 		}
 		
@@ -88,8 +91,8 @@ public class SliceShape extends Shape {
 		
 		private final NodeLoader shape;
 		
-		public Loader(LoaderSystem loaderSystem, UUID uuid, JsonObj src) {
-			super(uuid);
+		public Loader(LoaderSystem loaderSystem, JsonObj src) {
+			super(loaderSystem, src);
 			this.shape = loaderSystem.loader(src, SHAPE);
 		}
 		

@@ -93,8 +93,8 @@ public class ResourceBlockProvider extends BlockProvider {
 		
 		private final String res;
 		
-		public Loader(LoaderSystem loaderSystem, UUID uuid, JsonObj src) {
-			super(uuid);
+		public Loader(LoaderSystem loaderSystem, JsonObj src) {
+			super(loaderSystem, src);
 			this.res = src.getString(RES).orElseThrow(missing(RES));
 		}
 		

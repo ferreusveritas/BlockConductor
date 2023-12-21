@@ -90,8 +90,8 @@ public class CheckerShape extends Shape {
 		
 		private final Axis axis; // null means all axes(3D checker block)
 		
-		public Loader(LoaderSystem loaderSystem, UUID uuid, JsonObj src) {
-			super(uuid);
+		public Loader(LoaderSystem loaderSystem, JsonObj src) {
+			super(loaderSystem, src);
 			this.axis = src.getString(AXIS).flatMap(Axis::of).orElse(null);
 		}
 		

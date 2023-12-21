@@ -95,8 +95,8 @@ public class GradientShape extends Shape {
 		private final double minY;
 		private final double maxY;
 		
-		public Loader(LoaderSystem loaderSystem, UUID uuid, JsonObj src) {
-			super(uuid);
+		public Loader(LoaderSystem loaderSystem, JsonObj src) {
+			super(loaderSystem, src);
 			this.minY = src.getDouble(MIN_Y).orElse(DEFAULT_MIN_Y);
 			this.maxY = src.getDouble(MAX_Y).orElse(DEFAULT_MAX_Y);
 		}

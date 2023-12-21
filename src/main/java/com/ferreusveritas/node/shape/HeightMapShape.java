@@ -85,7 +85,7 @@ public class HeightMapShape extends Shape {
 	public static class Builder {
 		
 		private UUID uuid = null;
-		private Shape shape = VoidShape.VOID;
+		private Shape shape = null;
 		private double height = DEFAULT_HEIGHT;
 		private double minY = DEFAULT_MIN_Y;
 		
@@ -110,6 +110,9 @@ public class HeightMapShape extends Shape {
 		}
 		
 		public HeightMapShape build() {
+			if(shape == null) {
+				throw new IllegalStateException("shape cannot be null");
+			}
 			return new HeightMapShape(uuid, shape, height, minY);
 		}
 		
@@ -126,8 +129,8 @@ public class HeightMapShape extends Shape {
 		private final double height;
 		private final double minY;
 		
-		public Loader(LoaderSystem loaderSystem, UUID uuid, JsonObj src) {
-			super(uuid);
+		public Loader(LoaderSystem loaderSystem, JsonObj src) {
+			super(loaderSystem, src);
 			this.shape = loaderSystem.loader(src, SHAPE);
 			this.height = src.getDouble(HEIGHT).orElse(DEFAULT_HEIGHT);
 			this.minY = src.getDouble(MIN_Y).orElse(DEFAULT_MIN_Y);

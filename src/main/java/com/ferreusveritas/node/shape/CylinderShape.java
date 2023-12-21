@@ -99,8 +99,8 @@ public class CylinderShape extends Shape {
 		private final double height;
 		private final double radius;
 		
-		public Loader(LoaderSystem loaderSystem, UUID uuid, JsonObj src) {
-			super(uuid);
+		public Loader(LoaderSystem loaderSystem, JsonObj src) {
+			super(loaderSystem, src);
 			this.height = src.getDouble(HEIGHT).orElse(DEFAULT_HEIGHT);
 			this.radius = src.getDouble(RADIUS).orElse(DEFAULT_RADIUS);
 		}

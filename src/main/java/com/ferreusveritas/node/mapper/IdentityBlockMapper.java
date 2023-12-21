@@ -13,9 +13,6 @@ import java.util.UUID;
  */
 public class IdentityBlockMapper extends BlockMapper {
 	
-	public static final UUID IDENTITY_UUID = UUID.fromString("645a3c7a-5c5a-4b7a-9b9a-9b9a9b9a9b9a");
-	public static final IdentityBlockMapper IDENTITY = new IdentityBlockMapper(IDENTITY_UUID);
-	
 	public static final String TYPE = "identity";
 	
 	private IdentityBlockMapper(UUID uuid) {
@@ -39,13 +36,13 @@ public class IdentityBlockMapper extends BlockMapper {
 	
 	public static class Loader extends NodeLoader {
 		
-		public Loader(LoaderSystem loaderSystem, UUID uuid, JsonObj src) {
-			super(uuid);
+		public Loader(LoaderSystem loaderSystem, JsonObj src) {
+			super(loaderSystem, src);
 		}
 		
 		@Override
 		public BlockMapper load(LoaderSystem loaderSystem) {
-			return IDENTITY;
+			return new IdentityBlockMapper(getUuid());
 		}
 		
 	}

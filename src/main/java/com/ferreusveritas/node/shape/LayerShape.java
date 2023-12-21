@@ -96,8 +96,8 @@ public class LayerShape extends Shape {
 		private final double min; // inclusive
 		private final double max; // exclusive
 		
-		public Loader(LoaderSystem loaderSystem, UUID uuid, JsonObj src) {
-			super(uuid);
+		public Loader(LoaderSystem loaderSystem, JsonObj src) {
+			super(loaderSystem, src);
 			this.min = src.getDouble(MIN).orElse(0.0);
 			this.max = src.getDouble(MAX).orElse(1.0);
 		}

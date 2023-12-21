@@ -92,8 +92,8 @@ public class SimpleBlockMapper extends BlockMapper {
 		private final List<BlockInOut> map;
 		private final Block defaultBlock;
 		
-		public Loader(LoaderSystem loaderSystem, UUID uuid, JsonObj src) {
-			super(uuid);
+		public Loader(LoaderSystem loaderSystem, JsonObj src) {
+			super(loaderSystem, src);
 			this.map = src.getObj("map").orElseGet(JsonObj::newList).toImmutableList(j -> new BlockInOut(loaderSystem, j));
 			this.defaultBlock = src.getObj("defaultBlock").map(loaderSystem::blockLoader).orElse(null);
 		}

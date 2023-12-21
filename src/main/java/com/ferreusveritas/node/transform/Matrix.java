@@ -11,16 +11,16 @@ public class Matrix extends Transform {
 	
 	public static final String TYPE = "matrix";
 	
-	private final Matrix4X4 matrix;
+	private final Matrix4X4 data;
 	
 	private Matrix(UUID uuid, Matrix4X4 matrix) {
 		super(uuid);
-		this.matrix = matrix;
+		this.data = matrix;
 	}
 	
 	@Override
-	public Matrix4X4 getMatrix() {
-		return matrix;
+	public Matrix4X4 getData() {
+		return data;
 	}
 	
 	@Override
@@ -31,7 +31,7 @@ public class Matrix extends Transform {
 	@Override
 	public JsonObj toJsonObj() {
 		return super.toJsonObj()
-			.set("data", matrix);
+			.set("data", data);
 	}
 	
 	
@@ -42,21 +42,21 @@ public class Matrix extends Transform {
 	public static class Builder {
 		
 		private UUID uuid = null;
-		private Matrix4X4 matrix = Matrix4X4.IDENTITY;
+		private Matrix4X4 data = Matrix4X4.IDENTITY;
 		
 		public Builder uuid(UUID uuid) {
 			this.uuid = uuid;
 			return this;
 		}
 		
-		public Builder matrix(Matrix4X4 matrix) {
-			this.matrix = matrix;
+		public Builder matrix(Matrix4X4 data) {
+			this.data = data;
 			return this;
 		}
 		
 		
 		public Matrix build() {
-			return new Matrix(uuid, matrix);
+			return new Matrix(uuid, data);
 		}
 		
 	}
@@ -68,16 +68,16 @@ public class Matrix extends Transform {
 	
 	public static class Loader extends NodeLoader {
 		
-		private final Matrix4X4 matrix;
+		private final Matrix4X4 data;
 		
-		public Loader(LoaderSystem loaderSystem, UUID uuid, JsonObj src) {
-			super(uuid);
-			this.matrix = src.getObj("data").map(Matrix4X4::new).orElse(Matrix4X4.IDENTITY);
+		public Loader(LoaderSystem loaderSystem, JsonObj src) {
+			super(loaderSystem, src);
+			this.data = src.getObj("data").map(Matrix4X4::new).orElse(Matrix4X4.IDENTITY);
 		}
 		
 		@Override
 		public Matrix load(LoaderSystem loaderSystem) {
-			return new Matrix(getUuid(), matrix);
+			return new Matrix(getUuid(), data);
 		}
 		
 	}

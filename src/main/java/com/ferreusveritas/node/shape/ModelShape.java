@@ -85,8 +85,8 @@ public class ModelShape extends Shape {
 		
 		private final NodeLoader model;
 		
-		public Loader(LoaderSystem loaderSystem, UUID uuid, JsonObj src) {
-			super(uuid);
+		public Loader(LoaderSystem loaderSystem, JsonObj src) {
+			super(loaderSystem, src);
 			this.model = loaderSystem.loader(src, MODEL);
 		}
 		

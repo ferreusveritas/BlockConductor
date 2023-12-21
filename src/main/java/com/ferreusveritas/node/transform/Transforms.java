@@ -26,13 +26,13 @@ public class Transforms extends Transform {
 	private Matrix4X4 createMatrix(List<Transform> transforms) {
 		Matrix4X4 mat = Matrix4X4.IDENTITY;
 		for(Transform transform : transforms) {
-			mat = transform.getMatrix().mul(mat);
+			mat = transform.getData().mul(mat);
 		}
 		return mat;
 	}
 	
 	@Override
-	public Matrix4X4 getMatrix() {
+	public Matrix4X4 getData() {
 		return matrix;
 	}
 	
@@ -86,8 +86,8 @@ public class Transforms extends Transform {
 		
 		private final List<NodeLoader> operations;
 		
-		public Loader(LoaderSystem loaderSystem, UUID uuid, JsonObj src) {
-			super(uuid);
+		public Loader(LoaderSystem loaderSystem, JsonObj src) {
+			super(loaderSystem, src);
 			this.operations = src.getList(OPERATIONS).toImmutableList(loaderSystem::createLoader);
 		}
 		

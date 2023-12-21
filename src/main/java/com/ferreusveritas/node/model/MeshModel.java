@@ -128,8 +128,8 @@ public class MeshModel extends Model {
 		private final String resource;
 		private final String object;
 		
-		public Loader(LoaderSystem loaderSystem, UUID uuid, JsonObj src) {
-			super(uuid);
+		public Loader(LoaderSystem loaderSystem, JsonObj src) {
+			super(loaderSystem, src);
 			this.resource = src.getString(RESOURCE).orElseThrow(() -> new InvalidJsonProperty("Missing resource"));
 			this.object = src.getString(OBJECT).orElse(null);
 		}

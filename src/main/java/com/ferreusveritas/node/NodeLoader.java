@@ -2,6 +2,7 @@ package com.ferreusveritas.node;
 
 import com.ferreusveritas.scene.LoaderSystem;
 import com.ferreusveritas.support.json.InvalidJsonProperty;
+import com.ferreusveritas.support.json.JsonObj;
 import org.slf4j.Logger;
 
 import java.util.Optional;
@@ -15,8 +16,11 @@ public abstract class NodeLoader {
 	private final UUID uuid;
 	private Node loaded;
 	
-	protected NodeLoader(UUID uuid) {
-		this.uuid = uuid;
+	protected NodeLoader(LoaderSystem loaderSystem, JsonObj src) {
+		this.uuid = src.getString("uuid").map(UUID::fromString).orElseGet(UUID::randomUUID);
+		if(loaderSystem.get(uuid).isPresent()) {
+			throw new InvalidJsonProperty("Duplicate UUID: " + uuid);
+		}
 	}
 	
 	public UUID getUuid() {

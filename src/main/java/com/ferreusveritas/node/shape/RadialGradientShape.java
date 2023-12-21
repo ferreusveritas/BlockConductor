@@ -96,8 +96,8 @@ public class RadialGradientShape extends Shape {
 		
 		private final double radius;
 		
-		public Loader(LoaderSystem loaderSystem, UUID uuid, JsonObj src) {
-			super(uuid);
+		public Loader(LoaderSystem loaderSystem, JsonObj src) {
+			super(loaderSystem, src);
 			this.radius = src.getDouble(RADIUS).orElse(DEFAULT_RADIUS);
 		}
 		

@@ -22,7 +22,7 @@ public class RotateY extends Transform {
 	}
 	
 	@Override
-	public Matrix4X4 getMatrix() {
+	public Matrix4X4 getData() {
 		return matrix;
 	}
 	
@@ -34,7 +34,7 @@ public class RotateY extends Transform {
 	@Override
 	public JsonObj toJsonObj() {
 		return super.toJsonObj()
-			.set("angle", angle);
+			.set(ANGLE, angle);
 	}
 	
 	
@@ -77,8 +77,8 @@ public class RotateY extends Transform {
 		
 		private final double angle;
 		
-		public Loader(LoaderSystem loaderSystem, UUID uuid, JsonObj src) {
-			super(uuid);
+		public Loader(LoaderSystem loaderSystem, JsonObj src) {
+			super(loaderSystem, src);
 			this.angle = src.getDouble(ANGLE).orElse(0.0);
 		}
 		

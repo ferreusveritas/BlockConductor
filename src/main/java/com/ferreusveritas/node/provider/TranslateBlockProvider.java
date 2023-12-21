@@ -108,8 +108,8 @@ public class TranslateBlockProvider extends BlockProvider {
 		private final Vec3I offset;
 		private final NodeLoader provider;
 		
-		public Loader(LoaderSystem loaderSystem, UUID uuid, JsonObj src) {
-			super(uuid);
+		public Loader(LoaderSystem loaderSystem, JsonObj src) {
+			super(loaderSystem, src);
 			this.offset = src.getObj(OFFSET).map(Vec3I::new).orElseThrow(missing(OFFSET));
 			this.provider = loaderSystem.loader(src, PROVIDER);
 		}

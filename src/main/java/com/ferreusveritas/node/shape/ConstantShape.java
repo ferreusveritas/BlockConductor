@@ -79,8 +79,8 @@ public class ConstantShape extends Shape {
 		
 		private final double value;
 		
-		public Loader(LoaderSystem loaderSystem, UUID uuid, JsonObj src) {
-			super(uuid);
+		public Loader(LoaderSystem loaderSystem, JsonObj src) {
+			super(loaderSystem, src);
 			this.value = src.getDouble(VALUE).orElse(0.0);
 		}
 		

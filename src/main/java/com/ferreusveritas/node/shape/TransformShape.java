@@ -4,10 +4,9 @@ import com.ferreusveritas.math.AABBD;
 import com.ferreusveritas.math.Matrix4X4;
 import com.ferreusveritas.math.Vec3D;
 import com.ferreusveritas.node.NodeLoader;
+import com.ferreusveritas.node.transform.Transform;
 import com.ferreusveritas.scene.LoaderSystem;
 import com.ferreusveritas.support.json.JsonObj;
-import com.ferreusveritas.node.transform.Identity;
-import com.ferreusveritas.node.transform.Transform;
 
 import java.util.UUID;
 
@@ -25,12 +24,12 @@ public class TransformShape extends Shape {
 		super(uuid);
 		this.shape = shape;
 		this.transform = transform;
-		this.matrix = transform.getMatrix().invert();
+		this.matrix = transform.getData().invert();
 		this.bounds = calculateBounds(shape);
 	}
 	
 	private AABBD calculateBounds(Shape shape) {
-		return shape.bounds().transform(transform.getMatrix());
+		return shape.bounds().transform(transform.getData());
 	}
 	
 	@Override
@@ -67,8 +66,8 @@ public class TransformShape extends Shape {
 	public static class Builder {
 		
 		private UUID uuid = null;
-		private Shape shape = VoidShape.VOID;
-		private Transform transform = Identity.INSTANCE;
+		private Shape shape = null;
+		private Transform transform = null;
 		
 		public Builder uuid(UUID uuid) {
 			this.uuid = uuid;
@@ -86,6 +85,12 @@ public class TransformShape extends Shape {
 		}
 		
 		public TransformShape build() {
+			if(shape == null) {
+				throw new IllegalStateException("shape cannot be null");
+			}
+			if(transform == null) {
+				throw new IllegalStateException("transform cannot be null");
+			}
 			return new TransformShape(uuid, shape, transform);
 		}
 		
@@ -101,8 +106,8 @@ public class TransformShape extends Shape {
 		private final NodeLoader shape;
 		private final NodeLoader transform;
 		
-		public Loader(LoaderSystem loaderSystem, UUID uuid, JsonObj src) {
-			super(uuid);
+		public Loader(LoaderSystem loaderSystem, JsonObj src) {
+			super(loaderSystem, src);
 			this.shape = loaderSystem.loader(src, SHAPE);
 			this.transform = loaderSystem.loader(src, TRANSFORM);
 		}

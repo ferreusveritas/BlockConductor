@@ -98,8 +98,8 @@ public class CubeShape extends Shape {
 		private final Vec3D size;
 		private final boolean centered;
 		
-		public Loader(LoaderSystem loaderSystem, UUID uuid, JsonObj src) {
-			super(uuid);
+		public Loader(LoaderSystem loaderSystem, JsonObj src) {
+			super(loaderSystem, src);
 			this.size = src.getObj(SIZE).map(Vec3D::new).orElse(Vec3D.ONE);
 			this.centered = src.getBoolean(CENTERED).orElse(false);
 		}

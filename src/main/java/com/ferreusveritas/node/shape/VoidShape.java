@@ -10,9 +10,6 @@ import java.util.UUID;
 
 public class VoidShape extends Shape {
 	
-	public static final UUID VOID_UUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
-	public static final VoidShape VOID = new VoidShape(VOID_UUID);
-	
 	public static final String TYPE = "void";
 	
 	private VoidShape(UUID uuid) {
@@ -41,13 +38,13 @@ public class VoidShape extends Shape {
 	
 	public static class Loader extends NodeLoader {
 		
-		public Loader(LoaderSystem loaderSystem, UUID uuid, JsonObj src) {
-			super(uuid);
+		public Loader(LoaderSystem loaderSystem, JsonObj src) {
+			super(loaderSystem, src);
 		}
 		
 		@Override
 		public Shape load(LoaderSystem loaderSystem) {
-			return VOID;
+			return new VoidShape(getUuid());
 		}
 		
 	}
