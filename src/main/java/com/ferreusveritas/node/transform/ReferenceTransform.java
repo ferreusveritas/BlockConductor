@@ -18,11 +18,11 @@ public class ReferenceTransform extends Transform {
 	private ReferenceTransform(UUID uuid, Transform ref) {
 		super(uuid);
 		this.ref = ref;
-		this.matrix = ref.getData();
+		this.matrix = ref.getMatrix();
 	}
 	
 	@Override
-	public Matrix4X4 getData() {
+	public Matrix4X4 getMatrix() {
 		return matrix;
 	}
 	

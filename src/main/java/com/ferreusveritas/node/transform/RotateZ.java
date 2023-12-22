@@ -18,11 +18,11 @@ public class RotateZ extends Transform {
 	private RotateZ(UUID uuid, double angle) {
 		super(uuid);
 		this.angle = angle;
-		this.matrix = Matrix4X4.IDENTITY.rotateZ(angle);
+		this.matrix = Matrix4X4.IDENTITY.rotateZ(Math.toRadians(angle));
 	}
 	
 	@Override
-	public Matrix4X4 getData() {
+	public Matrix4X4 getMatrix() {
 		return matrix;
 	}
 	
@@ -54,11 +54,6 @@ public class RotateZ extends Transform {
 		
 		public Builder angle(double angle) {
 			this.angle = angle;
-			return this;
-		}
-		
-		public Builder degrees(double angleDeg) {
-			this.angle = Math.toRadians(angleDeg);
 			return this;
 		}
 		

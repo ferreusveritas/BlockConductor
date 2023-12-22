@@ -1,0 +1,38 @@
+{
+	"class": "BlockProvider",
+	"type": "shape",
+	"uuid": "399f91df-be2f-4bf0-9712-42263afaed96",
+	"block": {
+		"name": "minecraft:sandstone",
+		"state": ""
+	},
+	"shape": {
+		"class": "Shape",
+		"type": "transform",
+		"uuid": "3b745ebd-bfcd-4c37-ad08-5ffa9f5bcdbb",
+		"transform": {
+			"class": "Transform",
+			"type": "transforms",
+			"uuid": "6e043849-eb8e-42c0-bf83-089f98f5ed84",
+			"operations": [
+				{
+					"class": "Transform",
+					"type": "translate",
+					"uuid": "6c775717-d44c-4bd1-ae8b-93adae94d85c",
+					"offset": {
+						"x": 20.5,
+						"y": 56.0,
+						"z": 20.5
+					}
+				}
+			]
+		},
+		"shape": {
+			"class": "Shape",
+			"type": "pyramid",
+			"uuid": "0cacee29-5b19-4e72-b043-a9e8df6ebf9a",
+			"height": 16.0,
+			"base": 32.0
+		}
+	}
+}

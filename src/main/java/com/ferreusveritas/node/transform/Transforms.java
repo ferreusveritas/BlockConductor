@@ -26,13 +26,12 @@ public class Transforms extends Transform {
 	private Matrix4X4 createMatrix(List<Transform> transforms) {
 		Matrix4X4 mat = Matrix4X4.IDENTITY;
 		for(Transform transform : transforms) {
-			mat = transform.getData().mul(mat);
+			mat = transform.getMatrix().mul(mat);
 		}
 		return mat;
 	}
 	
-	@Override
-	public Matrix4X4 getData() {
+	public Matrix4X4 getMatrix() {
 		return matrix;
 	}
 	
@@ -44,7 +43,7 @@ public class Transforms extends Transform {
 	@Override
 	public JsonObj toJsonObj() {
 		return super.toJsonObj()
-			.set(OPERATIONS, operations);
+			.set(OPERATIONS, JsonObj.newList(operations));
 	}
 	
 	

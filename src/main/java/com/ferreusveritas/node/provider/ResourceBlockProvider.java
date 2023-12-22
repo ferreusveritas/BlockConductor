@@ -29,7 +29,8 @@ public class ResourceBlockProvider extends BlockProvider {
 	}
 	
 	private BlockProvider loadProvider(String resource) {
-		Scene scene = new Scene(Storage.getJson(resource));
+		JsonObj src = Storage.getJson(resource);
+		Scene scene = new Scene(src);
 		return scene.getRoot(BlockProvider.class).orElseThrow();
 	}
 	

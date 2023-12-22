@@ -1,0 +1,9 @@
+{
+	"class": "BlockProvider",
+	"type": "solid",
+	"uuid": "212e12cb-d308-4c95-a845-b5c01690c3f8",
+	"block": {
+		"name": "minecraft:air",
+		"state": ""
+	}
+}

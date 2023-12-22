@@ -24,12 +24,12 @@ public class TransformShape extends Shape {
 		super(uuid);
 		this.shape = shape;
 		this.transform = transform;
-		this.matrix = transform.getData().invert();
+		this.matrix = transform.getMatrix().invert();
 		this.bounds = calculateBounds(shape);
 	}
 	
 	private AABBD calculateBounds(Shape shape) {
-		return shape.bounds().transform(transform.getData());
+		return shape.bounds().transform(transform.getMatrix());
 	}
 	
 	@Override
@@ -44,9 +44,11 @@ public class TransformShape extends Shape {
 	
 	@Override
 	public double getVal(Vec3D pos) {
-		Vec3D transPos = matrix.transform(pos);
-		if(shape.bounds().contains(transPos)) {
-			return shape.getVal(transPos);
+		if(bounds.contains(pos)) {
+			Vec3D transPos = matrix.transform(pos);
+			if(shape.bounds().contains(transPos)) {
+				return shape.getVal(transPos);
+			}
 		}
 		return 0;
 	}

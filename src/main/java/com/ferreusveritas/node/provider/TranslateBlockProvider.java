@@ -29,7 +29,7 @@ public class TranslateBlockProvider extends BlockProvider {
 	}
 	
 	private AABBI calculateBounds(BlockProvider provider) {
-		return provider.getAABB().offset(offset.neg());
+		return provider.getAABB().offset(offset);
 	}
 	
 	@Override

@@ -23,7 +23,7 @@ public class Scale extends Transform {
 	}
 	
 	@Override
-	public Matrix4X4 getData() {
+	public Matrix4X4 getMatrix() {
 		return matrix;
 	}
 	

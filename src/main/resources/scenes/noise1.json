@@ -1,0 +1,36 @@
+{
+	"class": "BlockProvider",
+	"type": "shape",
+	"uuid": "e7ecd2f1-f3ec-4996-b461-838bdd2b6d16",
+	"block": {
+		"name": "minecraft:stone",
+		"state": ""
+	},
+	"shape": {
+		"class": "Shape",
+		"type": "translate",
+		"uuid": "f807d178-9615-4b84-b51b-6d35da68050e",
+		"shape": {
+			"class": "Shape",
+			"type": "heightmap",
+			"uuid": "71132e5c-adba-4435-b888-a993a843aedd",
+			"height": 32.0,
+			"minY": 0.0,
+			"shape": {
+				"class": "Shape",
+				"type": "simplex",
+				"uuid": "0f36d68b-09c8-4763-b20d-f7cbda2f4344",
+				"frequency": 0.005,
+				"lacunarity": 2.0,
+				"persistence": 0.5,
+				"octaves": 6,
+				"seed": 0
+			}
+		},
+		"offset": {
+			"x": 0.5,
+			"y": 56.5,
+			"z": 0.5
+		}
+	}
+}

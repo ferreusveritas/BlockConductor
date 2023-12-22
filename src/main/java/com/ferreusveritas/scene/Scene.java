@@ -25,7 +25,7 @@ public class Scene implements Jsonable {
 	public Scene(JsonObj src) {
 		LoaderSystem loaderSystem = new LoaderSystem(nodeFactory);
 		List<NodeLoader> defLoaders = src.getObj(DEFS).orElseGet(JsonObj::newList).toImmutableList(loaderSystem::createLoader);
-		NodeLoader rootLoader = src.getObj(ROOT).map(loaderSystem::createLoader).orElseThrow();
+		NodeLoader rootLoader = src.getObj(ROOT).or(() -> Optional.of(src)).map(loaderSystem::createLoader).orElseThrow();
 		defLoaders.stream().map(loader -> loader.load(loaderSystem, Node.class).orElseThrow()).forEach(node -> defs.put(node.getUuid(), node));
 		this.root = rootLoader.load(loaderSystem, Node.class).orElseThrow();
 		this.nodes.putAll(loaderSystem.getNodes());
