@@ -15,7 +15,11 @@ public class NbtHelper {
 			return new byte[0];
 		}
 		CompoundTag main = nbtable.toNBT();
-		NamedTag file = new NamedTag("", main);
+		return serialize(main);
+	}
+	
+	public static byte[] serialize(CompoundTag tag) {
+		NamedTag file = new NamedTag("", tag);
 		byte[] bytes;
 		try {
 			bytes = serializer.toBytes(file);

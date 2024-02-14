@@ -34,9 +34,9 @@ class BlockProviderFactoryTest extends BaseTestSupport {
 		Scene scene = new Scene();
 		Block none = loaderSystem.block(BlockCache.NONE);
 		Block air = loaderSystem.block(BlockCache.AIR);
-		Block stone = loaderSystem.block(new Block("minecraft:stone", ""));
-		Block bone = loaderSystem.block(new Block("minecraft:bone_block", ""));
-		Block dirt = loaderSystem.block(new Block("minecraft:dirt", ""));
+		Block stone = loaderSystem.block(new Block("minecraft:stone"));
+		Block bone = loaderSystem.block(new Block("minecraft:bone_block"));
+		Block dirt = loaderSystem.block(new Block("minecraft:dirt"));
 		
 		List<NodeLoader> loaders = blockProviderTest.toImmutableList(loaderSystem::createLoader);
 		List<BlockProvider> providers = loaders.stream().map(l -> l.load(loaderSystem, BlockProvider.class).orElseThrow()).toList();

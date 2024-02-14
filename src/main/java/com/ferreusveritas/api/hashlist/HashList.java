@@ -12,6 +12,18 @@ public class HashList<T> {
 	private final Map<T, Integer> map = new HashMap<>();
 	private final List<T> list = new ArrayList<>();
 	
+	public HashList() {
+	}
+	
+	public HashList(HashList<T> hashList) {
+		map.putAll(hashList.map);
+		list.addAll(hashList.list);
+	}
+	
+	public HashList(Collection<T> collection) {
+		collection.forEach(this::add);
+	}
+	
 	public int add(T t) {
 		return map.computeIfAbsent(t, k -> {
 			int pos = list.size();

@@ -7,11 +7,11 @@ import java.util.Map;
 
 public class BlockCache {
 	
-	public static final Block NONE = new Block("", "");
-	public static final Block AIR = new Block("minecraft:air", "");
-	public static final Block TERRAIN = new Block("common:terrain", "");
+	public static final Block NONE = new Block("");
+	public static final Block AIR = new Block("minecraft:air");
+	public static final Block TERRAIN = new Block("common:terrain");
 	
-	private Map<Block, Block> blocks = new HashMap<>();
+	private final Map<Block, Block> blocks = new HashMap<>();
 	
 	public BlockCache() {
 		resolve(NONE);
@@ -19,10 +19,7 @@ public class BlockCache {
 	}
 	
 	public Block resolve(JsonObj src) {
-		Block block = new Block(
-			src.getString("name").orElseThrow(),
-			src.getString("state").orElse("")
-		);
+		Block block = new Block(src);
 		return resolve(block);
 	}
 	

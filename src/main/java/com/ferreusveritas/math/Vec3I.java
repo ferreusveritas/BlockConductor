@@ -2,13 +2,14 @@ package com.ferreusveritas.math;
 
 import com.ferreusveritas.support.json.JsonObj;
 import com.ferreusveritas.support.json.Jsonable;
+import com.ferreusveritas.support.nbt.Nbtable;
 import net.querz.nbt.tag.CompoundTag;
 
 public record Vec3I(
 	int x,
 	int y,
 	int z
-) implements Jsonable {
+) implements Jsonable, Nbtable {
 	
 	public static final Vec3I ZERO = new Vec3I(0);
 	public static final Vec3I ONE = new Vec3I(1);
