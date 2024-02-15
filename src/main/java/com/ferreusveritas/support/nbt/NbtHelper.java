@@ -3,12 +3,18 @@ package com.ferreusveritas.support.nbt;
 import net.querz.nbt.io.NBTSerializer;
 import net.querz.nbt.io.NamedTag;
 import net.querz.nbt.tag.CompoundTag;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.zip.GZIPOutputStream;
 
 public class NbtHelper {
 	
-	private static final NBTSerializer serializer = new NBTSerializer();
+	private static final Logger LOG = LoggerFactory.getLogger(NbtHelper.class);
+	
+	private static final NBTSerializer serializer = new NBTSerializer(false);
 	
 	public static byte[] serialize(Nbtable nbtable) {
 		if(nbtable == null) {
@@ -19,6 +25,10 @@ public class NbtHelper {
 	}
 	
 	public static byte[] serialize(CompoundTag tag) {
+		return serialize(tag, true);
+	}
+	
+	public static byte[] serialize(CompoundTag tag, boolean compressed) {
 		NamedTag file = new NamedTag("", tag);
 		byte[] bytes;
 		try {
@@ -26,7 +36,26 @@ public class NbtHelper {
 		} catch (IOException e) {
 			throw new NbtException("Failed to serialize NBT", e);
 		}
+		if(compressed) {
+			bytes = gzip(bytes);
+		}
 		return bytes;
+	}
+	
+	private static byte[] gzip(byte[] dataToCompress) {
+		try {
+			ByteArrayOutputStream byteStream = new ByteArrayOutputStream(dataToCompress.length);
+			try (byteStream) {
+				try (GZIPOutputStream zipStream = new GZIPOutputStream(byteStream)) {
+					zipStream.write(dataToCompress);
+				}
+			}
+			return byteStream.toByteArray();
+		}
+		catch(Exception e) {
+			LOG.error("Failed to gzip NBT", e);
+			return new byte[0];
+		}
 	}
 	
 	private NbtHelper() {
