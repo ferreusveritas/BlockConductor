@@ -1,16 +1,24 @@
 package com.ferreusveritas.node.shape;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ferreusveritas.math.AABBD;
 import com.ferreusveritas.math.Vec3D;
-import com.ferreusveritas.node.NodeLoader;
-import com.ferreusveritas.scene.LoaderSystem;
-import com.ferreusveritas.support.json.JsonObj;
+import com.ferreusveritas.node.ports.*;
+import com.ferreusveritas.node.NodeRegistryData;
 
 import java.util.UUID;
 
 public class CavitateShape extends Shape {
 	
-	public static final String TYPE = "cavitate";
+	public static final NodeRegistryData REGISTRY_DATA = new NodeRegistryData.Builder()
+		.majorType(SHAPE)
+		.minorType("cavitate")
+		.loaderClass(Loader.class)
+		.sceneObjectClass(CavitateShape.class)
+		.port(new PortDescription(PortDirection.IN, PortDataTypes.SHAPE))
+		.port(new PortDescription(PortDirection.OUT, PortDataTypes.SHAPE))
+		.build();
 	
 	private final Shape shape;
 	private final AABBD bounds;
@@ -21,13 +29,13 @@ public class CavitateShape extends Shape {
 		this.bounds = calculateBounds();
 	}
 	
-	private AABBD calculateBounds() {
-		return shape.bounds();
+	@Override
+	public NodeRegistryData getRegistryData() {
+		return REGISTRY_DATA;
 	}
 	
-	@Override
-	public String getType() {
-		return TYPE;
+	private AABBD calculateBounds() {
+		return shape.bounds();
 	}
 	
 	@Override
@@ -44,11 +52,11 @@ public class CavitateShape extends Shape {
 		return inShape(pos) &&
 			!(
 				inShape(pos.down()) &&
-				inShape(pos.up()) &&
-				inShape(pos.north()) &&
-				inShape(pos.south()) &&
-				inShape(pos.west()) &&
-				inShape(pos.east())
+					inShape(pos.up()) &&
+					inShape(pos.north()) &&
+					inShape(pos.south()) &&
+					inShape(pos.west()) &&
+					inShape(pos.east())
 			);
 	}
 	
@@ -56,59 +64,29 @@ public class CavitateShape extends Shape {
 		return shape.getVal(pos) >= 0.5;
 	}
 	
-	@Override
-	public JsonObj toJsonObj() {
-		return super.toJsonObj()
-			.set(SHAPE, shape);
-	}
-	
-	
-	////////////////////////////////////////////////////////////////
-	// Builder
-	////////////////////////////////////////////////////////////////
-	
-	public static class Builder {
-		
-		private UUID uuid = null;
-		private Shape shape = null;
-		
-		public Builder uuid(UUID uuid) {
-			this.uuid = uuid;
-			return this;
-		}
-		
-		public Builder shape(Shape shape) {
-			this.shape = shape;
-			return this;
-		}
-		
-		public CavitateShape build() {
-			if(shape == null) {
-				throw new IllegalStateException("shape cannot be null");
-			}
-			return new CavitateShape(uuid, shape);
-		}
-		
-	}
-	
 	
 	////////////////////////////////////////////////////////////////
 	// Loader
 	////////////////////////////////////////////////////////////////
 	
-	public static class Loader extends NodeLoader {
+	public static class Loader extends ShapeLoaderNode {
 		
-		private final NodeLoader shape;
+		private final InputPort<Shape> shapeInput;
 		
-		public Loader(LoaderSystem loaderSystem, JsonObj src) {
-			super(loaderSystem, src);
-			this.shape = loaderSystem.loader(src, SHAPE);
+		@JsonCreator
+		public Loader(
+			@JsonProperty(UID) UUID uuid,
+			@JsonProperty(SHAPE) PortAddress shapeAddress
+		) {
+			super(uuid);
+			this.shapeInput = createInputAndRegisterConnection(PortDataTypes.SHAPE, shapeAddress);
 		}
 		
-		@Override
-		public Shape load(LoaderSystem loaderSystem) {
-			Shape s = shape.load(loaderSystem, Shape.class).orElseThrow(wrongType(SHAPE));
-			return new CavitateShape(getUuid(), s);
+		protected Shape create() {
+			return new CavitateShape(
+				getUuid(),
+				get(shapeInput)
+			);
 		}
 		
 	}

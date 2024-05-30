@@ -1,16 +1,23 @@
 package com.ferreusveritas.node.shape;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ferreusveritas.math.AABBD;
 import com.ferreusveritas.math.Vec3D;
-import com.ferreusveritas.node.NodeLoader;
-import com.ferreusveritas.scene.LoaderSystem;
-import com.ferreusveritas.support.json.JsonObj;
+import com.ferreusveritas.node.ports.*;
+import com.ferreusveritas.node.NodeRegistryData;
 
 import java.util.UUID;
 
 public class GrowShape extends Shape {
 	
-	public static final String TYPE = "grow";
+	public static final NodeRegistryData REGISTRY_DATA = new NodeRegistryData.Builder()
+		.majorType(SHAPE)
+		.minorType("grow")
+		.loaderClass(Loader.class)
+		.sceneObjectClass(GrowShape.class)
+		.port(new PortDescription(PortDirection.OUT, PortDataTypes.SHAPE))
+		.build();
 	
 	private final Shape shape;
 	private final AABBD bounds;
@@ -21,13 +28,13 @@ public class GrowShape extends Shape {
 		this.bounds = calculateBounds();
 	}
 	
-	private AABBD calculateBounds() {
-		return shape.bounds().expand(1.0);
+	@Override
+	public NodeRegistryData getRegistryData() {
+		return REGISTRY_DATA;
 	}
 	
-	@Override
-	public String getType() {
-		return TYPE;
+	private AABBD calculateBounds() {
+		return shape.bounds().expand(1.0);
 	}
 	
 	@Override
@@ -50,59 +57,28 @@ public class GrowShape extends Shape {
 			? 1.0 : 0.0;
 	}
 	
-	@Override
-	public JsonObj toJsonObj() {
-		return super.toJsonObj()
-			.set(SHAPE, shape.toJsonObj());
-	}
-	
-	
-	////////////////////////////////////////////////////////////////
-	// Builder
-	////////////////////////////////////////////////////////////////
-	
-	public static class Builder {
-		
-		private UUID uuid = null;
-		private Shape shape = null;
-		
-		public Builder uuid(UUID uuid) {
-			this.uuid = uuid;
-			return this;
-		}
-		
-		public Builder shape(Shape shape) {
-			this.shape = shape;
-			return this;
-		}
-		
-		public GrowShape build() {
-			if(shape == null) {
-				throw new IllegalStateException("shape cannot be null");
-			}
-			return new GrowShape(uuid, shape);
-		}
-		
-	}
-	
-	
 	////////////////////////////////////////////////////////////////
 	// Loader
 	////////////////////////////////////////////////////////////////
 	
-	public static class Loader extends NodeLoader {
+	public static class Loader extends ShapeLoaderNode {
 		
-		private final NodeLoader shape;
+		private final InputPort<Shape> shapeInput;
 		
-		public Loader(LoaderSystem loaderSystem, JsonObj src) {
-			super(loaderSystem, src);
-			this.shape = loaderSystem.loader(src, SHAPE);
+		@JsonCreator
+		public Loader(
+			@JsonProperty(UID) UUID uuid,
+			@JsonProperty(SHAPE) PortAddress shapeAddress
+		) {
+			super(uuid);
+			this.shapeInput = createInputAndRegisterConnection(PortDataTypes.SHAPE, shapeAddress);
 		}
 		
-		@Override
-		public Shape load(LoaderSystem loaderSystem) {
-			Shape s = shape.load(loaderSystem, Shape.class).orElseThrow(wrongType(SHAPE));
-			return new GrowShape(getUuid(), s);
+		protected Shape create() {
+			return new GrowShape(
+				getUuid(),
+				get(shapeInput)
+			);
 		}
 		
 	}

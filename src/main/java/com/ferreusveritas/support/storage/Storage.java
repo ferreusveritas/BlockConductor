@@ -1,6 +1,6 @@
 package com.ferreusveritas.support.storage;
 
-import com.ferreusveritas.support.json.JsonObj;
+import com.ferreusveritas.misc.MiscHelper;
 
 import java.io.InputStream;
 
@@ -23,8 +23,9 @@ public class Storage {
 		return storageSystem.getString(path);
 	}
 	
-	public static JsonObj getJson(String path) {
-		return JsonObj.fromJsonString(storageSystem.getString(path));
+	public static <T> T getObject(String path, Class<T> type) {
+		String jsonStr = storageSystem.getString(path);
+		return MiscHelper.read(jsonStr, type);
 	}
 	
 	private Storage() {

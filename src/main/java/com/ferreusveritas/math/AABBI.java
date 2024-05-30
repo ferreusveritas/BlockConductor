@@ -1,22 +1,18 @@
 package com.ferreusveritas.math;
 
-import com.ferreusveritas.support.json.InvalidJsonProperty;
-import com.ferreusveritas.support.json.JsonObj;
-import com.ferreusveritas.support.json.Jsonable;
 import com.ferreusveritas.support.nbt.Nbtable;
 import net.querz.nbt.tag.CompoundTag;
 
 import java.util.Optional;
 import java.util.function.BiConsumer;
-import java.util.function.Supplier;
 
 /**
  * An axis-aligned bounding box.
  */
 public record AABBI(
-	Vec3I min,
-	Vec3I max
-) implements Jsonable, Nbtable {
+	Vec3I min, // inclusive
+	Vec3I max // inclusive
+) implements Nbtable {
 	
 	public static final AABBI EMPTY = new AABBI(Vec3I.MIN, Vec3I.MIN);
 	public static final AABBI INFINITE = new AABBI(Vec3I.MIN, Vec3I.MAX);
@@ -56,43 +52,6 @@ public record AABBI(
 	
 	private static int convMax(double v) {
 		return (Double.isInfinite(v) && v > 0) ? Integer.MAX_VALUE : (int)Math.ceil(v);
-	}
-	
-	public static AABBI fromJson(JsonObj src) {
-		if(src == null) {
-			throw new InvalidJsonProperty("Null JsonObj");
-		}
-		if(src.isString()) {
-			String str = src.asString().orElseThrow();
-			if(str.equalsIgnoreCase("INFINITE")) {
-				return INFINITE;
-			}
-			if (str.equalsIgnoreCase("EMPTY")) {
-				return EMPTY;
-			}
-			throw new InvalidJsonProperty("Invalid AABBI String: " + src);
-		}
-		if(src.isMap()) {
-			Vec3I min = src.getObj(MIN).map(Vec3I::new).orElseThrow(missing(MIN));
-			Vec3I max = src.getObj(MAX).map(Vec3I::new).orElseThrow(missing(MAX));
-			return new AABBI(min.resolve(), max.resolve()).resolve();
-		}
-		if(src.isList()) {
-			if(src.size() < 6) {
-				throw new InvalidJsonProperty("List must have at least 6 elements: " + src);
-			}
-			int[] v = new int[6];
-			for (int i = 0; i < 6; i++) {
-				final int j = i;
-				v[i] = src.getObj(i).flatMap(JsonObj::asInteger).orElseThrow(() -> new InvalidJsonProperty("Could not parse element " + j + " as integer"));
-			}
-			return new AABBI(new Vec3I(v[0], v[1], v[2]), new Vec3I(v[3], v[4], v[5])).resolve();
-		}
-		throw new InvalidJsonProperty("Invalid AABBI Json: " + src);
-	}
-	
-	private static Supplier<InvalidJsonProperty> missing(String name) {
-		return () -> new InvalidJsonProperty("Missing " + name);
 	}
 	
 	public AABBD toAABBD() {
@@ -339,24 +298,5 @@ public record AABBI(
 		tag.put(MAX, max().toNBT());
 		return tag;
 	}
-	
-	@Override
-	public JsonObj toJsonObj() {
-		AABBI resolved = resolve();
-		if(resolved == INFINITE) {
-			return new JsonObj("INFINITE");
-		}
-		if(resolved == EMPTY) {
-			return new JsonObj("EMPTY");
-		}
-		return JsonObj.newMap()
-			.set(MIN, resolved.min)
-			.set(MAX, resolved.max);
-	}
-	
-	@Override
-	public String toString() {
-		return toJsonObj().toString();
-	}
-	
+
 }

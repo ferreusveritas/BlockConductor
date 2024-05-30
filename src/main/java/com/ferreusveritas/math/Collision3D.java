@@ -22,7 +22,7 @@ public class Collision3D {
 		double a = -n.dot(w0);
 		double b = n.dot(dir);
 		
-		if (Math.abs(b) < SMALL_NUM) {	// ray is  parallel to triangle plane
+		if (Math.abs(b) < SMALL_NUM) {	// ray is parallel to triangle plane
 			// if a == 0  // ray lies in triangle plane
 			return false; // ray disjoint from plane
 		}

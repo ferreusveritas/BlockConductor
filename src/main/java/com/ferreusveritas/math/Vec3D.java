@@ -1,14 +1,12 @@
 package com.ferreusveritas.math;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.ferreusveritas.support.json.JsonObj;
-import com.ferreusveritas.support.json.Jsonable;
 
 public record Vec3D(
 	double x,
 	double y,
 	double z
-) implements Jsonable {
+) {
 	
 	public static final double EPSILON = 0.0000000001;
 	public static final Vec3D ZERO = new Vec3D(0);
@@ -29,14 +27,6 @@ public record Vec3D(
 	
 	public Vec3D(Vec3I vec) {
 		this(vec.x() + 0.5, vec.y() + 0.5, vec.z() + 0.5);
-	}
-	
-	public Vec3D(JsonObj src) {
-		this(
-			src.getDouble("x").orElse(0.0),
-			src.getDouble("y").orElse(0.0),
-			src.getDouble("z").orElse(0.0)
-		);
 	}
 	
 	public Vec3I toVecI() {
@@ -209,19 +199,6 @@ public record Vec3D(
 			return ZERO;
 		}
 		return this;
-	}
-	
-	@Override
-	public JsonObj toJsonObj() {
-		return JsonObj.newMap()
-			.set("x", MathHelper.dbl(x))
-			.set("y", MathHelper.dbl(y))
-			.set("z", MathHelper.dbl(z));
-	}
-	
-	@Override
-	public String toString() {
-		return toJsonObj().toString();
 	}
 	
 }

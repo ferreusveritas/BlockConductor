@@ -1,0 +1,13 @@
+{
+	"nodes": [
+		{
+			"type": "blockProvider:solid",
+			"uuid": "00000000-0000-0000-0000-000000000000",
+			"block": {
+				"name": "minecraft:stone",
+				"properties": {}
+			}
+		}
+	],
+	"root": "00000000-0000-0000-0000-000000000000"
+}

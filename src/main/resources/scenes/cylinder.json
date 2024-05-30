@@ -1,66 +1,78 @@
 {
-	"root": {
-		"class": "blockProvider",
-		"type": "translate",
-		"offset": {
-			"x": 16,
-			"y": 56,
-			"z": 25
+	"nodes": [
+		{
+			"type": "shape:cylinder",
+			"uuid": "00000000-0000-0000-0000-000000000001",
+			"height": 20,
+			"radius": 10
 		},
-		"provider": {
-			"class": "blockProvider",
-			"type": "shape",
-			"shape": {
-				"class": "shape",
-				"type": "transform",
-				"transform": {
-					"class": "transform",
-					"type": "transforms",
-					"operations": [
-						{
-							"class": "transform",
-							"type": "rotatex",
-							"angle": 45.0
-						},
-						{
-							"class": "transform",
-							"type": "rotatey",
-							"angle": 22.5
-						},
-						{
-							"class": "transform",
-							"type": "translate",
-							"offset": {
-								"x": 0,
-								"y": 8,
-								"z": 0
-							}
-						}
-					]
-				},
-				"shape": {
-					"class": "shape",
-					"type": "combine",
-					"operation": "SUB",
-					"shapes": [
-						{
-							"class": "shape",
-							"type": "cylinder",
-							"height": 20,
-							"radius": 10
-						},
-						{
-							"class": "shape",
-							"type": "cylinder",
-							"height": 20,
-							"radius": 8
-						}
-					]
-				}
-			},
+		{
+			"type": "shape:cylinder",
+			"uuid": "00000000-0000-0000-0000-000000000002",
+			"height": 20,
+			"radius": 8
+		},
+		{
+			"type": "shape:combine",
+			"uuid": "00000000-0000-0000-0000-000000000003",
+			"operation": "SUB",
+			"shape": [
+				"00000000-0000-0000-0000-000000000001:shape",
+				"00000000-0000-0000-0000-000000000002:shape"
+			]
+		},
+		{
+			"type": "transform:rotatex",
+			"uuid": "00000000-0000-0000-0000-000000000004",
+			"angle": 45
+		},
+		{
+			"type": "transform:rotatey",
+			"uuid": "00000000-0000-0000-0000-000000000005",
+			"angle": 22.5
+		},
+		{
+			"type": "transform:translate",
+			"uuid": "00000000-0000-0000-0000-000000000006",
+			"offset": {
+				"x": 0,
+				"y": 8,
+				"z": 0
+			}
+		},
+		{
+			"type": "transform:transforms",
+			"uuid": "00000000-0000-0000-0000-000000000007",
+			"transform": [
+				"00000000-0000-0000-0000-000000000004:transform",
+				"00000000-0000-0000-0000-000000000005:transform",
+				"00000000-0000-0000-0000-000000000006:transform"
+			]
+		},
+		{
+			"type": "shape:transform",
+			"uuid": "00000000-0000-0000-0000-000000000008",
+			"transform": "00000000-0000-0000-0000-000000000007:transform",
+			"shape": "00000000-0000-0000-0000-000000000003:shape"
+		},
+		{
+			"type": "blockProvider:shape",
+			"uuid": "00000000-0000-0000-0000-000000000009",
+			"shape": "00000000-0000-0000-0000-000000000008:shape",
 			"block": {
 				"name": "minecraft:stone_bricks"
 			}
+		},
+		{
+			"type": "blockProvider:translate",
+			"uuid": "00000000-0000-0000-0000-000000000010",
+			"offset": {
+				"x": 16,
+				"y": 56,
+				"z": 25
+			},
+			"blocks": "00000000-0000-0000-0000-000000000009:blocks"
 		}
-	}
+	],
+	"root": "00000000-0000-0000-0000-000000000010"
 }

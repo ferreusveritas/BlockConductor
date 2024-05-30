@@ -3,24 +3,27 @@ package com.ferreusveritas.scene;
 import com.ferreusveritas.api.Request;
 import com.ferreusveritas.api.Response;
 import com.ferreusveritas.block.Blocks;
+import com.ferreusveritas.node.ports.OutputPort;
 import com.ferreusveritas.node.provider.BlockProvider;
 import com.ferreusveritas.math.AABBI;
+import com.ferreusveritas.support.storage.Storage;
 
 public class BlockSystem {
 	
 	public static final Response EMPTY_RESPONSE = new Response(null, null);
 	
-	private final Scene scene = MainScene.getScene();
+	private final Scene scene = Storage.getObject("res://scenes/main.json", Scene.class);
 	
 	public Response process(Request request) {
-		Blocks blocks = scene.getRoot(BlockProvider.class).orElseThrow().getBlocks(request).orElse(null);
+		BlockProvider blockProvider = scene.root().getOutputPort("blocks", BlockProvider.class).map(OutputPort::read).orElseThrow();
+		Blocks blocks = blockProvider.getBlocks(request).orElse(null);
 		Response response = new Response(request.area(), blocks);
 		response = optimize(response);
 		return response;
 	}
 	
 	private Response optimize(Response response) {
-		if(response.blocks() == null) {
+		if(response.getBlocks().isEmpty()) {
 			return EMPTY_RESPONSE;
 		}
 		Blocks blocks = response.blocks();

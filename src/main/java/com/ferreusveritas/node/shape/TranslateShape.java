@@ -1,18 +1,27 @@
 package com.ferreusveritas.node.shape;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ferreusveritas.math.AABBD;
 import com.ferreusveritas.math.Vec3D;
-import com.ferreusveritas.math.Vec3I;
-import com.ferreusveritas.node.NodeLoader;
-import com.ferreusveritas.scene.LoaderSystem;
-import com.ferreusveritas.support.json.JsonObj;
+import com.ferreusveritas.node.ports.*;
+import com.ferreusveritas.node.NodeRegistryData;
+import com.ferreusveritas.node.values.VecNodeValue;
 
 import java.util.UUID;
 
 public class TranslateShape extends Shape {
 	
-	public static final String TYPE = "translate";
 	public static final String OFFSET = "offset";
+	public static final NodeRegistryData REGISTRY_DATA = new NodeRegistryData.Builder()
+		.majorType(SHAPE)
+		.minorType("translate")
+		.loaderClass(Loader.class)
+		.sceneObjectClass(TranslateShape.class)
+		.value(new VecNodeValue.Builder(OFFSET).def(Vec3D.ZERO).build())
+		.port(new PortDescription(PortDirection.IN, PortDataTypes.SHAPE))
+		.port(new PortDescription(PortDirection.OUT, PortDataTypes.SHAPE))
+		.build();
 	
 	private final Shape shape;
 	private final Vec3D offset;
@@ -25,13 +34,13 @@ public class TranslateShape extends Shape {
 		this.bounds = calculateBounds(shape);
 	}
 	
-	private AABBD calculateBounds(Shape shape) {
-		return shape.bounds().offset(offset);
+	@Override
+	public NodeRegistryData getRegistryData() {
+		return REGISTRY_DATA;
 	}
 	
-	@Override
-	public String getType() {
-		return TYPE;
+	private AABBD calculateBounds(Shape shape) {
+		return shape.bounds().offset(offset);
 	}
 	
 	@Override
@@ -47,75 +56,33 @@ public class TranslateShape extends Shape {
 		return shape.getVal(pos.sub(offset));
 	}
 	
-	@Override
-	public JsonObj toJsonObj() {
-		return super.toJsonObj()
-			.set(SHAPE, shape)
-			.set(OFFSET, offset);
-	}
-	
-	
-	////////////////////////////////////////////////////////////////
-	// Builder
-	////////////////////////////////////////////////////////////////
-	
-	public static class Builder {
-		
-		private UUID uuid = null;
-		private Shape shape = null;
-		private Vec3D offset = Vec3D.ZERO;
-		
-		public Builder uuid(UUID uuid) {
-			this.uuid = uuid;
-			return this;
-		}
-		
-		public Builder shape(Shape shape) {
-			this.shape = shape;
-			return this;
-		}
-		
-		public Builder offset(Vec3D offset) {
-			this.offset = offset;
-			return this;
-		}
-		
-		public Builder offset(Vec3I offset) {
-			return offset(offset.toVecD());
-		}
-		
-		public TranslateShape build() {
-			if(shape == null) {
-				throw new IllegalStateException("shape cannot be null");
-			}
-			if(offset == null) {
-				throw new IllegalStateException("offset cannot be null");
-			}
-			return new TranslateShape(uuid, shape, offset);
-		}
-		
-	}
-	
 	
 	////////////////////////////////////////////////////////////////
 	// Loader
 	////////////////////////////////////////////////////////////////
 	
-	public static class Loader extends NodeLoader {
+	public static class Loader extends ShapeLoaderNode {
 		
-		private final NodeLoader shape;
 		private final Vec3D offset;
+		private final InputPort<Shape> shapeInput;
 		
-		public Loader(LoaderSystem loaderSystem, JsonObj src) {
-			super(loaderSystem, src);
-			this.shape = loaderSystem.loader(src, SHAPE);
-			this.offset = src.getObj(OFFSET).map(Vec3D::new).orElseThrow(missing(OFFSET));
+		@JsonCreator
+		public Loader(
+			@JsonProperty(UID) UUID uuid,
+			@JsonProperty(OFFSET) Vec3D offset,
+			@JsonProperty(SHAPE) PortAddress shape
+		) {
+			super(uuid);
+			this.offset = offset;
+			this.shapeInput = createInputAndRegisterConnection(PortDataTypes.SHAPE, shape);
 		}
 		
-		@Override
-		public Shape load(LoaderSystem loaderSystem) {
-			Shape s = shape.load(loaderSystem, Shape.class).orElseThrow(wrongType(SHAPE));
-			return new TranslateShape(getUuid(), s, offset);
+		protected Shape create() {
+			return new TranslateShape(
+				getUuid(),
+				get(shapeInput),
+				offset
+			);
 		}
 		
 	}

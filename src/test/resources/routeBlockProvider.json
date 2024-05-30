@@ -1,0 +1,35 @@
+{
+	"nodes": [
+		{
+			"type": "blockProvider:route",
+			"uuid": "00000000-0000-0000-0000-000000000000",
+			"blocks": {
+				"stone": "00000000-0000-0000-0000-000000000001:blocks",
+				"dirt": "00000000-0000-0000-0000-000000000002:blocks",
+				"air": "00000000-0000-0000-0000-000000000003:blocks"
+			}
+		},
+		{
+			"type": "blockProvider:solid",
+			"uuid": "00000000-0000-0000-0000-000000000001",
+			"block": {
+				"name": "minecraft:stone"
+			}
+		},
+		{
+			"type": "blockProvider:solid",
+			"uuid": "00000000-0000-0000-0000-000000000002",
+			"block": {
+				"name": "minecraft:dirt"
+			}
+		},
+		{
+			"type": "blockProvider:solid",
+			"uuid": "00000000-0000-0000-0000-000000000003",
+			"block": {
+				"name": "minecraft:air"
+			}
+		}
+	],
+	"root": "00000000-0000-0000-0000-000000000000"
+}

@@ -1,20 +1,30 @@
 package com.ferreusveritas.node.shape;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ferreusveritas.math.AABBD;
 import com.ferreusveritas.math.Vec3D;
-import com.ferreusveritas.node.NodeLoader;
-import com.ferreusveritas.scene.LoaderSystem;
-import com.ferreusveritas.support.json.JsonObj;
+import com.ferreusveritas.node.ports.*;
+import com.ferreusveritas.node.NodeRegistryData;
+import com.ferreusveritas.node.values.NumberNodeValue;
 
 import java.util.UUID;
 
 public class HeightMapShape extends Shape {
-
-	public static final String TYPE = "heightmap";
+	
 	public static final String HEIGHT = "height";
 	public static final String MIN_Y = "minY";
 	public static final double DEFAULT_HEIGHT = 255.0;
 	public static final double DEFAULT_MIN_Y = 0.0;
+	public static final NodeRegistryData REGISTRY_DATA = new NodeRegistryData.Builder()
+		.majorType(SHAPE)
+		.minorType("heightMap")
+		.loaderClass(Loader.class)
+		.sceneObjectClass(HeightMapShape.class)
+		.value(new NumberNodeValue.Builder(HEIGHT).def(DEFAULT_HEIGHT).build())
+		.value(new NumberNodeValue.Builder(MIN_Y).def(DEFAULT_MIN_Y).build())
+		.port(new PortDescription(PortDirection.OUT, PortDataTypes.SHAPE))
+		.build();
 	
 	private final Shape shape;
 	private final double height;
@@ -30,6 +40,11 @@ public class HeightMapShape extends Shape {
 		validate();
 	}
 	
+	@Override
+	public NodeRegistryData getRegistryData() {
+		return REGISTRY_DATA;
+	}
+	
 	private void validate() {
 		if(height < 1.0) {
 			throw new IllegalArgumentException("Height must be at least 1");
@@ -41,11 +56,6 @@ public class HeightMapShape extends Shape {
 		Vec3D min = shapeBounds.min().withY(Double.NEGATIVE_INFINITY);
 		Vec3D max = shapeBounds.max().withY(height);
 		return new AABBD(min, max);
-	}
-	
-	@Override
-	public String getType() {
-		return TYPE;
 	}
 	
 	@Override
@@ -69,77 +79,36 @@ public class HeightMapShape extends Shape {
 		return 0.0;
 	}
 	
-	@Override
-	public JsonObj toJsonObj() {
-		return super.toJsonObj()
-			.set(HEIGHT, height)
-			.set(MIN_Y, minY)
-			.set(SHAPE, shape);
-	}
-	
-	
-	////////////////////////////////////////////////////////////////
-	// Builder
-	////////////////////////////////////////////////////////////////
-	
-	public static class Builder {
-		
-		private UUID uuid = null;
-		private Shape shape = null;
-		private double height = DEFAULT_HEIGHT;
-		private double minY = DEFAULT_MIN_Y;
-		
-		public Builder uuid(UUID uuid) {
-			this.uuid = uuid;
-			return this;
-		}
-		
-		public Builder shape(Shape shape) {
-			this.shape = shape;
-			return this;
-		}
-		
-		public Builder height(double height) {
-			this.height = height;
-			return this;
-		}
-		
-		public Builder minY(double minY) {
-			this.minY = minY;
-			return this;
-		}
-		
-		public HeightMapShape build() {
-			if(shape == null) {
-				throw new IllegalStateException("shape cannot be null");
-			}
-			return new HeightMapShape(uuid, shape, height, minY);
-		}
-		
-	}
-	
-	
 	////////////////////////////////////////////////////////////////
 	// Loader
 	////////////////////////////////////////////////////////////////
 	
-	public static class Loader extends NodeLoader {
+	public static class Loader extends ShapeLoaderNode {
 		
-		private final NodeLoader shape;
 		private final double height;
 		private final double minY;
+		private final InputPort<Shape> shapeInput;
 		
-		public Loader(LoaderSystem loaderSystem, JsonObj src) {
-			super(loaderSystem, src);
-			this.shape = loaderSystem.loader(src, SHAPE);
-			this.height = src.getDouble(HEIGHT).orElse(DEFAULT_HEIGHT);
-			this.minY = src.getDouble(MIN_Y).orElse(DEFAULT_MIN_Y);
+		@JsonCreator
+		public Loader(
+			@JsonProperty(UID) UUID uuid,
+			@JsonProperty(HEIGHT) Double height,
+			@JsonProperty(MIN_Y) Double minY,
+			@JsonProperty(SHAPE) PortAddress shapeAddress
+		) {
+			super(uuid);
+			this.height = height;
+			this.minY = minY;
+			this.shapeInput = createInputAndRegisterConnection(PortDataTypes.SHAPE, shapeAddress);
 		}
-		
-		@Override
-		public Shape load(LoaderSystem loaderSystem) {
-			Shape s = shape.load(loaderSystem, Shape.class).orElseThrow(wrongType(SHAPE));
-			return new HeightMapShape(getUuid(), s, height, minY);
+
+		protected Shape create() {
+			return new HeightMapShape(
+				getUuid(),
+				get(shapeInput),
+				height,
+				minY
+			);
 		}
 		
 	}

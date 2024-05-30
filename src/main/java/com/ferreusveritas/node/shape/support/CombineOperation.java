@@ -1,15 +1,8 @@
 package com.ferreusveritas.node.shape.support;
 
 import com.ferreusveritas.math.AABBD;
-import com.ferreusveritas.support.json.JsonObj;
-import com.ferreusveritas.support.json.Jsonable;
-import org.apache.tomcat.util.collections.CaseInsensitiveKeyMap;
 
-import java.util.EnumSet;
-import java.util.Map;
-import java.util.Optional;
-
-public enum CombineOperation implements Jsonable {
+public enum CombineOperation {
 	OR((a,b) -> d(d(a) || d(b)), BoundsOperation.UNION),
 	AND((a,b) -> d(d(a) && d(b)), BoundsOperation.INTERSECTION),
 	XOR((a,b) -> d(d(a) ^ d(b)), BoundsOperation.UNION),
@@ -28,7 +21,6 @@ public enum CombineOperation implements Jsonable {
 	PWR(Math::pow, BoundsOperation.UNION),
 	ABS((a,b) -> Math.abs(a), BoundsOperation.INFINITE);
 	
-	private static final Map<String, CombineOperation> map = EnumSet.allOf(CombineOperation.class).stream().collect(CaseInsensitiveKeyMap::new, (m, v) -> m.put(v.name(), v), Map::putAll);
 	private final DoubleFunction func;
 	private final BoundsOperation boundsCombineType;
 	
@@ -43,15 +35,6 @@ public enum CombineOperation implements Jsonable {
 	
 	public AABBD apply(AABBD a, AABBD b) {
 		return boundsCombineType.apply(a, b);
-	}
-	
-	public static Optional<CombineOperation> of(String str) {
-		return Optional.ofNullable(map.get(str));
-	}
-	
-	@Override
-	public JsonObj toJsonObj() {
-		return new JsonObj(name());
 	}
 	
 	private interface DoubleFunction {

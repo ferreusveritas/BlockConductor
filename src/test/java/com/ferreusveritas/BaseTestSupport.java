@@ -1,24 +1,51 @@
 package com.ferreusveritas;
 
-import java.io.IOException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ferreusveritas.misc.CoreMiscHelper;
+
 import java.io.InputStream;
 
 public class BaseTestSupport {
 	
-	public static String readResourceAsString(String path) {
-		InputStream is = readResourceAsStream(path);
-		if(is == null) {
-			throw new RuntimeException("Could not find resource: " + path);
-		}
-		try(is) {
-			return new String(is.readAllBytes());
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+	private static final CoreMiscHelper CORE = new CoreMiscHelper(BaseTestSupport.class);
+	
+	protected static ObjectMapper mapper() {
+		return CoreMiscHelper.MAPPER;
 	}
 	
-	public static InputStream readResourceAsStream(String path) {
-		return BaseTestSupport.class.getClassLoader().getResourceAsStream(path);
+	protected static <T> T read(String jsonString, Class<T> type) {
+		return CORE.read(jsonString, type);
+	}
+	
+	protected static <T> T read(JsonNode jsonNode, Class<T> type) {
+		return CORE.read(jsonNode, type);
+	}
+	
+	protected static <T> T read(String jsonStr, TypeReference<T> typeRef) {
+		return CORE.read(jsonStr, typeRef);
+	}
+	
+	protected static <T> T read(String jsonStr, JavaType javaType) {
+		return CORE.read(jsonStr, javaType);
+	}
+	
+	protected static String write(Object object) {
+		return CORE.write(object);
+	}
+	
+	protected static String readResourceAsString(String path) {
+		return CORE.readResourceAsString(path);
+	}
+	
+	protected static InputStream readResourceAsStream(String path) {
+		return CORE.readResourceAsStream(path);
+	}
+	
+	protected static <T> T readResourceAs(String path, Class<T> type) {
+		return CORE.readResourceAs(path, type);
 	}
 	
 }

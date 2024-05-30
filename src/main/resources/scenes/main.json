@@ -1,0 +1,71 @@
+{
+	"nodes": [
+		{
+			"type": "blockProvider:route",
+			"uuid": "00000000-0000-0000-0000-000000000000",
+			"blocks": {
+				"air": "00000000-0000-0000-0000-000000000001:blocks",
+				"shapes": "00000000-0000-0000-0000-000000000002:blocks",
+				"cylinder": "00000000-0000-0000-0000-000000000003:blocks",
+				"heightmap": "00000000-0000-0000-0000-000000000004:blocks",
+				"model": "00000000-0000-0000-0000-000000000005:blocks",
+				"noise1": "00000000-0000-0000-0000-000000000006:blocks",
+				"noise2": "00000000-0000-0000-0000-000000000007:blocks",
+				"pyramid": "00000000-0000-0000-0000-000000000008:blocks",
+				"shyguy": "00000000-0000-0000-0000-000000000009:blocks",
+				"tree": "00000000-0000-0000-0000-000000000010:blocks"
+			}
+		},
+		{
+			"type": "blockProvider:reference",
+			"uuid": "00000000-0000-0000-0000-000000000001",
+			"ref": "res://scenes/air.json"
+		},
+		{
+			"type": "blockProvider:reference",
+			"uuid": "00000000-0000-0000-0000-000000000002",
+			"ref": "res://scenes/shapes.json"
+		},
+		{
+			"type": "blockProvider:reference",
+			"uuid": "00000000-0000-0000-0000-000000000003",
+			"ref": "res://scenes/cylinder.json"
+		},
+		{
+			"type": "blockProvider:reference",
+			"uuid": "00000000-0000-0000-0000-000000000004",
+			"ref": "res://scenes/heightmap.json"
+		},
+		{
+			"type": "blockProvider:reference",
+			"uuid": "00000000-0000-0000-0000-000000000005",
+			"ref": "res://scenes/model.json"
+		},
+		{
+			"type": "blockProvider:reference",
+			"uuid": "00000000-0000-0000-0000-000000000006",
+			"ref": "res://scenes/noise1.json"
+		},
+		{
+			"type": "blockProvider:reference",
+			"uuid": "00000000-0000-0000-0000-000000000007",
+			"ref": "res://scenes/noise2.json"
+		},
+		{
+			"type": "blockProvider:reference",
+			"uuid": "00000000-0000-0000-0000-000000000008",
+			"ref": "res://scenes/pyramid.json"
+		},
+		{
+			"type": "blockProvider:reference",
+			"uuid": "00000000-0000-0000-0000-000000000009",
+			"ref": "res://scenes/shyguy.json"
+		},
+		{
+			"type": "blockProvider:reference",
+			"uuid": "00000000-0000-0000-0000-000000000010",
+			"ref": "res://scenes/tree.json"
+		}
+	],
+	"root": "00000000-0000-0000-0000-000000000000"
+}

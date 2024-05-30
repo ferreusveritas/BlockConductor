@@ -1,23 +1,32 @@
 package com.ferreusveritas.node.transform;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ferreusveritas.math.Matrix4X4;
-import com.ferreusveritas.node.NodeLoader;
-import com.ferreusveritas.scene.LoaderSystem;
-import com.ferreusveritas.support.json.JsonObj;
+import com.ferreusveritas.node.NodeRegistryData;
+import com.ferreusveritas.node.ports.PortDataTypes;
+import com.ferreusveritas.node.ports.PortDescription;
+import com.ferreusveritas.node.ports.PortDirection;
+import com.ferreusveritas.node.values.NumberNodeValue;
 
 import java.util.UUID;
 
 public class RotateX extends Transform {
 	
-	public static final String TYPE = "rotatex";
 	public static final String ANGLE = "angle";
+	public static final NodeRegistryData REGISTRY_DATA = new NodeRegistryData.Builder()
+		.majorType(TRANSFORM)
+		.minorType("rotatex")
+		.loaderClass(Loader.class)
+		.sceneObjectClass(RotateX.class)
+		.value(new NumberNodeValue.Builder(ANGLE).def(0.0).build())
+		.port(new PortDescription(PortDirection.OUT, PortDataTypes.TRANSFORM))
+		.build();
 	
-	private final double angle;
 	private final Matrix4X4 matrix;
 	
 	private RotateX(UUID uuid, double angle) {
 		super(uuid);
-		this.angle = angle;
 		this.matrix = Matrix4X4.IDENTITY.rotateX(Math.toRadians(angle));
 	}
 	
@@ -27,58 +36,28 @@ public class RotateX extends Transform {
 	}
 	
 	@Override
-	public String getType() {
-		return TYPE;
+	public NodeRegistryData getRegistryData() {
+		return REGISTRY_DATA;
 	}
-	
-	@Override
-	public JsonObj toJsonObj() {
-		return super.toJsonObj()
-			.set(ANGLE, angle);
-	}
-	
-	
-	////////////////////////////////////////////////////////////////
-	// Builder
-	////////////////////////////////////////////////////////////////
-	
-	public static class Builder {
-		
-		private UUID uuid = null;
-		private double angle = 0.0;
-		
-		public Builder uuid(UUID uuid) {
-			this.uuid = uuid;
-			return this;
-		}
-		
-		public Builder angle(double angle) {
-			this.angle = angle;
-			return this;
-		}
-		
-		public RotateX build() {
-			return new RotateX(uuid, angle);
-		}
-		
-	}
-	
-	
+
 	////////////////////////////////////////////////////////////////
 	// Loader
 	////////////////////////////////////////////////////////////////
 	
-	public static class Loader extends NodeLoader {
+	public static class Loader extends TransformProviderLoaderNode {
 		
 		private final double angle;
 		
-		public Loader(LoaderSystem loaderSystem, JsonObj src) {
-			super(loaderSystem, src);
-			this.angle = src.getDouble(ANGLE).orElse(0.0);
+		@JsonCreator
+		public Loader(
+			@JsonProperty(UID) UUID uuid,
+			@JsonProperty(ANGLE) Double angle
+		) {
+			super(uuid);
+			this.angle = angle;
 		}
 		
-		@Override
-		public RotateX load(LoaderSystem loaderSystem) {
+		protected Transform create() {
 			return new RotateX(getUuid(), angle);
 		}
 		

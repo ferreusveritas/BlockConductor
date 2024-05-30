@@ -1,12 +1,16 @@
 package com.ferreusveritas.node.provider;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ferreusveritas.api.Request;
 import com.ferreusveritas.block.Block;
 import com.ferreusveritas.block.Blocks;
 import com.ferreusveritas.math.AABBI;
-import com.ferreusveritas.node.NodeLoader;
-import com.ferreusveritas.scene.LoaderSystem;
-import com.ferreusveritas.support.json.JsonObj;
+import com.ferreusveritas.node.NodeRegistryData;
+import com.ferreusveritas.node.ports.PortDataTypes;
+import com.ferreusveritas.node.ports.PortDescription;
+import com.ferreusveritas.node.ports.PortDirection;
+import com.ferreusveritas.node.values.BlockNodeValue;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -16,8 +20,14 @@ import java.util.UUID;
  */
 public class SolidBlockProvider extends BlockProvider {
 	
-	public static final String TYPE = "solid";
-	public static final String BLOCK = "block";
+	public static final NodeRegistryData REGISTRY_DATA = new NodeRegistryData.Builder()
+		.majorType(BLOCK_PROVIDER)
+		.minorType("solid")
+		.loaderClass(Loader.class)
+		.sceneObjectClass(SolidBlockProvider.class)
+		.value(new BlockNodeValue.Builder(BLOCK).build())
+		.port(new PortDescription(PortDirection.OUT, PortDataTypes.BLOCKS))
+		.build();
 	
 	private final Block block;
 	
@@ -31,8 +41,8 @@ public class SolidBlockProvider extends BlockProvider {
 	}
 	
 	@Override
-	public String getType() {
-		return TYPE;
+	public NodeRegistryData getRegistryData() {
+		return REGISTRY_DATA;
 	}
 	
 	@Override
@@ -52,58 +62,25 @@ public class SolidBlockProvider extends BlockProvider {
 		return AABBI.INFINITE;
 	}
 	
-	@Override
-	public JsonObj toJsonObj() {
-		return super.toJsonObj()
-			.set(BLOCK, block);
-	}
-	
-	
-	////////////////////////////////////////////////////////////////
-	// Builder
-	////////////////////////////////////////////////////////////////
-	
-	public static class Builder {
-		
-		private UUID uuid = null;
-		private Block block = null;
-		
-		public Builder uuid(UUID uuid) {
-			this.uuid = uuid;
-			return this;
-		}
-		
-		public Builder block(Block block) {
-			this.block = block;
-			return this;
-		}
-		
-		public SolidBlockProvider build() {
-			if(block == null) {
-				throw new IllegalStateException("SolidBlockProvider requires a block");
-			}
-			return new SolidBlockProvider(uuid, block);
-		}
-		
-	}
-	
-	
 	////////////////////////////////////////////////////////////////
 	// Loader
 	////////////////////////////////////////////////////////////////
 	
-	public static class Loader extends NodeLoader {
+	public static class Loader extends BlockProviderLoaderNode {
 		
 		private final Block block;
 		
-		public Loader(LoaderSystem loaderSystem, JsonObj src) {
-			super(loaderSystem, src);
-			this.block = loaderSystem.blockLoader(src, BLOCK);
+		@JsonCreator
+		public Loader(
+			@JsonProperty(UID) UUID uuid,
+			@JsonProperty(BLOCK) Block block
+		) {
+			super(uuid);
+			this.block = block;
 		}
 		
-		@Override
-		public BlockProvider load(LoaderSystem loaderSystem) {
-			return new SolidBlockProvider(getUuid(), block);
+		protected BlockProvider create() {
+			return new SolidBlockProvider(block);
 		}
 		
 	}

@@ -3,16 +3,12 @@ package com.ferreusveritas.support.nbt;
 import net.querz.nbt.io.NBTSerializer;
 import net.querz.nbt.io.NamedTag;
 import net.querz.nbt.tag.CompoundTag;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.zip.GZIPOutputStream;
 
 public class NbtHelper {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(NbtHelper.class);
 	
 	private static final NBTSerializer serializer = new NBTSerializer(false);
 	
@@ -53,8 +49,7 @@ public class NbtHelper {
 			return byteStream.toByteArray();
 		}
 		catch(Exception e) {
-			LOG.error("Failed to gzip NBT", e);
-			return new byte[0];
+			throw new NbtException("Failed to gzip serialized NBT", e);
 		}
 	}
 	

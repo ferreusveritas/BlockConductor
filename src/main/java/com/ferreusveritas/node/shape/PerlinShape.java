@@ -1,11 +1,16 @@
 package com.ferreusveritas.node.shape;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ferreusveritas.math.AABBD;
 import com.ferreusveritas.math.Vec3D;
-import com.ferreusveritas.node.NodeLoader;
-import com.ferreusveritas.scene.LoaderSystem;
-import com.ferreusveritas.support.json.JsonObj;
+import com.ferreusveritas.node.NodeRegistryData;
+import com.ferreusveritas.node.ports.PortDataTypes;
+import com.ferreusveritas.node.ports.PortDescription;
+import com.ferreusveritas.node.ports.PortDirection;
+import com.ferreusveritas.node.values.NumberNodeValue;
 import org.spongepowered.noise.module.source.Perlin;
+import org.spongepowered.noise.module.source.Simplex;
 
 import java.util.UUID;
 
@@ -14,12 +19,23 @@ import java.util.UUID;
  */
 public class PerlinShape extends Shape {
 	
-	public static final String TYPE = "perlin";
 	public static final String FREQUENCY = "frequency";
 	public static final String LACUNARITY = "lacunarity";
 	public static final String PERSISTENCE = "persistence";
 	public static final String OCTAVES = "octaves";
 	public static final String SEED = "seed";
+	public static final NodeRegistryData REGISTRY_DATA = new NodeRegistryData.Builder()
+		.majorType(SHAPE)
+		.minorType("perlin")
+		.loaderClass(Loader.class)
+		.sceneObjectClass(PerlinShape.class)
+		.value(new NumberNodeValue.Builder(FREQUENCY).def(Simplex.DEFAULT_SIMPLEX_FREQUENCY).build())
+		.value(new NumberNodeValue.Builder(LACUNARITY).def(Simplex.DEFAULT_SIMPLEX_LACUNARITY).build())
+		.value(new NumberNodeValue.Builder(PERSISTENCE).def(Simplex.DEFAULT_SIMPLEX_PERSISTENCE).build())
+		.value(new NumberNodeValue.Builder(OCTAVES).def(Simplex.DEFAULT_SIMPLEX_OCTAVE_COUNT).min(1).max(Simplex.SIMPLEX_MAX_OCTAVE).increment(1).build())
+		.value(new NumberNodeValue.Builder(SEED).def(Simplex.DEFAULT_SIMPLEX_SEED).integer().build())
+		.port(new PortDescription(PortDirection.OUT, PortDataTypes.SHAPE))
+		.build();
 	
 	private final Perlin perlin;
 	private final double frequency;
@@ -38,6 +54,11 @@ public class PerlinShape extends Shape {
 		this.perlin = setupPerlin();
 	}
 	
+	@Override
+	public NodeRegistryData getRegistryData() {
+		return REGISTRY_DATA;
+	}
+	
 	private Perlin setupPerlin() {
 		Perlin p = new Perlin();
 		p.setFrequency(frequency);
@@ -49,11 +70,6 @@ public class PerlinShape extends Shape {
 	}
 	
 	@Override
-	public String getType() {
-		return TYPE;
-	}
-	
-	@Override
 	public AABBD bounds() {
 		return AABBD.INFINITE;
 	}
@@ -62,72 +78,12 @@ public class PerlinShape extends Shape {
 	public double getVal(Vec3D pos) {
 		return perlin.get(pos.x(), pos.y(), pos.z());
 	}
-	
-	@Override
-	public JsonObj toJsonObj() {
-		return super.toJsonObj()
-			.set(FREQUENCY, frequency)
-			.set(LACUNARITY, lacunarity)
-			.set(PERSISTENCE, persistence)
-			.set(OCTAVES, octaves)
-			.set(SEED, seed);
-	}
-	
-	
-	////////////////////////////////////////////////////////////////
-	// Builder
-	////////////////////////////////////////////////////////////////
-	
-	public static class Builder {
-		private UUID uuid = UUID.randomUUID();
-		private double frequency = Perlin.DEFAULT_PERLIN_FREQUENCY;
-		private double lacunarity = Perlin.DEFAULT_PERLIN_LACUNARITY;
-		private double persistence = Perlin.DEFAULT_PERLIN_PERSISTENCE;
-		private int octaves = Perlin.DEFAULT_PERLIN_OCTAVE_COUNT;
-		private int seed = Perlin.DEFAULT_PERLIN_SEED;
-		
-		public Builder uuid(UUID uuid) {
-			this.uuid = uuid;
-			return this;
-		}
-		
-		public Builder frequency(double frequency) {
-			this.frequency = frequency;
-			return this;
-		}
-		
-		public Builder lacunarity(double lacunarity) {
-			this.lacunarity = lacunarity;
-			return this;
-		}
-		
-		public Builder persistence(double persistence) {
-			this.persistence = persistence;
-			return this;
-		}
-		
-		public Builder octaves(int octaves) {
-			this.octaves = octaves;
-			return this;
-		}
-		
-		public Builder seed(int seed) {
-			this.seed = seed;
-			return this;
-		}
-		
-		public PerlinShape build() {
-			return new PerlinShape(uuid, frequency, lacunarity, persistence, octaves, seed);
-		}
-		
-	}
-	
-	
+
 	////////////////////////////////////////////////////////////////
 	// Loader
 	////////////////////////////////////////////////////////////////
 	
-	public static class Loader extends NodeLoader {
+	public static class Loader extends ShapeLoaderNode {
 		
 		private final double frequency;
 		private final double lacunarity;
@@ -135,18 +91,32 @@ public class PerlinShape extends Shape {
 		private final int octaves;
 		private final int seed;
 		
-		public Loader(LoaderSystem loaderSystem, JsonObj src) {
-			super(loaderSystem, src);
-			this.frequency = src.getDouble(FREQUENCY).orElse(Perlin.DEFAULT_PERLIN_FREQUENCY);
-			this.lacunarity = src.getDouble(LACUNARITY).orElse(Perlin.DEFAULT_PERLIN_LACUNARITY);
-			this.persistence = src.getDouble(PERSISTENCE).orElse(Perlin.DEFAULT_PERLIN_PERSISTENCE);
-			this.octaves = src.getInt(OCTAVES).orElse(Perlin.DEFAULT_PERLIN_OCTAVE_COUNT);
-			this.seed = src.getInt(SEED).orElse(Perlin.DEFAULT_PERLIN_SEED);
+		@JsonCreator
+		public Loader(
+			@JsonProperty(UID) UUID uuid,
+			@JsonProperty(FREQUENCY) Double frequency,
+			@JsonProperty(LACUNARITY) Double lacunarity,
+			@JsonProperty(PERSISTENCE) Double persistence,
+			@JsonProperty(OCTAVES) Integer octaves,
+			@JsonProperty(SEED) Integer seed
+		) {
+			super(uuid);
+			this.frequency = frequency;
+			this.lacunarity = lacunarity;
+			this.persistence = persistence;
+			this.octaves = octaves;
+			this.seed = seed;
 		}
 		
-		@Override
-		public Shape load(LoaderSystem loaderSystem) {
-			return new PerlinShape(getUuid(), frequency, lacunarity, persistence, octaves, seed);
+		protected Shape create() {
+			return new PerlinShape(
+				getUuid(),
+				frequency,
+				lacunarity,
+				persistence,
+				octaves,
+				seed
+			);
 		}
 		
 	}

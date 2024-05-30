@@ -1,19 +1,29 @@
 package com.ferreusveritas.node.shape;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ferreusveritas.math.AABBD;
 import com.ferreusveritas.math.Matrix4X4;
 import com.ferreusveritas.math.Vec3D;
-import com.ferreusveritas.node.NodeLoader;
+import com.ferreusveritas.node.ports.*;
+import com.ferreusveritas.node.NodeRegistryData;
 import com.ferreusveritas.node.transform.Transform;
-import com.ferreusveritas.scene.LoaderSystem;
-import com.ferreusveritas.support.json.JsonObj;
 
 import java.util.UUID;
 
+import static com.ferreusveritas.node.transform.Transform.TRANSFORM;
+
 public class TransformShape extends Shape {
 	
-	public static final String TYPE = "transform";
-	public static final String TRANSFORM = "transform";
+	public static final NodeRegistryData REGISTRY_DATA = new NodeRegistryData.Builder()
+		.majorType(SHAPE)
+		.minorType("transform")
+		.loaderClass(Loader.class)
+		.sceneObjectClass(TransformShape.class)
+		.port(new PortDescription(PortDirection.IN, PortDataTypes.SHAPE))
+		.port(new PortDescription(PortDirection.IN, PortDataTypes.TRANSFORM))
+		.port(new PortDescription(PortDirection.OUT, PortDataTypes.SHAPE))
+		.build();
 	
 	private final Shape shape;
 	private final Transform transform;
@@ -28,13 +38,13 @@ public class TransformShape extends Shape {
 		this.bounds = calculateBounds(shape);
 	}
 	
-	private AABBD calculateBounds(Shape shape) {
-		return shape.bounds().transform(transform.getMatrix());
+	@Override
+	public NodeRegistryData getRegistryData() {
+		return REGISTRY_DATA;
 	}
 	
-	@Override
-	public String getType() {
-		return TYPE;
+	private AABBD calculateBounds(Shape shape) {
+		return shape.bounds().transform(transform.getMatrix());
 	}
 	
 	@Override
@@ -53,72 +63,32 @@ public class TransformShape extends Shape {
 		return 0;
 	}
 	
-	@Override
-	public JsonObj toJsonObj() {
-		return super.toJsonObj()
-			.set(TRANSFORM, transform)
-			.set(SHAPE, shape);
-	}
-	
-	
-	////////////////////////////////////////////////////////////////
-	// Builder
-	////////////////////////////////////////////////////////////////
-	
-	public static class Builder {
-		
-		private UUID uuid = null;
-		private Shape shape = null;
-		private Transform transform = null;
-		
-		public Builder uuid(UUID uuid) {
-			this.uuid = uuid;
-			return this;
-		}
-		
-		public Builder shape(Shape shape) {
-			this.shape = shape;
-			return this;
-		}
-		
-		public Builder transform(Transform transform) {
-			this.transform = transform;
-			return this;
-		}
-		
-		public TransformShape build() {
-			if(shape == null) {
-				throw new IllegalStateException("shape cannot be null");
-			}
-			if(transform == null) {
-				throw new IllegalStateException("transform cannot be null");
-			}
-			return new TransformShape(uuid, shape, transform);
-		}
-		
-	}
-	
-	
 	////////////////////////////////////////////////////////////////
 	// Loader
 	////////////////////////////////////////////////////////////////
 	
-	public static class Loader extends NodeLoader {
+	public static class Loader extends ShapeLoaderNode {
 		
-		private final NodeLoader shape;
-		private final NodeLoader transform;
+		private final InputPort<Shape> shapeInput;
+		private final InputPort<Transform> transformInput;
 		
-		public Loader(LoaderSystem loaderSystem, JsonObj src) {
-			super(loaderSystem, src);
-			this.shape = loaderSystem.loader(src, SHAPE);
-			this.transform = loaderSystem.loader(src, TRANSFORM);
+		@JsonCreator
+		public Loader(
+			@JsonProperty(UID) UUID uuid,
+			@JsonProperty(SHAPE) PortAddress shapeAddress,
+			@JsonProperty(TRANSFORM) PortAddress transformAddress
+		) {
+			super(uuid);
+			shapeInput = createInputAndRegisterConnection(PortDataTypes.SHAPE, shapeAddress);
+			transformInput = createInputAndRegisterConnection(PortDataTypes.TRANSFORM, transformAddress);
 		}
 		
-		@Override
-		public Shape load(LoaderSystem loaderSystem) {
-			Shape s = shape.load(loaderSystem, Shape.class).orElseThrow(wrongType(SHAPE));
-			Transform t = this.transform.load(loaderSystem, Transform.class).orElseThrow(wrongType(TRANSFORM));
-			return new TransformShape(getUuid(), s, t);
+		protected Shape create() {
+			return new TransformShape(
+				getUuid(),
+				get(shapeInput),
+				get(transformInput)
+			);
 		}
 		
 	}

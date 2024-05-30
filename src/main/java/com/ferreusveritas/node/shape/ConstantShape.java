@@ -1,10 +1,14 @@
 package com.ferreusveritas.node.shape;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ferreusveritas.math.AABBD;
 import com.ferreusveritas.math.Vec3D;
-import com.ferreusveritas.node.NodeLoader;
-import com.ferreusveritas.scene.LoaderSystem;
-import com.ferreusveritas.support.json.JsonObj;
+import com.ferreusveritas.node.NodeRegistryData;
+import com.ferreusveritas.node.ports.PortDataTypes;
+import com.ferreusveritas.node.ports.PortDescription;
+import com.ferreusveritas.node.ports.PortDirection;
+import com.ferreusveritas.node.values.NumberNodeValue;
 
 import java.util.UUID;
 
@@ -13,8 +17,15 @@ import java.util.UUID;
  */
 public class ConstantShape extends Shape {
 	
-	public static final String TYPE = "constant";
 	public static final String VALUE = "value";
+	public static final NodeRegistryData REGISTRY_DATA = new NodeRegistryData.Builder()
+		.majorType(SHAPE)
+		.minorType("constant")
+		.loaderClass(Loader.class)
+		.sceneObjectClass(ConstantShape.class)
+		.value(new NumberNodeValue.Builder(VALUE).def(0.0).build())
+		.port(new PortDescription(PortDirection.OUT, PortDataTypes.SHAPE))
+		.build();
 	
 	private final double value;
 	
@@ -24,8 +35,8 @@ public class ConstantShape extends Shape {
 	}
 	
 	@Override
-	public String getType() {
-		return TYPE;
+	public NodeRegistryData getRegistryData() {
+		return REGISTRY_DATA;
 	}
 	
 	@Override
@@ -38,54 +49,24 @@ public class ConstantShape extends Shape {
 		return value;
 	}
 	
-	@Override
-	public JsonObj toJsonObj() {
-		return super.toJsonObj()
-			.set(VALUE, value);
-	}
-	
-	
-	////////////////////////////////////////////////////////////////
-	// Builder
-	////////////////////////////////////////////////////////////////
-	
-	public static class Builder {
-		
-		private UUID uuid = null;
-		private double value = 0.0;
-		
-		public Builder uuid(UUID uuid) {
-			this.uuid = uuid;
-			return this;
-		}
-		
-		public Builder value(double value) {
-			this.value = value;
-			return this;
-		}
-		
-		public ConstantShape build() {
-			return new ConstantShape(uuid, value);
-		}
-		
-	}
-	
-	
 	////////////////////////////////////////////////////////////////
 	// Loader
 	////////////////////////////////////////////////////////////////
 	
-	public static class Loader extends NodeLoader {
+	public static class Loader extends ShapeLoaderNode {
 		
 		private final double value;
 		
-		public Loader(LoaderSystem loaderSystem, JsonObj src) {
-			super(loaderSystem, src);
-			this.value = src.getDouble(VALUE).orElse(0.0);
+		@JsonCreator
+		public Loader(
+			@JsonProperty(UID) UUID uuid,
+			@JsonProperty(VALUE) double value
+		) {
+			super(uuid);
+			this.value = value;
 		}
 		
-		@Override
-		public Shape load(LoaderSystem loaderSystem) {
+		protected Shape create() {
 			return new ConstantShape(getUuid(), value);
 		}
 		

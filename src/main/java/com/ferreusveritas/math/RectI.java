@@ -1,14 +1,11 @@
 package com.ferreusveritas.math;
 
-import com.ferreusveritas.support.json.JsonObj;
-import com.ferreusveritas.support.json.Jsonable;
-
 public record RectI(
 	int x1, //inclusive
 	int z1, //inclusive
 	int x2, //inclusive
 	int z2  //inclusive
-) implements Jsonable {
+) {
 	
 	public static final RectI INFINITE = new RectI(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
 	public static final RectI EMPTY = new RectI(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
@@ -27,15 +24,6 @@ public record RectI(
 			aabb.min().z(),
 			aabb.max().x(),
 			aabb.max().z()
-		);
-	}
-	
-	public RectI(JsonObj src) {
-		this(
-			src.getInt("x1").orElse(0),
-			src.getInt("z1").orElse(0),
-			src.getInt("x2").orElse(0),
-			src.getInt("z2").orElse(0)
 		);
 	}
 	
@@ -143,15 +131,6 @@ public record RectI(
 			return a;
 		}
 		return a.union(b);
-	}
-	
-	@Override
-	public JsonObj toJsonObj() {
-		return JsonObj.newMap()
-			.set("x1", x1)
-			.set("z1", z1)
-			.set("x2", x2)
-			.set("z2", z2);
 	}
 	
 }

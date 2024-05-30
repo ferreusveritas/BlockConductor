@@ -1,69 +1,36 @@
 package com.ferreusveritas.math;
 
-import com.ferreusveritas.support.json.InvalidJsonProperty;
-import com.ferreusveritas.support.json.JsonObj;
-import com.ferreusveritas.support.json.Jsonable;
-
-import java.util.function.Supplier;
+import com.fasterxml.jackson.annotation.JsonCreator;
 
 public record RectD(
-	double x1,
-	double z1,
-	double x2,
-	double z2
-) implements Jsonable {
+	double x1, //inclusive
+	double z1, //inclusive
+	double x2, //exclusive
+	double z2  //exclusive
+) {
 	
 	public static final RectD INFINITE = new RectD(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
 	public static final RectD EMPTY = new RectD(Double.NaN, Double.NaN, Double.NaN, Double.NaN);
 	
-	public RectD(Vec3D size) {
-		this(size.x(), size.z());
+	@JsonCreator
+	public static RectD create(double x1, double z1, double x2, double z2) {
+		return new RectD(x1, z1, x2, z2).resolve();
 	}
 	
-	public RectD(double width, double height) {
-		this(0, 0, width, height);
+	public static RectD create(Vec2D min, Vec2D max) {
+		return new RectD(min.x(), min.z(), max.x(), max.z()).resolve();
 	}
 	
-	public RectD(AABBD aabb) {
-		this(aabb.min().x(), aabb.min().z(), aabb.max().x(), aabb.max().z());
+	public static RectD create(Vec2D size) {
+		return new RectD(0, 0, size.x(), size.z()).resolve();
 	}
 	
-	public static RectD fromJson(JsonObj src) {
-		if(src == null) {
-			throw new InvalidJsonProperty("Null JsonObj");
-		}
-		if(src.isString()) {
-			String str = src.asString().orElseThrow();
-			if(str.equalsIgnoreCase("INFINITE")) {
-				return INFINITE;
-			}
-			if (str.equalsIgnoreCase("EMPTY")) {
-				return EMPTY;
-			}
-			throw new InvalidJsonProperty("Invalid RectD String: " + src);
-		}
-		if(src.isMap()) {
-			double x1 = src.getDouble("x1").orElseThrow(missing("x1"));
-			double z1 = src.getDouble("z1").orElseThrow(missing("z1"));
-			double x2 = src.getDouble("x2").orElseThrow(missing("x2"));
-			double z2 = src.getDouble("z2").orElseThrow(missing("z2"));
-			return new RectD(x1, z1, x2, z2).resolve();
-		}
-		if(src.isList()) {
-			if(src.size() < 4) {
-				throw new InvalidJsonProperty("List must have at least 4 elements: " + src);
-			}
-			double x1 = src.getObj(0).flatMap(JsonObj::asDouble).orElseThrow(missing("[0](x1)"));
-			double z1 = src.getObj(1).flatMap(JsonObj::asDouble).orElseThrow(missing("[1](z1)"));
-			double x2 = src.getObj(2).flatMap(JsonObj::asDouble).orElseThrow(missing("[2](x2)"));
-			double z2 = src.getObj(3).flatMap(JsonObj::asDouble).orElseThrow(missing("[3](z2)"));
-			return new RectD(x1, z1, x2, z2).resolve();
-		}
-		throw new InvalidJsonProperty("Invalid RectD Json: " + src);
+	public static RectD create(double width, double height) {
+		return new RectD(0, 0, width, height).resolve();
 	}
 	
-	private static Supplier<InvalidJsonProperty> missing(String name) {
-		return () -> new InvalidJsonProperty("Missing or invalid double value: " + name);
+	public static RectD create(AABBD aabb) {
+		return new RectD(aabb.min().x(), aabb.min().z(), aabb.max().x(), aabb.max().z()).resolve();
 	}
 	
 	public AABBD toAABB() {
@@ -186,37 +153,24 @@ public record RectD(
 	}
 	
 	public RectD resolve() {
-		if(this == INFINITE) {
+		if(this == INFINITE || this == EMPTY) {
 			return this;
 		}
-		if(this == EMPTY) {
-			return this;
-		}
-		if(Double.isInfinite(x1) && Double.isInfinite(z1) && Double.isInfinite(x2) && Double.isInfinite(z2) &&
-			(x1 < 0 && z1 < 0 && x2 > 0 && z2 > 0)
+		if(
+			Double.isNaN(x1) ||
+			Double.isNaN(z1) ||
+			Double.isNaN(x2) ||
+			Double.isNaN(z2)
 		) {
-			return INFINITE;
-		}
-		if(Double.isNaN(x1) || Double.isNaN(z1) || Double.isNaN(x2) || Double.isNaN(z2)) {
 			return EMPTY;
 		}
-		return this;
-	}
-	
-	@Override
-	public JsonObj toJsonObj() {
-		RectD resolved = resolve();
-		if(resolved == INFINITE) {
-			return new JsonObj("INFINITE");
-		}
-		if(resolved == EMPTY) {
-			return new JsonObj("EMPTY");
-		}
-		return JsonObj.newMap()
-			.set("x1", MathHelper.dbl(resolved.x1))
-			.set("z1", MathHelper.dbl(resolved.z1))
-			.set("x2", MathHelper.dbl(resolved.x2))
-			.set("z2", MathHelper.dbl(resolved.z2));
+		return
+			Double.NEGATIVE_INFINITY != x1 ||
+			Double.NEGATIVE_INFINITY != z1 ||
+			Double.POSITIVE_INFINITY != x2 ||
+			Double.POSITIVE_INFINITY != z2
+		? this
+		: INFINITE;
 	}
 	
 }

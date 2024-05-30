@@ -1,25 +1,30 @@
 package com.ferreusveritas.node.transform;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ferreusveritas.math.Matrix4X4;
-import com.ferreusveritas.node.NodeLoader;
-import com.ferreusveritas.scene.LoaderSystem;
-import com.ferreusveritas.support.json.JsonObj;
+import com.ferreusveritas.node.*;
+import com.ferreusveritas.node.ports.*;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public class Transforms extends Transform {
 	
-	public static final String TYPE = "transforms";
-	public static final String OPERATIONS = "operations";
+	public static final NodeRegistryData REGISTRY_DATA = new NodeRegistryData.Builder()
+		.majorType(TRANSFORM)
+		.minorType("transforms")
+		.loaderClass(Loader.class)
+		.sceneObjectClass(Transforms.class)
+		.port(new PortDescription(PortDirection.IN, PortDataTypes.TRANSFORM, DataSpan.MULTIPLE))
+		.port(new PortDescription(PortDirection.OUT, PortDataTypes.TRANSFORM))
+		.build();
 	
-	private final List<Transform> operations;
 	private final Matrix4X4 matrix;
 	
 	public Transforms(UUID uuid, List<Transform> operations) {
 		super(uuid);
-		this.operations = List.copyOf(operations);
 		this.matrix = createMatrix(operations);
 	}
 	
@@ -36,64 +41,34 @@ public class Transforms extends Transform {
 	}
 	
 	@Override
-	public String getType() {
-		return TYPE;
+	public NodeRegistryData getRegistryData() {
+		return REGISTRY_DATA;
 	}
-	
-	@Override
-	public JsonObj toJsonObj() {
-		return super.toJsonObj()
-			.set(OPERATIONS, JsonObj.newList(operations));
-	}
-	
-	
-	////////////////////////////////////////////////////////////////
-	// Builder
-	////////////////////////////////////////////////////////////////
-	
-	public static class Builder {
-		
-		private UUID uuid = null;
-		List<Transform> operations = new ArrayList<>();
-		
-		public Builder uuid(UUID uuid) {
-			this.uuid = uuid;
-			return this;
-		}
-		
-		public Builder add(List<Transform> transforms) {
-			operations.addAll(transforms);
-			return this;
-		}
-		
-		public Builder add(Transform ... transforms) {
-			return add(List.of(transforms));
-		}
-		
-		public Transforms build() {
-			return new Transforms(uuid, operations);
-		}
-		
-	}
-	
 	
 	////////////////////////////////////////////////////////////////
 	// Loader
 	////////////////////////////////////////////////////////////////
 	
-	public static class Loader extends NodeLoader {
+	public static class Loader extends TransformProviderLoaderNode {
 		
-		private final List<NodeLoader> operations;
+		private final List<InputPort<Transform>> operations;
 		
-		public Loader(LoaderSystem loaderSystem, JsonObj src) {
-			super(loaderSystem, src);
-			this.operations = src.getList(OPERATIONS).toImmutableList(loaderSystem::createLoader);
+		@JsonCreator
+		public Loader(
+			@JsonProperty(UID) UUID uuid,
+			@JsonProperty(TRANSFORM) List<PortAddress> operations
+		) {
+			super(uuid);
+			this.operations = createInputsAndRegisterConnections(PortDataTypes.TRANSFORM, operations);
 		}
 		
-		@Override
-		public Transforms load(LoaderSystem loaderSystem) {
-			List<Transform> operationList = operations.stream().map(l -> l.load(loaderSystem, Transform.class).orElseThrow()).toList();
-			return new Transforms(getUuid(), operationList);
+		protected Transforms create() {
+			List<Transform> transforms = operations.stream()
+				.map(InputPort::readOpt)
+				.filter(Optional::isPresent)
+				.map(Optional::get)
+				.toList();
+			return new Transforms(getUuid(), transforms);
 		}
 		
 	}

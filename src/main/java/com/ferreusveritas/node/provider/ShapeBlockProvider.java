@@ -1,24 +1,33 @@
 package com.ferreusveritas.node.provider;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ferreusveritas.api.Request;
 import com.ferreusveritas.block.Block;
-import com.ferreusveritas.block.BlockCache;
 import com.ferreusveritas.block.Blocks;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
-import com.ferreusveritas.node.NodeLoader;
+import com.ferreusveritas.node.ports.*;
+import com.ferreusveritas.node.NodeRegistryData;
 import com.ferreusveritas.node.shape.Shape;
-import com.ferreusveritas.scene.LoaderSystem;
-import com.ferreusveritas.support.json.JsonObj;
+import com.ferreusveritas.node.values.BlockNodeValue;
 
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.ferreusveritas.node.shape.Shape.SHAPE;
+
 public class ShapeBlockProvider extends BlockProvider {
 	
-	public static final String TYPE = "shape";
-	public static final String BLOCK = "block";
-	public static final String SHAPE = "shape";
+	public static final NodeRegistryData REGISTRY_DATA = new NodeRegistryData.Builder()
+		.majorType(BLOCK_PROVIDER)
+		.minorType(SHAPE)
+		.loaderClass(Loader.class)
+		.sceneObjectClass(ShapeBlockProvider.class)
+		.value(new BlockNodeValue.Builder(BLOCK).build())
+		.port(new PortDescription(PortDirection.IN, PortDataTypes.SHAPE))
+		.port(new PortDescription(PortDirection.OUT, PortDataTypes.BLOCKS))
+		.build();
 	
 	private final Block block;
 	private final Shape shape;
@@ -42,8 +51,8 @@ public class ShapeBlockProvider extends BlockProvider {
 	}
 	
 	@Override
-	public String getType() {
-		return TYPE;
+	public NodeRegistryData getRegistryData() {
+		return REGISTRY_DATA;
 	}
 	
 	public Block getBlock() {
@@ -73,68 +82,32 @@ public class ShapeBlockProvider extends BlockProvider {
 		return aabb;
 	}
 	
-	@Override
-	public JsonObj toJsonObj() {
-		return super.toJsonObj()
-			.set(BLOCK, block)
-			.set(SHAPE, shape);
-	}
-	
-	
-	////////////////////////////////////////////////////////////////
-	// Builder
-	////////////////////////////////////////////////////////////////
-	
-	public static class Builder {
-		
-		private UUID uuid = null;
-		private Shape shape = null;
-		private Block block = BlockCache.NONE;
-		
-		public Builder uuid(UUID uuid) {
-			this.uuid = uuid;
-			return this;
-		}
-		
-		public Builder shape(Shape shape) {
-			this.shape = shape;
-			return this;
-		}
-		
-		public Builder block(Block block) {
-			this.block = block;
-			return this;
-		}
-		
-		public ShapeBlockProvider build() {
-			if(shape == null) {
-				throw new IllegalStateException("shape cannot be null");
-			}
-			return new ShapeBlockProvider(uuid, shape, block);
-		}
-		
-	}
-	
-	
 	////////////////////////////////////////////////////////////////
 	// Loader
 	////////////////////////////////////////////////////////////////
 	
-	public static class Loader extends NodeLoader {
+	public static class Loader extends BlockProviderLoaderNode {
 		
 		private final Block block;
-		private final NodeLoader shape;
+		private final InputPort<Shape> shapeInput;
 		
-		public Loader(LoaderSystem loaderSystem, JsonObj src) {
-			super(loaderSystem, src);
-			this.block = loaderSystem.blockLoader(src, BLOCK);
-			this.shape = loaderSystem.loader(src, SHAPE);
+		@JsonCreator
+		public Loader(
+			@JsonProperty(UID) UUID uuid,
+			@JsonProperty(BLOCK) Block block,
+			@JsonProperty(SHAPE) PortAddress shape
+		) {
+			super(uuid);
+			this.block = block;
+			this.shapeInput = createInputAndRegisterConnection(PortDataTypes.SHAPE, shape);
 		}
 		
-		@Override
-		public BlockProvider load(LoaderSystem loaderSystem) {
-			Shape s = shape.load(loaderSystem, Shape.class).orElseThrow(wrongType(SHAPE));
-			return new ShapeBlockProvider(getUuid(), s, block);
+		protected ShapeBlockProvider create() {
+			return new ShapeBlockProvider(
+				getUuid(),
+				get(shapeInput),
+				block
+			);
 		}
 		
 	}

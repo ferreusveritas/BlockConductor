@@ -1,13 +1,20 @@
 package com.ferreusveritas.node.shape;
 
-import com.ferreusveritas.image.ImageLoader;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.ferreusveritas.resources.Resources;
+import com.ferreusveritas.resources.image.ImageLoader;
 import com.ferreusveritas.math.AABBD;
 import com.ferreusveritas.math.Vec3D;
 import com.ferreusveritas.math.Vec3I;
-import com.ferreusveritas.node.NodeLoader;
+import com.ferreusveritas.misc.MiscHelper;
+import com.ferreusveritas.node.NodeRegistryData;
+import com.ferreusveritas.node.ports.PortDataTypes;
+import com.ferreusveritas.node.ports.PortDescription;
+import com.ferreusveritas.node.ports.PortDirection;
 import com.ferreusveritas.node.shape.support.ColorChannel;
-import com.ferreusveritas.scene.LoaderSystem;
-import com.ferreusveritas.support.json.JsonObj;
+import com.ferreusveritas.node.values.EnumNodeValue;
+import com.ferreusveritas.node.values.StringNodeValue;
 
 import java.awt.image.BufferedImage;
 import java.util.UUID;
@@ -17,24 +24,33 @@ import java.util.UUID;
  */
 public class ImageShape extends Shape {
 	
-	public static final String TYPE = "image";
 	public static final String RESOURCE = "resource";
 	public static final String CHANNEL = "channel";
+	public static final NodeRegistryData REGISTRY_DATA = new NodeRegistryData.Builder()
+		.majorType(SHAPE)
+		.minorType("image")
+		.loaderClass(Loader.class)
+		.sceneObjectClass(ImageShape.class)
+		.value(new StringNodeValue.Builder(RESOURCE).build())
+		.value(new EnumNodeValue.Builder(CHANNEL).values(ColorChannel.class).def(ColorChannel.G).build())
+		.port(new PortDescription(PortDirection.OUT, PortDataTypes.SHAPE))
+		.build();
 	
-	private final String resource;
-	private final ColorChannel channel;
 	private final float[] data;
 	private final int dataWidth;
 	private final AABBD bounds;
 	
 	private ImageShape(UUID uuid, String resource, ColorChannel channel) {
 		super(uuid);
-		this.resource = resource;
-		this.channel = channel;
-		BufferedImage image = ImageLoader.load(resource);
+		BufferedImage image = Resources.load(resource, BufferedImage.class);
 		this.data = createData(image, channel);
 		this.dataWidth = image.getWidth();
 		this.bounds = calculateBounds(image);
+	}
+	
+	@Override
+	public NodeRegistryData getRegistryData() {
+		return REGISTRY_DATA;
 	}
 	
 	private AABBD calculateBounds(BufferedImage image) {
@@ -59,11 +75,6 @@ public class ImageShape extends Shape {
 	}
 	
 	@Override
-	public String getType() {
-		return TYPE;
-	}
-	
-	@Override
 	public AABBD bounds() {
 		return bounds;
 	}
@@ -77,67 +88,38 @@ public class ImageShape extends Shape {
 		return 0.0;
 	}
 	
-	@Override
-	public JsonObj toJsonObj() {
-		return super.toJsonObj()
-			.set(RESOURCE, resource)
-			.set(CHANNEL, channel);
-	}
-	
-	
-	////////////////////////////////////////////////////////////////
-	// Builder
-	////////////////////////////////////////////////////////////////
-	
-	public static class Builder {
-		
-		private UUID uuid = null;
-		private String resource = null;
-		private ColorChannel channel = ColorChannel.G;
-		
-		public Builder uuid(UUID uuid) {
-			this.uuid = uuid;
-			return this;
-		}
-		
-		public Builder resource(String resource) {
-			this.resource = resource;
-			return this;
-		}
-		
-		public Builder channel(ColorChannel channel) {
-			this.channel = channel;
-			return this;
-		}
-		
-		public ImageShape build() {
-			if(resource == null) {
-				throw new IllegalStateException("resource cannot be null");
-			}
-			return new ImageShape(uuid, resource, channel);
-		}
-		
-	}
-	
-	
 	////////////////////////////////////////////////////////////////
 	// Loader
 	////////////////////////////////////////////////////////////////
 	
-	public static class Loader extends NodeLoader {
+	public static class Loader extends ShapeLoaderNode {
 		
 		private final String resource;
 		private final ColorChannel channel;
 		
-		public Loader(LoaderSystem loaderSystem, JsonObj src) {
-			super(loaderSystem, src);
-			this.resource = src.getString(RESOURCE).orElseThrow(missing(RESOURCE));
-			this.channel = src.getString(CHANNEL).flatMap(ColorChannel::of).orElse(ColorChannel.G);
+		@JsonCreator
+		public Loader(
+			@JsonProperty(UID) UUID uuid,
+			@JsonProperty(RESOURCE) String resource,
+			@JsonProperty(CHANNEL) ColorChannel channel
+		) {
+			super(uuid);
+			this.resource = resource;
+			this.channel = channel;
+			validate();
 		}
 		
-		@Override
-		public Shape load(LoaderSystem loaderSystem) {
-			return new ImageShape(getUuid(), resource, channel);
+		private void validate() {
+			MiscHelper.require(resource, RESOURCE);
+			MiscHelper.require(channel, CHANNEL);
+		}
+		
+		protected Shape create() {
+			return new ImageShape(
+				getUuid(),
+				resource,
+				channel
+			);
 		}
 		
 	}

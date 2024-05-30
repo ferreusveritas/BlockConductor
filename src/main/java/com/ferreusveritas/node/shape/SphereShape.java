@@ -1,17 +1,28 @@
 package com.ferreusveritas.node.shape;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ferreusveritas.math.AABBD;
 import com.ferreusveritas.math.Vec3D;
-import com.ferreusveritas.node.NodeLoader;
-import com.ferreusveritas.scene.LoaderSystem;
-import com.ferreusveritas.support.json.JsonObj;
+import com.ferreusveritas.node.NodeRegistryData;
+import com.ferreusveritas.node.ports.PortDataTypes;
+import com.ferreusveritas.node.ports.PortDescription;
+import com.ferreusveritas.node.ports.PortDirection;
+import com.ferreusveritas.node.values.NumberNodeValue;
 
 import java.util.UUID;
 
 public class SphereShape extends Shape {
 	
-	public static final String TYPE = "sphere";
 	public static final String RADIUS = "radius";
+	public static final NodeRegistryData REGISTRY_DATA = new NodeRegistryData.Builder()
+		.majorType(SHAPE)
+		.minorType("sphere")
+		.loaderClass(Loader.class)
+		.sceneObjectClass(SphereShape.class)
+		.value(new NumberNodeValue.Builder(RADIUS).min(0.0).def(1.0).build())
+		.port(new PortDescription(PortDirection.OUT, PortDataTypes.SHAPE))
+		.build();
 	
 	private final double radius;
 	private final AABBD bounds;
@@ -20,6 +31,11 @@ public class SphereShape extends Shape {
 		super(uuid);
 		this.radius = radius;
 		this.bounds = calculateBounds(radius);
+	}
+	
+	@Override
+	public NodeRegistryData getRegistryData() {
+		return REGISTRY_DATA;
 	}
 	
 	private static AABBD calculateBounds(double radius) {
@@ -33,11 +49,6 @@ public class SphereShape extends Shape {
 	}
 	
 	@Override
-	public String getType() {
-		return TYPE;
-	}
-	
-	@Override
 	public AABBD bounds() {
 		return bounds;
 	}
@@ -47,54 +58,24 @@ public class SphereShape extends Shape {
 		return pos.lenSq() < radius * radius ? 1.0 : 0.0;
 	}
 	
-	@Override
-	public JsonObj toJsonObj() {
-		return super.toJsonObj()
-			.set(RADIUS, radius);
-	}
-	
-	
-	////////////////////////////////////////////////////////////////
-	// Builder
-	////////////////////////////////////////////////////////////////
-	
-	public static class Builder {
-		
-		private UUID uuid;
-		private double radius;
-		
-		public Builder uuid(UUID uuid) {
-			this.uuid = uuid;
-			return this;
-		}
-		
-		public Builder radius(double radius) {
-			this.radius = radius;
-			return this;
-		}
-		
-		public SphereShape build() {
-			return new SphereShape(uuid, radius);
-		}
-		
-	}
-	
-	
 	////////////////////////////////////////////////////////////////
 	// Loader
 	////////////////////////////////////////////////////////////////
 	
-	public static class Loader extends NodeLoader {
+	public static class Loader extends ShapeLoaderNode {
 		
 		private final double radius;
 		
-		public Loader(LoaderSystem loaderSystem, JsonObj src) {
-			super(loaderSystem, src);
-			this.radius = src.getDouble(RADIUS).orElse(1.0);
+		@JsonCreator
+		public Loader(
+			@JsonProperty(UID) UUID uuid,
+			@JsonProperty(RADIUS) Double radius
+		) {
+			super(uuid);
+			this.radius = radius;
 		}
 		
-		@Override
-		public Shape load(LoaderSystem loaderSystem) {
+		protected Shape create() {
 			return new SphereShape(getUuid(), radius);
 		}
 		

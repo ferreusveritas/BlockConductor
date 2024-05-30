@@ -1,11 +1,17 @@
 package com.ferreusveritas.node.shape;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ferreusveritas.math.AABBD;
 import com.ferreusveritas.math.Vec3D;
-import com.ferreusveritas.node.model.Model;
-import com.ferreusveritas.node.NodeLoader;
-import com.ferreusveritas.scene.LoaderSystem;
-import com.ferreusveritas.support.json.JsonObj;
+import com.ferreusveritas.node.NodeRegistryData;
+import com.ferreusveritas.node.ports.PortDataTypes;
+import com.ferreusveritas.node.ports.PortDescription;
+import com.ferreusveritas.node.ports.PortDirection;
+import com.ferreusveritas.node.values.StringNodeValue;
+import com.ferreusveritas.resources.Resources;
+import com.ferreusveritas.resources.model.qsp.QspModel;
+import com.ferreusveritas.resources.model.qsp.QspModelPart;
 
 import java.util.UUID;
 
@@ -14,21 +20,30 @@ import java.util.UUID;
  */
 public class ModelShape extends Shape {
 	
-	public static final String TYPE = "model";
 	public static final String MODEL = "model";
+	public static final String PART = "part";
+	public static final NodeRegistryData REGISTRY_DATA = new NodeRegistryData.Builder()
+		.majorType(SHAPE)
+		.minorType(MODEL)
+		.loaderClass(Loader.class)
+		.sceneObjectClass(ModelShape.class)
+		.value(new StringNodeValue.Builder(MODEL).build())
+		.value(new StringNodeValue.Builder(PART).build())
+		.port(new PortDescription(PortDirection.OUT, PortDataTypes.SHAPE))
+		.build();
 	
-	private final Model model;
+	private final QspModelPart model;
 	private final AABBD bounds;
 	
-	private ModelShape(UUID uuid, Model model) {
+	private ModelShape(UUID uuid, QspModelPart model) {
 		super(uuid);
 		this.model = model;
 		this.bounds = model.getAABB();
 	}
 	
 	@Override
-	public String getType() {
-		return TYPE;
+	public NodeRegistryData getRegistryData() {
+		return REGISTRY_DATA;
 	}
 	
 	@Override
@@ -41,59 +56,32 @@ public class ModelShape extends Shape {
 		return bounds.contains(pos) && model.pointIsInside(pos) ? 1.0 : 0.0;
 	}
 	
-	@Override
-	public JsonObj toJsonObj() {
-		return super.toJsonObj()
-			.set(MODEL, model);
-	}
-	
-	
-	////////////////////////////////////////////////////////////////
-	// Builder
-	////////////////////////////////////////////////////////////////
-	
-	public static class Builder {
-		
-		private UUID uuid = null;
-		private Model model;
-		
-		public Builder uuid(UUID uuid) {
-			this.uuid = uuid;
-			return this;
-		}
-		
-		public Builder model(Model model) {
-			this.model = model;
-			return this;
-		}
-		
-		public ModelShape build() {
-			if (model == null){
-				throw new IllegalStateException("Model is null");
-			}
-			return new ModelShape(uuid, model);
-		}
-		
-	}
-	
-	
 	////////////////////////////////////////////////////////////////
 	// Loader
 	////////////////////////////////////////////////////////////////
 	
-	public static class Loader extends NodeLoader {
+	public static class Loader extends ShapeLoaderNode {
 		
-		private final NodeLoader model;
+		private final String model;
+		private final String part;
 		
-		public Loader(LoaderSystem loaderSystem, JsonObj src) {
-			super(loaderSystem, src);
-			this.model = loaderSystem.loader(src, MODEL);
+		@JsonCreator
+		public Loader(
+			@JsonProperty(UID) UUID uuid,
+			@JsonProperty(MODEL) String model,
+			@JsonProperty(PART) String part
+		) {
+			super(uuid);
+			this.model = model;
+			this.part = part;
 		}
 		
-		@Override
-		public Shape load(LoaderSystem loaderSystem) {
-			Model m = model.load(loaderSystem, Model.class).orElseThrow(wrongType(MODEL));
-			return new ModelShape(getUuid(), m);
+		protected Shape create() {
+			QspModelPart qspModelPart = Resources.load(model, QspModel.class).getPart(part);
+			return new ModelShape(
+				getUuid(),
+				qspModelPart
+			);
 		}
 		
 	}

@@ -1,19 +1,32 @@
 package com.ferreusveritas.node.shape;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ferreusveritas.math.AABBD;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3D;
 import com.ferreusveritas.math.Vec3I;
-import com.ferreusveritas.node.NodeLoader;
-import com.ferreusveritas.scene.LoaderSystem;
-import com.ferreusveritas.support.json.JsonObj;
+import com.ferreusveritas.node.ports.*;
+import com.ferreusveritas.node.NodeRegistryData;
+import com.ferreusveritas.node.values.VecNodeValue;
 
 import java.util.BitSet;
 import java.util.UUID;
 
 public class CacheShape extends Shape {
-
-	public static final String TYPE = "cache";
+	
+	public static final String MIN = "min";
+	public static final String MAX = "max";
+	public static final NodeRegistryData REGISTRY_DATA = new NodeRegistryData.Builder()
+		.majorType(SHAPE)
+		.minorType("cache")
+		.loaderClass(Loader.class)
+		.sceneObjectClass(CacheShape.class)
+		.value(new VecNodeValue.Builder(MIN).build())
+		.value(new VecNodeValue.Builder(MAX).build())
+		.port(new PortDescription(PortDirection.IN, PortDataTypes.SHAPE))
+		.port(new PortDescription(PortDirection.OUT, PortDataTypes.SHAPE))
+		.build();
 	
 	private final Shape shape;
 	private final AABBD bounds;
@@ -45,8 +58,8 @@ public class CacheShape extends Shape {
 	}
 	
 	@Override
-	public String getType() {
-		return TYPE;
+	public NodeRegistryData getRegistryData() {
+		return REGISTRY_DATA;
 	}
 	
 	@Override
@@ -63,68 +76,33 @@ public class CacheShape extends Shape {
 		return cache.get(pos.calcIndex(aabb.size()));
 	}
 	
-	@Override
-	public JsonObj toJsonObj() {
-		return super.toJsonObj()
-			.set(SHAPE, shape)
-			.set(BOUNDS, bounds);
-	}
-	
-	
-	////////////////////////////////////////////////////////////////
-	// Builder
-	////////////////////////////////////////////////////////////////
-
-	public static class Builder {
-		
-		private UUID uuid = null;
-		private Shape shape = null;
-		private AABBD bounds = AABBD.EMPTY;
-		
-		public Builder uuid(UUID uuid) {
-			this.uuid = uuid;
-			return this;
-		}
-		
-		public Builder shape(Shape shape) {
-			this.shape = shape;
-			return this;
-		}
-		
-		public Builder bounds(AABBD bounds) {
-			this.bounds = bounds;
-			return this;
-		}
-		
-		public CacheShape build() {
-			if(shape == null) {
-				throw new IllegalStateException("shape cannot be null");
-			}
-			return new CacheShape(uuid, shape, bounds);
-		}
-		
-	}
-	
-	
 	////////////////////////////////////////////////////////////////
 	// Loader
 	////////////////////////////////////////////////////////////////
 	
-	public static class Loader extends NodeLoader {
+	public static class Loader extends ShapeLoaderNode {
 		
-		private final NodeLoader shape;
 		private final AABBD bounds;
+		private final InputPort<Shape> shapeInput;
 		
-		public Loader(LoaderSystem loaderSystem, JsonObj src) {
-			super(loaderSystem, src);
-			this.shape = loaderSystem.loader(src, SHAPE);
-			this.bounds = src.getObj(BOUNDS).map(AABBD::fromJson).orElseThrow(missing(BOUNDS));
+		@JsonCreator
+		public Loader(
+			@JsonProperty(UID) UUID uuid,
+			@JsonProperty(MIN) Vec3D min,
+			@JsonProperty(MAX) Vec3D max,
+			@JsonProperty(SHAPE) PortAddress shapeAddress
+		) {
+			super(uuid);
+			this.bounds = new AABBD(min, max);
+			this.shapeInput = createInputAndRegisterConnection(PortDataTypes.SHAPE, shapeAddress);
 		}
 		
-		@Override
-		public Shape load(LoaderSystem loaderSystem) {
-			Shape s = shape.load(loaderSystem, Shape.class).orElseThrow(wrongType(SHAPE));
-			return new CacheShape(getUuid(), s, bounds);
+		protected Shape create() {
+			return new CacheShape(
+				getUuid(),
+				get(shapeInput),
+				bounds
+			);
 		}
 		
 	}

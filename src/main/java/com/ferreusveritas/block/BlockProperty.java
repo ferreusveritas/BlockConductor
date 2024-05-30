@@ -1,37 +1,21 @@
 package com.ferreusveritas.block;
 
-import com.ferreusveritas.support.json.JsonObj;
-import com.ferreusveritas.support.json.Jsonable;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import net.querz.nbt.tag.*;
 
 import java.util.Set;
 
-public class BlockProperty implements Jsonable {
+public class BlockProperty {
 	
 	private static final Set<Class<?>> validTypes = Set.of(Boolean.class, Integer.class, String.class);
 	public static final String INVALID_TYPE = "Invalid type: ";
 	
 	private final Object value;
 	
+	@JsonCreator
 	public BlockProperty(Object value) {
 		this.value = value;
 		validate();
-	}
-	
-	public static BlockProperty load(JsonObj src) {
-		if(src.isString()) {
-			String v = src.asString().orElseThrow();
-			return new BlockProperty(v);
-		}
-		if(src.isNumber()) {
-			Integer v = src.asInteger().orElseThrow();
-			return new BlockProperty(v);
-		}
-		if(src.isBoolean()) {
-			Boolean v = src.asBoolean().orElseThrow();
-			return new BlockProperty(v);
-		}
-		throw new IllegalArgumentException(INVALID_TYPE + src);
 	}
 	
 	private void validate() {
@@ -65,36 +49,19 @@ public class BlockProperty implements Jsonable {
 		return getValue(String.class);
 	}
 	
-	@Override
-	public JsonObj toJsonObj() {
-		Class<?> clazz = value.getClass();
-		if(clazz == Boolean.class) {
-			return new JsonObj((Boolean) value);
-		}
-		if(clazz == Integer.class) {
-			return new JsonObj((Integer) value);
-		}
-		if(clazz == String.class) {
-			return new JsonObj((String) value);
-		}
-		throw new IllegalStateException(INVALID_TYPE + clazz);
-	}
-	
-	@Override
-	public String toString() {
-		return value.toString();
-	}
-	
 	public void addToNBT(CompoundTag target, String name) {
 		Class<?> clazz = value.getClass();
-		if(clazz == Boolean.class) {
+		if(clazz.equals(Boolean.class)) {
 			target.putByte(name, (byte) (Boolean.TRUE.equals(value) ? 1 : 0));
+			return;
 		}
-		if(clazz == Integer.class) {
+		if(clazz.equals(Integer.class)) {
 			target.putInt(name, (Integer) value);
+			return;
 		}
-		if(clazz == String.class) {
+		if(clazz.equals(String.class)) {
 			target.putString(name, (String) value);
+			return;
 		}
 		throw new IllegalStateException(INVALID_TYPE + clazz);
 	}

@@ -1,52 +1,53 @@
 {
-	"class": "BlockProvider",
-	"type": "terrain",
-	"uuid": "e756803d-949e-4b0c-8235-776f18562713",
-	"shape": {
-		"class": "Shape",
-		"type": "translate",
-		"uuid": "f9fda3cd-e802-4bcd-ac2d-037b388aba99",
-		"shape": {
-			"class": "Shape",
-			"type": "combine",
+	"nodes": [
+		{
+			"type": "shape:simplex",
+			"uuid": "f7765e36-6e28-4a5d-8e54-3e8f85669b7f",
+			"frequency": 0.005,
+			"lacunarity": 2.0,
+			"persistence": 0.5,
+			"octaves": 6,
+			"seed": 0
+		},
+		{
+			"type": "shape:gradient",
+			"uuid": "79e4317a-f452-4067-bb89-7eead46a5dc5",
+			"minY": 0.0,
+			"maxY": 64.0
+		},
+		{
+			"type": "shape:combine",
 			"uuid": "f5ae5cd3-014f-4ce9-8346-4babf13b78b6",
 			"operation": "MUL",
-			"shapes": [
-				{
-					"class": "Shape",
-					"type": "simplex",
-					"uuid": "f7765e36-6e28-4a5d-8e54-3e8f85669b7f",
-					"frequency": 0.005,
-					"lacunarity": 2.0,
-					"persistence": 0.5,
-					"octaves": 6,
-					"seed": 0
-				},
-				{
-					"class": "Shape",
-					"type": "gradient",
-					"uuid": "79e4317a-f452-4067-bb89-7eead46a5dc5",
-					"minY": 0.0,
-					"maxY": 64.0
-				}
+			"shape": [
+				"f7765e36-6e28-4a5d-8e54-3e8f85669b7f:shape",
+				"79e4317a-f452-4067-bb89-7eead46a5dc5:shape"
 			]
 		},
-		"offset": {
-			"x": 0.5,
-			"y": 56.5,
-			"z": 0.5
+		{
+			"type": "shape:translate",
+			"uuid": "f9fda3cd-e802-4bcd-ac2d-037b388aba99",
+			"shape": "f5ae5cd3-014f-4ce9-8346-4babf13b78b6:shape",
+			"offset": {
+				"x": 0.5,
+				"y": 56.5,
+				"z": 0.5
+			}
+		},
+		{
+			"type": "blockProvider:terrain",
+			"uuid": "e756803d-949e-4b0c-8235-776f18562713",
+			"shape": "f9fda3cd-e802-4bcd-ac2d-037b388aba99:shape",
+			"fill": {
+				"name": "minecraft:stone"
+			},
+			"surface": {
+				"name": "minecraft:grass_block"
+			},
+			"subSurface": {
+				"name": "minecraft:dirt"
+			}
 		}
-	},
-	"fill": {
-		"name": "minecraft:stone",
-		"state": ""
-	},
-	"surface": {
-		"name": "minecraft:grass_block",
-		"state": ""
-	},
-	"subsurface": {
-		"name": "minecraft:dirt",
-		"state": ""
-	}
+	],
+	"root": "e756803d-949e-4b0c-8235-776f18562713"
 }

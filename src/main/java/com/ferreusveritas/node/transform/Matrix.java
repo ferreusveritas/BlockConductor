@@ -1,15 +1,25 @@
 package com.ferreusveritas.node.transform;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ferreusveritas.math.Matrix4X4;
-import com.ferreusveritas.node.NodeLoader;
-import com.ferreusveritas.scene.LoaderSystem;
-import com.ferreusveritas.support.json.JsonObj;
+import com.ferreusveritas.node.NodeRegistryData;
+import com.ferreusveritas.node.ports.PortDataTypes;
+import com.ferreusveritas.node.ports.PortDescription;
+import com.ferreusveritas.node.ports.PortDirection;
 
 import java.util.UUID;
 
 public class Matrix extends Transform {
 	
-	public static final String TYPE = "matrix";
+	public static final NodeRegistryData REGISTRY_DATA = new NodeRegistryData.Builder()
+		.majorType(TRANSFORM)
+		.minorType("matrix")
+		.loaderClass(Loader.class)
+		.sceneObjectClass(Matrix.class)
+		.port(new PortDescription(PortDirection.OUT, PortDataTypes.TRANSFORM))
+		.build();
+	public static final String DATA = "data";
 	
 	private final Matrix4X4 data;
 	
@@ -24,59 +34,28 @@ public class Matrix extends Transform {
 	}
 	
 	@Override
-	public String getType() {
-		return TYPE;
+	public NodeRegistryData getRegistryData() {
+		return REGISTRY_DATA;
 	}
-	
-	@Override
-	public JsonObj toJsonObj() {
-		return super.toJsonObj()
-			.set("data", data);
-	}
-	
-	
-	////////////////////////////////////////////////////////////////
-	// Builder
-	////////////////////////////////////////////////////////////////
-	
-	public static class Builder {
-		
-		private UUID uuid = null;
-		private Matrix4X4 data = Matrix4X4.IDENTITY;
-		
-		public Builder uuid(UUID uuid) {
-			this.uuid = uuid;
-			return this;
-		}
-		
-		public Builder matrix(Matrix4X4 data) {
-			this.data = data;
-			return this;
-		}
-		
-		
-		public Matrix build() {
-			return new Matrix(uuid, data);
-		}
-		
-	}
-	
-	
+
 	////////////////////////////////////////////////////////////////
 	// Loader
 	////////////////////////////////////////////////////////////////
 	
-	public static class Loader extends NodeLoader {
+	public static class Loader extends TransformProviderLoaderNode {
 		
 		private final Matrix4X4 data;
 		
-		public Loader(LoaderSystem loaderSystem, JsonObj src) {
-			super(loaderSystem, src);
-			this.data = src.getObj("data").map(Matrix4X4::new).orElse(Matrix4X4.IDENTITY);
+		@JsonCreator
+		public Loader(
+			@JsonProperty(UID) UUID uuid,
+			@JsonProperty(DATA) Matrix4X4 data
+		) {
+			super(uuid);
+			this.data = data;
 		}
 		
-		@Override
-		public Matrix load(LoaderSystem loaderSystem) {
+		protected Matrix create() {
 			return new Matrix(getUuid(), data);
 		}
 		

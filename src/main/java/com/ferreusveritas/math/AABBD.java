@@ -1,18 +1,9 @@
 package com.ferreusveritas.math;
 
-import com.ferreusveritas.support.json.InvalidJsonProperty;
-import com.ferreusveritas.support.json.JsonObj;
-import com.ferreusveritas.support.json.Jsonable;
-
-import java.util.function.Supplier;
-
 public record AABBD(
 	Vec3D min, // inclusive
 	Vec3D max // exclusive
-)  implements Jsonable {
-	
-	public static final String MIN = "min";
-	public static final String MAX = "max";
+) {
 	
 	public static AABBD INFINITE = new AABBD(Vec3D.NEG_INFINITY, Vec3D.INFINITY);
 	public static AABBD EMPTY = new AABBD(Vec3D.NAN, Vec3D.NAN);
@@ -32,43 +23,6 @@ public record AABBD(
 		);
 	}
 	
-	public static AABBD fromJson(JsonObj src) {
-		if(src == null) {
-			throw new InvalidJsonProperty("Null JsonObj");
-		}
-		if(src.isString()) {
-			String str = src.asString().orElseThrow();
-			if(str.equalsIgnoreCase("INFINITE")) {
-				return INFINITE;
-			}
-			if (str.equalsIgnoreCase("EMPTY")) {
-				return EMPTY;
-			}
-			throw new InvalidJsonProperty("Invalid AABBD String: " + src);
-		}
-		if(src.isMap()) {
-			Vec3D min = src.getObj(MIN).map(Vec3D::new).orElseThrow(missing(MIN));
-			Vec3D max = src.getObj(MAX).map(Vec3D::new).orElseThrow(missing(MAX));
-			return new AABBD(min.resolve(), max.resolve()).resolve();
-		}
-		if(src.isList()) {
-			if(src.size() < 6) {
-				throw new InvalidJsonProperty("List must have at least 6 elements: " + src);
-			}
-			double[] v = new double[6];
-			for (int i = 0; i < 6; i++) {
-				final int j = i;
-				v[i] = src.getObj(i).flatMap(JsonObj::asDouble).orElseThrow(() -> new InvalidJsonProperty("Could not parse element " + j + " as double"));
-			}
-			return new AABBD(new Vec3D(v[0], v[1], v[2]), new Vec3D(v[3], v[4], v[5])).resolve();
-		}
-		throw new InvalidJsonProperty("Invalid AABBD Json: " + src);
-	}
-	
-	private static Supplier<InvalidJsonProperty> missing(String name) {
-		return () -> new InvalidJsonProperty("Missing " + name);
-	}
-	
 	public AABBI toAABBI() {
 		if(this == INFINITE) {
 			return AABBI.INFINITE;
@@ -80,7 +34,7 @@ public record AABBD(
 	}
 	
 	public RectD toRect() {
-		return new RectD(this);
+		return RectD.create(this);
 	}
 	
 	public AABBD offset(Vec3D offset) {
@@ -274,20 +228,6 @@ public record AABBD(
 			return EMPTY;
 		}
 		return badFilter(this);
-	}
-	
-	@Override
-	public JsonObj toJsonObj() {
-		AABBD resolved = resolve();
-		if(resolved == INFINITE) {
-			return new JsonObj("INFINITE");
-		}
-		if(resolved == EMPTY) {
-			return new JsonObj("EMPTY");
-		}
-		return JsonObj.newMap()
-			.set(MIN, resolved.min)
-			.set(MAX, resolved.max);
 	}
 	
 }

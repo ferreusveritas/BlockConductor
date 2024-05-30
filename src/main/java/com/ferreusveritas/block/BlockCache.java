@@ -1,7 +1,5 @@
 package com.ferreusveritas.block;
 
-import com.ferreusveritas.support.json.JsonObj;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,11 +14,6 @@ public class BlockCache {
 	public BlockCache() {
 		resolve(NONE);
 		resolve(AIR);
-	}
-	
-	public Block resolve(JsonObj src) {
-		Block block = new Block(src);
-		return resolve(block);
 	}
 	
 	public Block resolve(Block block) {

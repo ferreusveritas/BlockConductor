@@ -1,20 +1,32 @@
 package com.ferreusveritas.node.shape;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ferreusveritas.math.AABBD;
 import com.ferreusveritas.math.Vec3D;
-import com.ferreusveritas.node.NodeLoader;
-import com.ferreusveritas.scene.LoaderSystem;
-import com.ferreusveritas.support.json.JsonObj;
+import com.ferreusveritas.node.NodeRegistryData;
+import com.ferreusveritas.node.ports.PortDataTypes;
+import com.ferreusveritas.node.ports.PortDescription;
+import com.ferreusveritas.node.ports.PortDirection;
+import com.ferreusveritas.node.values.NumberNodeValue;
 
 import java.util.UUID;
 
 public class GradientShape extends Shape {
 	
-	public static final String TYPE = "gradient";
-	public static final String MIN_Y = "minY";
-	public static final String MAX_Y = "maxY";
 	public static final double DEFAULT_MIN_Y = 0.0;
 	public static final double DEFAULT_MAX_Y = 255.0;
+	public static final String MIN_Y = "minY";
+	public static final String MAX_Y = "maxY";
+	public static final NodeRegistryData REGISTRY_DATA = new NodeRegistryData.Builder()
+		.majorType(SHAPE)
+		.minorType("gradient")
+		.loaderClass(Loader.class)
+		.sceneObjectClass(GradientShape.class)
+		.value(new NumberNodeValue.Builder(MIN_Y).def(DEFAULT_MIN_Y).build())
+		.value(new NumberNodeValue.Builder(MAX_Y).def(DEFAULT_MAX_Y).build())
+		.port(new PortDescription(PortDirection.OUT, PortDataTypes.SHAPE))
+		.build();
 	
 	private final double minY;
 	private final double maxY;
@@ -26,8 +38,8 @@ public class GradientShape extends Shape {
 	}
 	
 	@Override
-	public String getType() {
-		return TYPE;
+	public NodeRegistryData getRegistryData() {
+		return REGISTRY_DATA;
 	}
 	
 	@Override
@@ -46,64 +58,32 @@ public class GradientShape extends Shape {
 		return 1.0 - ((pos.y() - minY) / (maxY - minY));
 	}
 	
-	@Override
-	public JsonObj toJsonObj() {
-		return super.toJsonObj()
-			.set(MIN_Y, minY)
-			.set(MAX_Y, maxY);
-	}
-	
-	
-	////////////////////////////////////////////////////////////////
-	// Builder
-	////////////////////////////////////////////////////////////////
-	
-	public static class Builder {
-		
-		private UUID uuid = null;
-		private double minY = DEFAULT_MIN_Y;
-		private double maxY = DEFAULT_MAX_Y;
-		
-		public Builder uuid(UUID uuid) {
-			this.uuid = uuid;
-			return this;
-		}
-		
-		public Builder minY(double minY) {
-			this.minY = minY;
-			return this;
-		}
-		
-		public Builder maxY(double maxY) {
-			this.maxY = maxY;
-			return this;
-		}
-		
-		public GradientShape build() {
-			return new GradientShape(uuid, minY, maxY);
-		}
-		
-	}
-	
-	
 	////////////////////////////////////////////////////////////////
 	// Loader
 	////////////////////////////////////////////////////////////////
 	
-	public static class Loader extends NodeLoader {
+	public static class Loader extends ShapeLoaderNode {
 		
 		private final double minY;
 		private final double maxY;
 		
-		public Loader(LoaderSystem loaderSystem, JsonObj src) {
-			super(loaderSystem, src);
-			this.minY = src.getDouble(MIN_Y).orElse(DEFAULT_MIN_Y);
-			this.maxY = src.getDouble(MAX_Y).orElse(DEFAULT_MAX_Y);
+		@JsonCreator
+		public Loader(
+			@JsonProperty(UID) UUID uuid,
+			@JsonProperty(MIN_Y) Double minY,
+			@JsonProperty(MAX_Y) Double maxY
+		) {
+			super(uuid);
+			this.minY = minY;
+			this.maxY = maxY;
 		}
 		
-		@Override
-		public Shape load(LoaderSystem loaderSystem) {
-			return new GradientShape(getUuid(), minY, maxY);
+		protected Shape create() {
+			return new GradientShape(
+				getUuid(),
+				minY,
+				maxY
+			);
 		}
 		
 	}

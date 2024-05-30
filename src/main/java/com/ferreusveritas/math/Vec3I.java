@@ -1,7 +1,5 @@
 package com.ferreusveritas.math;
 
-import com.ferreusveritas.support.json.JsonObj;
-import com.ferreusveritas.support.json.Jsonable;
 import com.ferreusveritas.support.nbt.Nbtable;
 import net.querz.nbt.tag.CompoundTag;
 
@@ -9,7 +7,7 @@ public record Vec3I(
 	int x,
 	int y,
 	int z
-) implements Jsonable, Nbtable {
+) implements Nbtable {
 	
 	public static final Vec3I ZERO = new Vec3I(0);
 	public static final Vec3I ONE = new Vec3I(1);
@@ -29,14 +27,6 @@ public record Vec3I(
 	
 	public Vec3I(Vec3D vec) {
 		this((int)Math.floor(vec.x()), (int)Math.floor(vec.y()), (int)Math.floor(vec.z()));
-	}
-	
-	public Vec3I(JsonObj src) {
-		this(
-			src.getInt("x").orElse(0),
-			src.getInt("y").orElse(0),
-			src.getInt("z").orElse(0)
-		);
 	}
 	
 	public Vec3D toVecD() {
@@ -215,19 +205,6 @@ public record Vec3I(
 			return ZERO;
 		}
 		return this;
-	}
-	
-	@Override
-	public JsonObj toJsonObj() {
-		return JsonObj.newMap()
-			.set("x", x)
-			.set("y", y)
-			.set("z", z);
-	}
-	
-	@Override
-	public String toString() {
-		return toJsonObj().toString();
 	}
 	
 }

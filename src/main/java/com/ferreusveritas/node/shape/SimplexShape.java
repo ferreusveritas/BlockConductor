@@ -1,10 +1,14 @@
 package com.ferreusveritas.node.shape;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ferreusveritas.math.AABBD;
 import com.ferreusveritas.math.Vec3D;
-import com.ferreusveritas.node.NodeLoader;
-import com.ferreusveritas.scene.LoaderSystem;
-import com.ferreusveritas.support.json.JsonObj;
+import com.ferreusveritas.node.NodeRegistryData;
+import com.ferreusveritas.node.ports.PortDataTypes;
+import com.ferreusveritas.node.ports.PortDescription;
+import com.ferreusveritas.node.ports.PortDirection;
+import com.ferreusveritas.node.values.NumberNodeValue;
 import org.spongepowered.noise.module.source.Simplex;
 
 import java.util.UUID;
@@ -14,12 +18,23 @@ import java.util.UUID;
  */
 public class SimplexShape extends Shape {
 	
-	public static final String TYPE = "simplex";
 	public static final String FREQUENCY = "frequency";
 	public static final String LACUNARITY = "lacunarity";
 	public static final String PERSISTENCE = "persistence";
 	public static final String OCTAVES = "octaves";
 	public static final String SEED = "seed";
+	public static final NodeRegistryData REGISTRY_DATA = new NodeRegistryData.Builder()
+		.majorType(SHAPE)
+		.minorType("simplex")
+		.loaderClass(Loader.class)
+		.sceneObjectClass(SimplexShape.class)
+		.value(new NumberNodeValue.Builder(FREQUENCY).def(Simplex.DEFAULT_SIMPLEX_FREQUENCY).build())
+		.value(new NumberNodeValue.Builder(LACUNARITY).def(Simplex.DEFAULT_SIMPLEX_LACUNARITY).build())
+		.value(new NumberNodeValue.Builder(PERSISTENCE).def(Simplex.DEFAULT_SIMPLEX_PERSISTENCE).build())
+		.value(new NumberNodeValue.Builder(OCTAVES).def(Simplex.DEFAULT_SIMPLEX_OCTAVE_COUNT).min(1).max(Simplex.SIMPLEX_MAX_OCTAVE).increment(1).build())
+		.value(new NumberNodeValue.Builder(SEED).def(Simplex.DEFAULT_SIMPLEX_SEED).integer().build())
+		.port(new PortDescription(PortDirection.OUT, PortDataTypes.SHAPE))
+		.build();
 	
 	private final Simplex simplex;
 	private final double frequency;
@@ -38,6 +53,11 @@ public class SimplexShape extends Shape {
 		this.simplex = setupSimplex();
 	}
 	
+	@Override
+	public NodeRegistryData getRegistryData() {
+		return REGISTRY_DATA;
+	}
+	
 	private Simplex setupSimplex() {
 		Simplex s = new Simplex();
 		s.setFrequency(frequency);
@@ -46,11 +66,6 @@ public class SimplexShape extends Shape {
 		s.setOctaveCount(octaves);
 		s.setSeed(seed);
 		return s;
-	}
-	
-	@Override
-	public String getType() {
-		return TYPE;
 	}
 	
 	@Override
@@ -63,71 +78,11 @@ public class SimplexShape extends Shape {
 		return simplex.get(pos.x(), pos.y(), pos.z());
 	}
 	
-	@Override
-	public JsonObj toJsonObj() {
-		return super.toJsonObj()
-			.set(FREQUENCY, frequency)
-			.set(LACUNARITY, lacunarity)
-			.set(PERSISTENCE, persistence)
-			.set(OCTAVES, octaves)
-			.set(SEED, seed);
-	}
-	
-	
-	////////////////////////////////////////////////////////////////
-	// Builder
-	////////////////////////////////////////////////////////////////
-	
-	public static class Builder {
-		private UUID uuid = UUID.randomUUID();
-		private double frequency = Simplex.DEFAULT_SIMPLEX_FREQUENCY;
-		private double lacunarity = Simplex.DEFAULT_SIMPLEX_LACUNARITY;
-		private double persistence = Simplex.DEFAULT_SIMPLEX_PERSISTENCE;
-		private int octaves = Simplex.DEFAULT_SIMPLEX_OCTAVE_COUNT;
-		private int seed = Simplex.DEFAULT_SIMPLEX_SEED;
-		
-		public Builder uuid(UUID uuid) {
-			this.uuid = uuid;
-			return this;
-		}
-		
-		public Builder frequency(double frequency) {
-			this.frequency = frequency;
-			return this;
-		}
-		
-		public Builder lacunarity(double lacunarity) {
-			this.lacunarity = lacunarity;
-			return this;
-		}
-		
-		public Builder persistence(double persistence) {
-			this.persistence = persistence;
-			return this;
-		}
-		
-		public Builder octaves(int octaves) {
-			this.octaves = octaves;
-			return this;
-		}
-		
-		public Builder seed(int seed) {
-			this.seed = seed;
-			return this;
-		}
-		
-		public SimplexShape build() {
-			return new SimplexShape(uuid, frequency, lacunarity, persistence, octaves, seed);
-		}
-		
-	}
-	
-	
 	////////////////////////////////////////////////////////////////
 	// Loader
 	////////////////////////////////////////////////////////////////
 	
-	public static class Loader extends NodeLoader {
+	public static class Loader extends ShapeLoaderNode {
 		
 		private final double frequency;
 		private final double lacunarity;
@@ -135,18 +90,24 @@ public class SimplexShape extends Shape {
 		private final int octaves;
 		private final int seed;
 		
-		public Loader(LoaderSystem loaderSystem, JsonObj src) {
-			super(loaderSystem, src);
-			this.frequency = src.getDouble(FREQUENCY).orElse(Simplex.DEFAULT_SIMPLEX_FREQUENCY);
-			this.lacunarity = src.getDouble(LACUNARITY).orElse(Simplex.DEFAULT_SIMPLEX_LACUNARITY);
-			this.persistence = src.getDouble(PERSISTENCE).orElse(Simplex.DEFAULT_SIMPLEX_PERSISTENCE);
-			this.octaves = src.getInt(OCTAVES).orElse(Simplex.DEFAULT_SIMPLEX_OCTAVE_COUNT);
-			this.seed = src.getInt(SEED).orElse(Simplex.DEFAULT_SIMPLEX_SEED);
-			
+		@JsonCreator
+		public Loader(
+			@JsonProperty(UID) UUID uuid,
+			@JsonProperty(FREQUENCY) Double frequency,
+			@JsonProperty(LACUNARITY) Double lacunarity,
+			@JsonProperty(PERSISTENCE) Double persistence,
+			@JsonProperty(OCTAVES) Integer octaves,
+			@JsonProperty(SEED) Integer seed
+		) {
+			super(uuid);
+			this.frequency = frequency;
+			this.lacunarity = lacunarity;
+			this.persistence = persistence;
+			this.octaves = octaves;
+			this.seed = seed;
 		}
 		
-		@Override
-		public Shape load(LoaderSystem loaderSystem) {
+		protected Shape create() {
 			return new SimplexShape(getUuid(), frequency, lacunarity, persistence, octaves, seed);
 		}
 		

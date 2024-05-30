@@ -1,13 +1,15 @@
 package com.ferreusveritas.node.shape;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ferreusveritas.math.AABBD;
 import com.ferreusveritas.math.Vec3D;
-import com.ferreusveritas.node.NodeLoader;
+import com.ferreusveritas.node.DataSpan;
+import com.ferreusveritas.node.ports.*;
+import com.ferreusveritas.node.NodeRegistryData;
 import com.ferreusveritas.node.shape.support.CombineOperation;
-import com.ferreusveritas.scene.LoaderSystem;
-import com.ferreusveritas.support.json.JsonObj;
+import com.ferreusveritas.node.values.EnumNodeValue;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,9 +18,16 @@ import java.util.UUID;
  */
 public class CombineShape extends Shape {
 	
-	public static final String TYPE = "combine";
 	public static final String OPERATION = "operation";
-	public static final String SHAPES = "shapes";
+	public static final NodeRegistryData REGISTRY_DATA = new NodeRegistryData.Builder()
+		.majorType(SHAPE)
+		.minorType("combine")
+		.loaderClass(Loader.class)
+		.sceneObjectClass(CombineShape.class)
+		.value(new EnumNodeValue.Builder(OPERATION).values(CombineOperation.class).def(CombineOperation.OR).build())
+		.port(new PortDescription(PortDirection.IN, PortDataTypes.SHAPE, DataSpan.MULTIPLE))
+		.port(new PortDescription(PortDirection.OUT, PortDataTypes.SHAPE))
+		.build();
 	
 	private final CombineOperation operation;
 	private final List<Shape> shapes;
@@ -31,6 +40,11 @@ public class CombineShape extends Shape {
 		this.bounds = calculateBounds(shapes);
 	}
 	
+	@Override
+	public NodeRegistryData getRegistryData() {
+		return REGISTRY_DATA;
+	}
+	
 	private AABBD calculateBounds(List<Shape> shapes) {
 		return shapes.stream()
 			.map(Shape::bounds)
@@ -41,11 +55,6 @@ public class CombineShape extends Shape {
 	@Override
 	public AABBD bounds() {
 		return bounds;
-	}
-	
-	@Override
-	public String getType() {
-		return TYPE;
 	}
 	
 	@Override
@@ -65,70 +74,32 @@ public class CombineShape extends Shape {
 		return accum;
 	}
 	
-	@Override
-	public JsonObj toJsonObj() {
-		return super.toJsonObj()
-			.set(OPERATION, operation)
-			.set(SHAPES, JsonObj.newList(shapes));
-	}
-	
-	
-	////////////////////////////////////////////////////////////////
-	// Builder
-	////////////////////////////////////////////////////////////////
-	
-	public static class Builder {
-		
-		private UUID uuid = null;
-		private CombineOperation operation = CombineOperation.ADD;
-		private final List<Shape> shapes = new ArrayList<>();
-		
-		public Builder uuid(UUID uuid) {
-			this.uuid = uuid;
-			return this;
-		}
-		
-		public Builder operation(CombineOperation operation) {
-			this.operation = operation;
-			return this;
-		}
-		
-		public Builder add(List<Shape> shapes) {
-			this.shapes.addAll(shapes);
-			return this;
-		}
-		
-		public Builder add(Shape... shapes) {
-			add(List.of(shapes));
-			return this;
-		}
-		
-		public CombineShape build() {
-			return new CombineShape(uuid, operation, shapes);
-		}
-		
-	}
-	
-	
 	////////////////////////////////////////////////////////////////
 	// Loader
 	////////////////////////////////////////////////////////////////
 	
-	public static class Loader extends NodeLoader {
+	public static class Loader extends ShapeLoaderNode {
 		
 		private final CombineOperation operation;
-		private final List<NodeLoader> shapes;
+		private final List<InputPort<Shape>> shapeInputs;
 		
-		public Loader(LoaderSystem loaderSystem, JsonObj src) {
-			super(loaderSystem, src);
-			this.operation = src.getString(OPERATION).flatMap(CombineOperation::of).orElseThrow(() -> new IllegalArgumentException("operation is required"));
-			this.shapes = src.getList(SHAPES).toImmutableList(loaderSystem::createLoader);
+		@JsonCreator
+		public Loader(
+			@JsonProperty(UID) UUID uuid,
+			@JsonProperty(OPERATION) CombineOperation operation,
+			@JsonProperty(SHAPE) List<PortAddress> shapeAddresses
+		) {
+			super(uuid);
+			this.operation = operation;
+			this.shapeInputs = createInputsAndRegisterConnections(PortDataTypes.SHAPE, shapeAddresses);
 		}
 		
-		@Override
-		public Shape load(LoaderSystem loaderSystem) {
-			List<Shape> s = shapes.stream().map(l -> l.load(loaderSystem, Shape.class).orElseThrow()).toList();
-			return new CombineShape(getUuid(), operation, s);
+		protected Shape create() {
+			return new CombineShape(
+				getUuid(),
+				operation,
+				shapeInputs.stream().map(this::get).toList()
+			);
 		}
 		
 	}

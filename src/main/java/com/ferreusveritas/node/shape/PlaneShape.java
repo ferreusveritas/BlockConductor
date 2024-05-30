@@ -1,10 +1,13 @@
 package com.ferreusveritas.node.shape;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ferreusveritas.math.AABBD;
 import com.ferreusveritas.math.Vec3D;
-import com.ferreusveritas.node.NodeLoader;
-import com.ferreusveritas.scene.LoaderSystem;
-import com.ferreusveritas.support.json.JsonObj;
+import com.ferreusveritas.node.NodeRegistryData;
+import com.ferreusveritas.node.ports.PortDataTypes;
+import com.ferreusveritas.node.ports.PortDescription;
+import com.ferreusveritas.node.ports.PortDirection;
 
 import java.util.UUID;
 
@@ -13,15 +16,21 @@ import java.util.UUID;
  */
 public class PlaneShape extends Shape {
 	
-	public static final String TYPE = "plane";
+	public static final NodeRegistryData REGISTRY_DATA = new NodeRegistryData.Builder()
+		.majorType(SHAPE)
+		.minorType("plane")
+		.loaderClass(Loader.class)
+		.sceneObjectClass(PlaneShape.class)
+		.port(new PortDescription(PortDirection.OUT, PortDataTypes.SHAPE))
+		.build();
 	
 	private PlaneShape(UUID uuid) {
 		super(uuid);
 	}
 	
 	@Override
-	public String getType() {
-		return TYPE;
+	public NodeRegistryData getRegistryData() {
+		return REGISTRY_DATA;
 	}
 	
 	@Override
@@ -39,14 +48,16 @@ public class PlaneShape extends Shape {
 	// Loader
 	////////////////////////////////////////////////////////////////
 	
-	public static class Loader extends NodeLoader {
+	public static class Loader extends ShapeLoaderNode {
 		
-		public Loader(LoaderSystem loaderSystem, JsonObj src) {
-			super(loaderSystem, src);
+		@JsonCreator
+		public Loader(
+			@JsonProperty(UID) UUID uuid
+		) {
+			super(uuid);
 		}
 		
-		@Override
-		public Shape load(LoaderSystem loaderSystem) {
+		protected Shape create() {
 			return new PlaneShape(getUuid());
 		}
 		

@@ -1,21 +1,30 @@
 package com.ferreusveritas.node.provider;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ferreusveritas.api.Request;
 import com.ferreusveritas.block.Blocks;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
-import com.ferreusveritas.node.NodeLoader;
-import com.ferreusveritas.scene.LoaderSystem;
-import com.ferreusveritas.support.json.JsonObj;
+import com.ferreusveritas.node.ports.*;
+import com.ferreusveritas.node.NodeRegistryData;
+import com.ferreusveritas.node.values.VecNodeValue;
 
 import java.util.Optional;
 import java.util.UUID;
 
 public class TranslateBlockProvider extends BlockProvider {
 	
-	public static final String TYPE = "translate";
 	public static final String OFFSET = "offset";
-	public static final String PROVIDER = "provider";
+	public static final NodeRegistryData REGISTRY_DATA = new NodeRegistryData.Builder()
+		.majorType(BLOCK_PROVIDER)
+		.minorType("translate")
+		.loaderClass(Loader.class)
+		.sceneObjectClass(TranslateBlockProvider.class)
+		.value(new VecNodeValue.Builder(OFFSET).increment(1).build())
+		.port(new PortDescription(PortDirection.IN, PortDataTypes.BLOCKS))
+		.port(new PortDescription(PortDirection.OUT, PortDataTypes.BLOCKS))
+		.build();
 	
 	private final Vec3I offset;
 	private final BlockProvider provider;
@@ -33,8 +42,8 @@ public class TranslateBlockProvider extends BlockProvider {
 	}
 	
 	@Override
-	public String getType() {
-		return TYPE;
+	public NodeRegistryData getRegistryData() {
+		return REGISTRY_DATA;
 	}
 	
 	public Vec3I getOffset() {
@@ -56,68 +65,32 @@ public class TranslateBlockProvider extends BlockProvider {
 		return aabb;
 	}
 	
-	@Override
-	public JsonObj toJsonObj() {
-		return super.toJsonObj()
-			.set(OFFSET, offset)
-			.set(PROVIDER, provider);
-	}
-	
-	
-	////////////////////////////////////////////////////////////////
-	// Builder
-	////////////////////////////////////////////////////////////////
-	
-	public static class Builder  {
-		
-		private UUID uuid = null;
-		private Vec3I offset = Vec3I.ZERO;
-		private BlockProvider provider = null;
-		
-		public Builder uuid(UUID uuid) {
-			this.uuid = uuid;
-			return this;
-		}
-		
-		public Builder offset(Vec3I offset) {
-			this.offset = offset;
-			return this;
-		}
-		
-		public Builder provider(BlockProvider provider) {
-			this.provider = provider;
-			return this;
-		}
-		
-		public BlockProvider build() {
-			if(provider == null) {
-				throw new IllegalStateException("provider is null");
-			}
-			return new TranslateBlockProvider(uuid, offset, provider);
-		}
-		
-	}
-	
-	
 	////////////////////////////////////////////////////////////////
 	// Loader
 	////////////////////////////////////////////////////////////////
 	
-	public static class Loader extends NodeLoader {
+	public static class Loader extends BlockProviderLoaderNode {
 		
 		private final Vec3I offset;
-		private final NodeLoader provider;
+		private final InputPort<BlockProvider> providerInput;
 		
-		public Loader(LoaderSystem loaderSystem, JsonObj src) {
-			super(loaderSystem, src);
-			this.offset = src.getObj(OFFSET).map(Vec3I::new).orElseThrow(missing(OFFSET));
-			this.provider = loaderSystem.loader(src, PROVIDER);
+		@JsonCreator
+		public Loader(
+			@JsonProperty(UID) UUID uuid,
+			@JsonProperty(OFFSET) Vec3I offset,
+			@JsonProperty(BLOCKS) PortAddress blocksAddress
+		) {
+			super(uuid);
+			this.offset = offset;
+			this.providerInput = createInputAndRegisterConnection(PortDataTypes.BLOCKS, blocksAddress);
 		}
 		
-		@Override
-		public BlockProvider load(LoaderSystem loaderSystem) {
-			BlockProvider b = provider.load(loaderSystem, BlockProvider.class).orElseThrow(wrongType(PROVIDER));
-			return new TranslateBlockProvider(getUuid(), offset, b);
+		protected BlockProvider create() {
+			return new TranslateBlockProvider(
+				getUuid(),
+				offset,
+				get(providerInput)
+			);
 		}
 		
 	}

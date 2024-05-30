@@ -1,53 +1,68 @@
 package com.ferreusveritas.scene;
 
-import com.ferreusveritas.factory.NodeFactory;
-import com.ferreusveritas.node.Node;
-import com.ferreusveritas.node.NodeLoader;
-import com.ferreusveritas.support.json.JsonObj;
-import com.ferreusveritas.support.json.Jsonable;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.ferreusveritas.node.*;
+import com.ferreusveritas.node.ports.InputPort;
+import com.ferreusveritas.node.ports.OutputPort;
+import com.ferreusveritas.node.ports.PortAddress;
+import com.ferreusveritas.node.ports.PortConnection;
+import com.ferreusveritas.support.exceptions.PortNotFoundException;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
-public class Scene implements Jsonable {
+public record Scene(
+	Map<UUID, Node> nodes,
+	Node root
+) {
 	
-	public static final String DEFS = "defs";
-	public static final String ROOT = "root";
-	
-	private static final NodeFactory nodeFactory = new NodeFactory();
-	
-	private final Map<UUID, Node> nodes = new HashMap<>();
-	private final Map<UUID, Node> defs = new HashMap<>();
-	private Node root;
-	
-	public Scene() {
+	@JsonCreator
+	public static Scene create(
+		@JsonProperty("nodes") List<Node> nodes,
+		@JsonProperty("root") UUID root
+	) {
+		Map<UUID, Node> nodeMap = nodes.stream().collect(Collectors.toMap(Node::getUuid, Function.identity()));
+		Node rootNode = nodeMap.get(root);
+		Scene scene = new Scene(nodeMap, rootNode);
+		scene.createNodeConnections();
+		return scene;
 	}
 	
-	public Scene(JsonObj src) {
-		LoaderSystem loaderSystem = new LoaderSystem(nodeFactory);
-		List<NodeLoader> defLoaders = src.getObj(DEFS).orElseGet(JsonObj::newList).toImmutableList(loaderSystem::createLoader);
-		NodeLoader rootLoader = src.getObj(ROOT).or(() -> Optional.of(src)).map(loaderSystem::createLoader).orElseThrow();
-		defLoaders.stream().map(loader -> loader.load(loaderSystem, Node.class).orElseThrow()).forEach(node -> defs.put(node.getUuid(), node));
-		this.root = rootLoader.load(loaderSystem, Node.class).orElseThrow();
-		this.nodes.putAll(loaderSystem.getNodes());
+	public Optional<Node> getNode(UUID uuid) {
+		return Optional.ofNullable(nodes.get(uuid));
 	}
 	
-	public void setRoot(Node root) {
-		this.root = root;
+	public void createNodeConnections() {
+		for(Node node : nodes().values()) {
+			if(node instanceof LoaderNode loaderNode) {
+				for (PortConnection<?> connection : loaderNode.getConnections()) {
+					connect(connection);
+				}
+			}
+		}
 	}
 	
-	public Node getRoot() {
-		return root;
+	private void connect(PortConnection<?> connection) {
+		InputPort<?> inputPort = connection.input();
+		PortAddress from = connection.from();
+		Node fromNode = getNode(from.node()).orElseThrow();
+		Class<?> fromType = inputPort.getType();
+		connect(fromNode, from.port(), inputPort, fromType);
 	}
 	
-	public <T extends Node> Optional<T> getRoot(Class<T> clazz) {
-		return Optional.ofNullable(root).filter(clazz::isInstance).map(clazz::cast);
+	private <T> void connect(Node fromNode, String fromPort, InputPort<?> inputPort, Class<T> type) {
+		OutputPort<T> out = fromNode.getOutputPort(fromPort, type).orElseThrow(this::badPortException);
+		InputPort<T> in = inputPort.getParent().getInputPort(inputPort.getName(), type).orElseThrow(this::badPortException);
+		in.connect(out);
 	}
 	
-	@Override
-	public JsonObj toJsonObj() {
-		return JsonObj.newMap()
-			.set(DEFS, defs)
-			.set(ROOT, root);
+	private RuntimeException badPortException() {
+		return new PortNotFoundException("Port not found");
 	}
 	
 }

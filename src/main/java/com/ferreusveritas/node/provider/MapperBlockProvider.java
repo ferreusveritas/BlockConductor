@@ -1,47 +1,57 @@
 package com.ferreusveritas.node.provider;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ferreusveritas.api.Request;
 import com.ferreusveritas.block.Block;
 import com.ferreusveritas.block.Blocks;
-import com.ferreusveritas.node.mapper.BlockMapper;
 import com.ferreusveritas.math.AABBI;
-import com.ferreusveritas.node.NodeLoader;
-import com.ferreusveritas.scene.LoaderSystem;
-import com.ferreusveritas.support.json.JsonObj;
+import com.ferreusveritas.misc.MiscHelper;
+import com.ferreusveritas.node.ports.*;
+import com.ferreusveritas.node.NodeRegistryData;
+import com.ferreusveritas.node.mapper.BlockMapper;
 
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.ferreusveritas.node.mapper.BlockMapper.MAPPER;
+
 public class MapperBlockProvider extends BlockProvider {
 	
-	public static final String TYPE = "mapper";
-	public static final String MAPPER = "mapper";
-	public static final String PROVIDER = "provider";
+	public static final NodeRegistryData REGISTRY_DATA = new NodeRegistryData.Builder()
+		.majorType(BLOCK_PROVIDER)
+		.minorType("mapper")
+		.loaderClass(Loader.class)
+		.sceneObjectClass(MapperBlockProvider.class)
+		.port(new PortDescription(PortDirection.IN, PortDataTypes.MAPPER))
+		.port(new PortDescription(PortDirection.IN, PortDataTypes.BLOCKS))
+		.port(new PortDescription(PortDirection.OUT, PortDataTypes.BLOCKS))
+		.build();
 	
 	private final BlockMapper mapper;
 	private final BlockProvider provider;
 	private final AABBI aabb;
 	
-	private MapperBlockProvider(UUID uuid, BlockMapper mapper, BlockProvider provider) {
+	private MapperBlockProvider(UUID uuid, BlockMapper mapper, BlockProvider blocks) {
 		super(uuid);
 		this.mapper = mapper;
-		this.provider = provider;
-		if(mapper == null) {
-			throw new IllegalArgumentException("MapperBlockProvider must have a mapper");
-		}
-		if(provider == null) {
-			throw new IllegalArgumentException("MapperBlockProvider must have a provider");
-		}
-		this.aabb = calculateBounds(provider);
+		this.provider = blocks;
+		this.aabb = calculateBounds(blocks);
+		validate();
+	}
+	
+	private void validate() {
+		MiscHelper.require(mapper, MAPPER);
+		MiscHelper.require(provider, BLOCKS);
+	}
+	
+	@Override
+	public NodeRegistryData getRegistryData() {
+		return REGISTRY_DATA;
 	}
 	
 	private AABBI calculateBounds(BlockProvider provider) {
 		return provider.getAABB();
-	}
-	
-	@Override
-	public String getType() {
-		return TYPE;
 	}
 	
 	@Override
@@ -51,7 +61,7 @@ public class MapperBlockProvider extends BlockProvider {
 		if(bounds == AABBI.EMPTY) {
 			return Optional.empty();
 		}
-		Blocks blocks = provider.getBlocks(request).orElse(null);
+		Blocks blocks = this.provider.getBlocks(request).orElse(null);
 		if(blocks == null) {
 			return Optional.empty();
 		}
@@ -69,66 +79,32 @@ public class MapperBlockProvider extends BlockProvider {
 		return aabb;
 	}
 	
-	@Override
-	public JsonObj toJsonObj() {
-		return super.toJsonObj()
-			.set(MAPPER, mapper)
-			.set(PROVIDER, provider);
-	}
-	
-	
-	////////////////////////////////////////////////////////////////
-	// Builder
-	////////////////////////////////////////////////////////////////
-	
-	public static class Builder  {
-		
-		private UUID uuid;
-		private BlockMapper mapper;
-		private BlockProvider provider;
-		
-		public Builder uuid(UUID uuid) {
-			this.uuid = uuid;
-			return this;
-		}
-		
-		public Builder mapper(BlockMapper mapper) {
-			this.mapper = mapper;
-			return this;
-		}
-		
-		public Builder provider(BlockProvider provider) {
-			this.provider = provider;
-			return this;
-		}
-		
-		public BlockProvider build() {
-			return new MapperBlockProvider(uuid, mapper, provider);
-		}
-		
-	}
-	
-	
 	////////////////////////////////////////////////////////////////
 	// Loader
 	////////////////////////////////////////////////////////////////
 	
-	public static class Loader extends NodeLoader {
+	public static class Loader extends BlockProviderLoaderNode {
 		
-		private final NodeLoader mapper;
-		private final NodeLoader provider;
+		private final InputPort<BlockMapper> mapperInput;
+		private final InputPort<BlockProvider> blocksInput;
 		
-		public Loader(LoaderSystem loaderSystem, JsonObj src) {
-			super(loaderSystem, src);
-			this.mapper = loaderSystem.loader(src, MAPPER);
-			this.provider = loaderSystem.loader(src, PROVIDER);
+		@JsonCreator
+		public Loader(
+			@JsonProperty(UID) UUID uuid,
+			@JsonProperty(MAPPER) PortAddress mapperAddress,
+			@JsonProperty(BLOCKS) PortAddress providerAddress
+		) {
+			super(uuid);
+			this.mapperInput = createInputAndRegisterConnection(PortDataTypes.MAPPER, mapperAddress);
+			this.blocksInput = createInputAndRegisterConnection(PortDataTypes.BLOCKS, providerAddress);
 		}
 		
-		@Override
-		public BlockProvider load(LoaderSystem loaderSystem) {
-			BlockMapper m = mapper.load(loaderSystem, BlockMapper.class).orElseThrow(wrongType(MAPPER));
-			BlockProvider b = provider.load(loaderSystem, BlockProvider.class).orElseThrow(wrongType(PROVIDER));
-			return new MapperBlockProvider(getUuid(), m, b);
+		protected BlockProvider create() {
+			return new MapperBlockProvider(
+				getUuid(),
+				get(mapperInput),
+				get(blocksInput)
+			);
 		}
 		
 	}

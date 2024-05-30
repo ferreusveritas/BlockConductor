@@ -1,27 +1,40 @@
 package com.ferreusveritas.node.provider;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ferreusveritas.api.Request;
 import com.ferreusveritas.block.Block;
-import com.ferreusveritas.block.BlockCache;
 import com.ferreusveritas.block.Blocks;
 import com.ferreusveritas.block.misc.TerrainMap;
 import com.ferreusveritas.block.misc.TerrainScanner;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
-import com.ferreusveritas.node.NodeLoader;
+import com.ferreusveritas.node.ports.*;
+import com.ferreusveritas.node.NodeRegistryData;
 import com.ferreusveritas.node.shape.Shape;
-import com.ferreusveritas.scene.LoaderSystem;
-import com.ferreusveritas.support.json.JsonObj;
+import com.ferreusveritas.node.values.BlockNodeValue;
 
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.ferreusveritas.node.shape.Shape.SHAPE;
+
 public class TerrainBlockProvider extends BlockProvider {
 	
-	public static final String TYPE = "terrain";
 	public static final String FILL = "fill";
 	public static final String SURFACE = "surface";
-	public static final String SUBSURFACE = "subsurface";
+	public static final String SUB_SURFACE = "subSurface";
+	public static final NodeRegistryData REGISTRY_DATA = new NodeRegistryData.Builder()
+		.majorType(BLOCK_PROVIDER)
+		.minorType("terrain")
+		.loaderClass(Loader.class)
+		.sceneObjectClass(TerrainBlockProvider.class)
+		.value(new BlockNodeValue.Builder(FILL).build())
+		.value(new BlockNodeValue.Builder(SURFACE).build())
+		.value(new BlockNodeValue.Builder(SUB_SURFACE).build())
+		.port(new PortDescription(PortDirection.IN, PortDataTypes.SHAPE))
+		.port(new PortDescription(PortDirection.OUT, PortDataTypes.BLOCKS))
+		.build();
 	
 	private final Shape shape;
 	private final Block fill;
@@ -38,13 +51,13 @@ public class TerrainBlockProvider extends BlockProvider {
 		this.aabb = calculateBounds(shape);
 	}
 	
-	private AABBI calculateBounds(Shape shape) {
-		return shape.bounds().toAABBI();
+	@Override
+	public NodeRegistryData getRegistryData() {
+		return REGISTRY_DATA;
 	}
 	
-	@Override
-	public String getType() {
-		return TYPE;
+	private AABBI calculateBounds(Shape shape) {
+		return shape.bounds().toAABBI();
 	}
 	
 	@Override
@@ -101,86 +114,40 @@ public class TerrainBlockProvider extends BlockProvider {
 		return aabb;
 	}
 	
-	@Override
-	public JsonObj toJsonObj() {
-		return super.toJsonObj()
-			.set(SHAPE, shape)
-			.set(FILL, fill)
-			.set(SURFACE, surface)
-			.set(SUBSURFACE, subSurface);
-	}
-	
-	
-	////////////////////////////////////////////////////////////////
-	// Builder
-	////////////////////////////////////////////////////////////////
-	
-	public static class Builder {
-		
-		private UUID uuid = null;
-		private Shape shape = null;
-		private Block fill = BlockCache.NONE;
-		private Block surface = BlockCache.NONE;
-		private Block subSurface = BlockCache.NONE;
-		
-		public Builder uuid(UUID uuid) {
-			this.uuid = uuid;
-			return this;
-		}
-		
-		public Builder shape(Shape shape) {
-			this.shape = shape;
-			return this;
-		}
-		
-		public Builder fill(Block fill) {
-			this.fill = fill;
-			return this;
-		}
-		
-		public Builder surface(Block surface) {
-			this.surface = surface;
-			return this;
-		}
-		
-		public Builder subSurface(Block subSurface) {
-			this.subSurface = subSurface;
-			return this;
-		}
-		
-		public TerrainBlockProvider build() {
-			if(shape == null) {
-				throw new IllegalStateException("shape cannot be null");
-			}
-			return new TerrainBlockProvider(uuid, shape, fill, surface, subSurface);
-		}
-		
-	}
-	
-	
 	////////////////////////////////////////////////////////////////
 	// Loader
 	////////////////////////////////////////////////////////////////
 	
-	public static class Loader extends NodeLoader {
+	public static class Loader extends BlockProviderLoaderNode {
 		
-		private final NodeLoader shape;
+		private final InputPort<Shape> shapeInput;
 		private final Block fill;
 		private final Block surface;
 		private final Block subSurface;
 		
-		public Loader(LoaderSystem loaderSystem, JsonObj src) {
-			super(loaderSystem, src);
-			this.shape = loaderSystem.loader(src, SHAPE);
-			this.fill = loaderSystem.blockLoader(src, FILL);
-			this.surface = loaderSystem.blockLoader(src, SURFACE);
-			this.subSurface = loaderSystem.blockLoader(src, SUBSURFACE);
+		@JsonCreator
+		public Loader(
+			@JsonProperty(UID) UUID uuid,
+			@JsonProperty(SHAPE) PortAddress shapeAddress,
+			@JsonProperty(FILL) Block fill,
+			@JsonProperty(SURFACE) Block surface,
+			@JsonProperty(SUB_SURFACE) Block subSurface
+		) {
+			super(uuid);
+			this.shapeInput = createInputAndRegisterConnection(SHAPE, PortDataTypes.SHAPE, shapeAddress);
+			this.fill = fill;
+			this.surface = surface;
+			this.subSurface = subSurface;
 		}
 		
-		@Override
-		public BlockProvider load(LoaderSystem loaderSystem) {
-			Shape s = shape.load(loaderSystem, Shape.class).orElseThrow(wrongType(SHAPE));
-			return new TerrainBlockProvider(getUuid(), s, fill, surface, subSurface);
+		protected BlockProvider create() {
+			return new TerrainBlockProvider(
+				getUuid(),
+				get(shapeInput),
+				fill,
+				surface,
+				subSurface
+			);
 		}
 		
 	}

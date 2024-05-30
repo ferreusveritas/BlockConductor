@@ -1,10 +1,11 @@
 package com.ferreusveritas.node.shape;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ferreusveritas.math.AABBD;
 import com.ferreusveritas.math.Vec3D;
-import com.ferreusveritas.node.NodeLoader;
-import com.ferreusveritas.scene.LoaderSystem;
-import com.ferreusveritas.support.json.JsonObj;
+import com.ferreusveritas.node.ports.*;
+import com.ferreusveritas.node.NodeRegistryData;
 
 import java.util.UUID;
 
@@ -12,8 +13,14 @@ import java.util.UUID;
  * A Shape that slices another Shape along Y = 0 and infinitely extrudes the result in the Y direction.
  */
 public class SliceShape extends Shape {
-
-	public static final String TYPE = "slice";
+	
+	public static final NodeRegistryData REGISTRY_DATA = new NodeRegistryData.Builder()
+		.majorType(SHAPE)
+		.minorType("slice")
+		.loaderClass(Loader.class)
+		.sceneObjectClass(SliceShape.class)
+		.port(new PortDescription(PortDirection.OUT, PortDataTypes.SHAPE))
+		.build();
 	
 	private final Shape shape;
 	private final AABBD bounds;
@@ -24,17 +31,17 @@ public class SliceShape extends Shape {
 		this.bounds = calculateBounds(shape);
 	}
 	
+	@Override
+	public NodeRegistryData getRegistryData() {
+		return REGISTRY_DATA;
+	}
+	
 	private AABBD calculateBounds(Shape shape) {
 		AABBD aabb = shape.bounds();
 		return new AABBD(
 			aabb.min().withY(Double.NEGATIVE_INFINITY),
 			aabb.max().withY(Double.POSITIVE_INFINITY)
 		);
-	}
-	
-	@Override
-	public String getType() {
-		return TYPE;
 	}
 	
 	@Override
@@ -47,59 +54,28 @@ public class SliceShape extends Shape {
 		return shape.getVal(pos.withY(0));
 	}
 	
-	@Override
-	public JsonObj toJsonObj() {
-		return super.toJsonObj()
-			.set(SHAPE, shape);
-	}
-	
-	
-	////////////////////////////////////////////////////////////////
-	// Builder
-	////////////////////////////////////////////////////////////////
-	
-	public static class Builder {
-		
-		private UUID uuid = null;
-		private Shape shape = null;
-		
-		public Builder uuid(UUID uuid) {
-			this.uuid = uuid;
-			return this;
-		}
-		
-		public Builder shape(Shape shape) {
-			this.shape = shape;
-			return this;
-		}
-		
-		public SliceShape build() {
-			if(shape == null) {
-				throw new IllegalStateException("shape cannot be null");
-			}
-			return new SliceShape(uuid, shape);
-		}
-		
-	}
-	
-	
 	////////////////////////////////////////////////////////////////
 	// Loader
 	////////////////////////////////////////////////////////////////
 	
-	public static class Loader extends NodeLoader {
+	public static class Loader extends ShapeLoaderNode {
 		
-		private final NodeLoader shape;
+		private final InputPort<Shape> shapeInput;
 		
-		public Loader(LoaderSystem loaderSystem, JsonObj src) {
-			super(loaderSystem, src);
-			this.shape = loaderSystem.loader(src, SHAPE);
+		@JsonCreator
+		public Loader(
+			@JsonProperty(UID) UUID uuid,
+			@JsonProperty(SHAPE) PortAddress shapeAddress
+		) {
+			super(uuid);
+			this.shapeInput = createInputAndRegisterConnection(SHAPE, PortDataTypes.SHAPE, shapeAddress);
 		}
 		
-		@Override
-		public Shape load(LoaderSystem loaderSystem) {
-			Shape s = shape.load(loaderSystem, Shape.class).orElseThrow(wrongType(SHAPE));
-			return new SliceShape(getUuid(), s);
+		protected Shape create() {
+			return new SliceShape(
+				getUuid(),
+				get(shapeInput)
+			);
 		}
 		
 	}

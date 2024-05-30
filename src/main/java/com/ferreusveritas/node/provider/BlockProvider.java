@@ -3,26 +3,20 @@ package com.ferreusveritas.node.provider;
 import com.ferreusveritas.api.Request;
 import com.ferreusveritas.block.Blocks;
 import com.ferreusveritas.math.AABBI;
-import com.ferreusveritas.node.Node;
-import com.ferreusveritas.node.shape.Shape;
+import com.ferreusveritas.node.SceneObject;
 
 import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
-public abstract class BlockProvider extends Node {
+public abstract class BlockProvider extends SceneObject {
 	
-	public static final String SHAPE = Shape.SHAPE;
+	public static final String BLOCK = "block";
+	public static final String BLOCKS = "blocks";
+	public static final String BLOCK_PROVIDER = "blockProvider";
 	
 	BlockProvider(UUID uuid) {
 		super(uuid);
-	}
-	
-	public abstract String getType();
-	
-	@Override
-	public Class<? extends Node> getNodeClass() {
-		return BlockProvider.class;
 	}
 	
 	/**

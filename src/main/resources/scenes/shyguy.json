@@ -1,288 +1,225 @@
 {
-	"defs": [
+	"nodes": [
 		{
-			"class": "Transform",
-			"type": "transforms",
+			"type": "transform:rotatey",
+			"uuid": "f9e5e035-b1c8-4778-87f4-b80ceece99b5",
+			"angle": -45.0
+		},
+		{
+			"type": "transform:scale",
+			"uuid": "54315462-42ea-47c9-af30-a53a7417ef08",
+			"size": 1.25
+		},
+		{
+			"type": "transform:translate",
+			"uuid": "8f0a409e-1b99-4230-b0df-7ae4f3d918ec",
+			"offset": {
+				"x": 32.0,
+				"y": 56.0,
+				"z": 32.0
+			}
+		},
+		{
+			"type": "transform:transforms",
 			"uuid": "5dc6a841-a72b-4414-82e6-ff6e32e9b83b",
-			"operations": [
-				{
-					"class": "Transform",
-					"type": "rotatey",
-					"uuid": "f9e5e035-b1c8-4778-87f4-b80ceece99b5",
-					"angle": -45.0
-				},
-				{
-					"class": "Transform",
-					"type": "scale",
-					"uuid": "54315462-42ea-47c9-af30-a53a7417ef08",
-					"size": 1.25
-				},
-				{
-					"class": "Transform",
-					"type": "translate",
-					"uuid": "8f0a409e-1b99-4230-b0df-7ae4f3d918ec",
-					"offset": {
-						"x": 32.0,
-						"y": 56.0,
-						"z": 32.0
-					}
-				}
+			"transform": [
+				"f9e5e035-b1c8-4778-87f4-b80ceece99b5:transform",
+				"54315462-42ea-47c9-af30-a53a7417ef08:transform",
+				"8f0a409e-1b99-4230-b0df-7ae4f3d918ec:transform"
+			]
+		},
+		
+		
+		{
+			"type": "shape:model",
+			"uuid": "e4cdd56b-2b3e-4585-bb85-8bd689a1cef3",
+			"model": "res://models/shyguy.obj",
+			"part": "body"
+		},
+		{
+			"type": "shape:transform",
+			"uuid": "ac07d090-234d-49b3-a83f-ed8e5773e78c",
+			"transform": "5dc6a841-a72b-4414-82e6-ff6e32e9b83b:transform",
+			"shape": "e4cdd56b-2b3e-4585-bb85-8bd689a1cef3:shape"
+		},
+		{
+			"type": "blockProvider:shape",
+			"uuid": "bc20362c-ab2c-4771-b945-e7707645b9a8",
+			"block": {
+				"name": "minecraft:red_concrete"
+			},
+			"shape": "ac07d090-234d-49b3-a83f-ed8e5773e78c:shape"
+		},
+		
+		
+		{
+			"type": "shape:model",
+			"uuid": "69cb2cb2-bf55-4017-ba39-b042164dbfb9",
+			"model": "res://models/shyguy.obj",
+			"part": "face"
+		},
+		{
+			"type": "shape:transform",
+			"uuid": "fbb5b1a5-c578-4483-88d6-5815fee12a6d",
+			"transform": "5dc6a841-a72b-4414-82e6-ff6e32e9b83b:transform",
+			"shape": "69cb2cb2-bf55-4017-ba39-b042164dbfb9:shape"
+		},
+		{
+			"type": "blockProvider:shape",
+			"uuid": "4b5fe6fe-e4bc-4aae-9610-33cc0de2afcf",
+			"block": {
+				"name": "minecraft:black_concrete"
+			},
+			"shape": "fbb5b1a5-c578-4483-88d6-5815fee12a6d:shape"
+		},
+		
+		
+		{
+			"type": "shape:model",
+			"uuid": "6eb10173-b079-4bee-9b47-b2ed3c8074f4",
+			"model": "res://models/shyguy.obj",
+			"part": "strap"
+		},
+		{
+			"type": "shape:transform",
+			"uuid": "4f3d0ead-5d44-4965-bb8f-5d6738157dbb",
+			"transform": "5dc6a841-a72b-4414-82e6-ff6e32e9b83b:transform",
+			"shape": "6eb10173-b079-4bee-9b47-b2ed3c8074f4:shape"
+		},
+		{
+			"type": "blockProvider:shape",
+			"uuid": "2a7afc63-2224-47cb-bb2f-9a65728525c3",
+			"block": {
+				"name": "minecraft:brown_concrete"
+			},
+			"shape": "4f3d0ead-5d44-4965-bb8f-5d6738157dbb:shape"
+		},
+		
+		
+		{
+			"type": "shape:model",
+			"uuid": "58a88de7-b331-4860-8c25-bc550a66e2ef",
+			"model": "res://models/shyguy.obj",
+			"part": "mask"
+		},
+		{
+			"type": "shape:transform",
+			"uuid": "8841e3e5-1257-46ec-8618-e57edaffe2de",
+			"transform": "5dc6a841-a72b-4414-82e6-ff6e32e9b83b:transform",
+			"shape": "58a88de7-b331-4860-8c25-bc550a66e2ef:shape"
+		},
+		{
+			"type": "blockProvider:shape",
+			"uuid": "f9c443ea-a522-490f-9ae8-e1723dce38b3",
+			"block": {
+				"name": "minecraft:white_concrete"
+			},
+			"shape": "8841e3e5-1257-46ec-8618-e57edaffe2de:shape"
+		},
+		
+		
+		{
+			"type": "shape:model",
+			"uuid": "79b3c717-87d7-4e70-b583-7e6e1484f329",
+			"model": "res://models/shyguy.obj",
+			"part": "shoes"
+		},
+		{
+			"type": "shape:transform",
+			"uuid": "4ff1e372-cb29-4b6c-905e-6c02a12523b7",
+			"transform": "5dc6a841-a72b-4414-82e6-ff6e32e9b83b:transform",
+			"shape": "79b3c717-87d7-4e70-b583-7e6e1484f329:shape"
+		},
+		{
+			"type": "blockProvider:shape",
+			"uuid": "c8119961-1333-40d8-bc27-424d28c4520b",
+			"block": {
+				"name": "minecraft:blue_concrete"
+			},
+			"shape": "4ff1e372-cb29-4b6c-905e-6c02a12523b7:shape"
+		},
+		
+		
+		{
+			"type": "shape:model",
+			"uuid": "2ded9b29-e635-4ec9-b5b7-1c0151e32fa2",
+			"model": "res://models/shyguy.obj",
+			"part": "soles"
+		},
+		{
+			"type": "shape:transform",
+			"uuid": "fdf7a261-3449-4456-8974-88c9ca41ea09",
+			"transform": "5dc6a841-a72b-4414-82e6-ff6e32e9b83b:transform",
+			"shape": "2ded9b29-e635-4ec9-b5b7-1c0151e32fa2:shape"
+		},
+		{
+			"type": "blockProvider:shape",
+			"uuid": "912ab2e7-4811-4f41-8e1b-4ce02c0f361c",
+			"block": {
+				"name": "minecraft:brown_concrete"
+			},
+			"shape": "fdf7a261-3449-4456-8974-88c9ca41ea09:shape"
+		},
+		
+		
+		{
+			"type": "shape:model",
+			"uuid": "878c14fa-c6ab-4b45-8b19-4b3bdf955e41",
+			"model": "res://models/shyguy.obj",
+			"part": "belt"
+		},
+		{
+			"type": "shape:transform",
+			"uuid": "f4b84663-7285-4e89-8bd9-3dcad64a3325",
+			"transform": "5dc6a841-a72b-4414-82e6-ff6e32e9b83b:transform",
+			"shape": "878c14fa-c6ab-4b45-8b19-4b3bdf955e41:shape"
+		},
+		{
+			"type": "blockProvider:shape",
+			"uuid": "aec0c197-2c03-4d4b-aadf-8f9b61cd1539",
+			"block": {
+				"name": "minecraft:black_concrete"
+			},
+			"shape": "f4b84663-7285-4e89-8bd9-3dcad64a3325:shape"
+		},
+		
+		
+		{
+			"type": "shape:model",
+			"uuid": "6c485879-688b-44ba-a750-50433d54be48",
+			"model": "res://models/shyguy.obj",
+			"part": "buckle"
+		},
+		{
+			"type": "shape:transform",
+			"uuid": "854bb259-8da9-4339-94fd-a86c9e4dbd41",
+			"transform": "5dc6a841-a72b-4414-82e6-ff6e32e9b83b:transform",
+			"shape": "6c485879-688b-44ba-a750-50433d54be48:shape"
+		},
+		{
+			"type": "blockProvider:shape",
+			"uuid": "0a749730-fd6d-4ff2-baa5-2baff751acb8",
+			"block": {
+				"name": "minecraft:yellow_concrete"
+			},
+			"shape": "854bb259-8da9-4339-94fd-a86c9e4dbd41:shape"
+		},
+		
+		
+		{
+			"type": "blockProvider:combine",
+			"uuid": "5872eb0b-daaf-4415-b561-821ca66f509a",
+			"blocks": [
+				"bc20362c-ab2c-4771-b945-e7707645b9a8:blocks",
+				"4b5fe6fe-e4bc-4aae-9610-33cc0de2afcf:blocks",
+				"2a7afc63-2224-47cb-bb2f-9a65728525c3:blocks",
+				"f9c443ea-a522-490f-9ae8-e1723dce38b3:blocks",
+				"c8119961-1333-40d8-bc27-424d28c4520b:blocks",
+				"912ab2e7-4811-4f41-8e1b-4ce02c0f361c:blocks",
+				"aec0c197-2c03-4d4b-aadf-8f9b61cd1539:blocks",
+				"0a749730-fd6d-4ff2-baa5-2baff751acb8:blocks"
 			]
 		}
 	],
-	"root": {
-		"class": "BlockProvider",
-		"type": "combine",
-		"uuid": "5872eb0b-daaf-4415-b561-821ca66f509a",
-		"providers": [
-			{
-				"class": "BlockProvider",
-				"type": "shape",
-				"uuid": "bc20362c-ab2c-4771-b945-e7707645b9a8",
-				"block": {
-					"name": "minecraft:red_concrete",
-					"state": ""
-				},
-				"shape": {
-					"class": "Shape",
-					"type": "transform",
-					"uuid": "ac07d090-234d-49b3-a83f-ed8e5773e78c",
-					"transform": {
-						"class": "Transform",
-						"type": "reference",
-						"ref": "5dc6a841-a72b-4414-82e6-ff6e32e9b83b"
-					},
-					"shape": {
-						"class": "Shape",
-						"type": "model",
-						"uuid": "e4cdd56b-2b3e-4585-bb85-8bd689a1cef3",
-						"model": {
-							"class": "Model",
-							"type": "mesh",
-							"uuid": "73c84ecd-93a7-4ba4-bb42-66508ef24ee5",
-							"resource": "res://models/shyguy.obj",
-							"object": "body"
-						}
-					}
-				}
-			},
-			{
-				"class": "BlockProvider",
-				"type": "shape",
-				"uuid": "4b5fe6fe-e4bc-4aae-9610-33cc0de2afcf",
-				"block": {
-					"name": "minecraft:black_concrete",
-					"state": ""
-				},
-				"shape": {
-					"class": "Shape",
-					"type": "transform",
-					"uuid": "fbb5b1a5-c578-4483-88d6-5815fee12a6d",
-					"transform": {
-						"class": "Transform",
-						"type": "reference",
-						"ref": "5dc6a841-a72b-4414-82e6-ff6e32e9b83b"
-					},
-					"shape": {
-						"class": "Shape",
-						"type": "model",
-						"uuid": "69cb2cb2-bf55-4017-ba39-b042164dbfb9",
-						"model": {
-							"class": "Model",
-							"type": "mesh",
-							"uuid": "31ac3776-8009-4ef0-8718-684ddb1bad09",
-							"resource": "res://models/shyguy.obj",
-							"object": "face"
-						}
-					}
-				}
-			},
-			{
-				"class": "BlockProvider",
-				"type": "shape",
-				"uuid": "2a7afc63-2224-47cb-bb2f-9a65728525c3",
-				"block": {
-					"name": "minecraft:brown_concrete",
-					"state": ""
-				},
-				"shape": {
-					"class": "Shape",
-					"type": "transform",
-					"uuid": "4f3d0ead-5d44-4965-bb8f-5d6738157dbb",
-					"transform": {
-						"class": "Transform",
-						"type": "reference",
-						"ref": "5dc6a841-a72b-4414-82e6-ff6e32e9b83b"
-					},
-					"shape": {
-						"class": "Shape",
-						"type": "model",
-						"uuid": "6eb10173-b079-4bee-9b47-b2ed3c8074f4",
-						"model": {
-							"class": "Model",
-							"type": "mesh",
-							"uuid": "6d096ec8-7137-48ed-97a6-b46998f03b9c",
-							"resource": "res://models/shyguy.obj",
-							"object": "strap"
-						}
-					}
-				}
-			},
-			{
-				"class": "BlockProvider",
-				"type": "shape",
-				"uuid": "f9c443ea-a522-490f-9ae8-e1723dce38b3",
-				"block": {
-					"name": "minecraft:white_concrete",
-					"state": ""
-				},
-				"shape": {
-					"class": "Shape",
-					"type": "transform",
-					"uuid": "8841e3e5-1257-46ec-8618-e57edaffe2de",
-					"transform": {
-						"class": "Transform",
-						"type": "reference",
-						"ref": "5dc6a841-a72b-4414-82e6-ff6e32e9b83b"
-					},
-					"shape": {
-						"class": "Shape",
-						"type": "model",
-						"uuid": "58a88de7-b331-4860-8c25-bc550a66e2ef",
-						"model": {
-							"class": "Model",
-							"type": "mesh",
-							"uuid": "df40fee1-819b-40e0-8487-b44dcc660509",
-							"resource": "res://models/shyguy.obj",
-							"object": "mask"
-						}
-					}
-				}
-			},
-			{
-				"class": "BlockProvider",
-				"type": "shape",
-				"uuid": "c8119961-1333-40d8-bc27-424d28c4520b",
-				"block": {
-					"name": "minecraft:blue_concrete",
-					"state": ""
-				},
-				"shape": {
-					"class": "Shape",
-					"type": "transform",
-					"uuid": "4ff1e372-cb29-4b6c-905e-6c02a12523b7",
-					"transform": {
-						"class": "Transform",
-						"type": "reference",
-						"ref": "5dc6a841-a72b-4414-82e6-ff6e32e9b83b"
-					},
-					"shape": {
-						"class": "Shape",
-						"type": "model",
-						"uuid": "79b3c717-87d7-4e70-b583-7e6e1484f329",
-						"model": {
-							"class": "Model",
-							"type": "mesh",
-							"uuid": "d96f0d78-d2fb-420d-9b5b-05747d9b748f",
-							"resource": "res://models/shyguy.obj",
-							"object": "shoes"
-						}
-					}
-				}
-			},
-			{
-				"class": "BlockProvider",
-				"type": "shape",
-				"uuid": "912ab2e7-4811-4f41-8e1b-4ce02c0f361c",
-				"block": {
-					"name": "minecraft:brown_concrete",
-					"state": ""
-				},
-				"shape": {
-					"class": "Shape",
-					"type": "transform",
-					"uuid": "fdf7a261-3449-4456-8974-88c9ca41ea09",
-					"transform": {
-						"class": "Transform",
-						"type": "reference",
-						"ref": "5dc6a841-a72b-4414-82e6-ff6e32e9b83b"
-					},
-					"shape": {
-						"class": "Shape",
-						"type": "model",
-						"uuid": "2ded9b29-e635-4ec9-b5b7-1c0151e32fa2",
-						"model": {
-							"class": "Model",
-							"type": "mesh",
-							"uuid": "23af2a3d-d1f7-4a3a-b612-73ba13f73de2",
-							"resource": "res://models/shyguy.obj",
-							"object": "soles"
-						}
-					}
-				}
-			},
-			{
-				"class": "BlockProvider",
-				"type": "shape",
-				"uuid": "aec0c197-2c03-4d4b-aadf-8f9b61cd1539",
-				"block": {
-					"name": "minecraft:black_concrete",
-					"state": ""
-				},
-				"shape": {
-					"class": "Shape",
-					"type": "transform",
-					"uuid": "f4b84663-7285-4e89-8bd9-3dcad64a3325",
-					"transform": {
-						"class": "Transform",
-						"type": "reference",
-						"ref": "5dc6a841-a72b-4414-82e6-ff6e32e9b83b"
-					},
-					"shape": {
-						"class": "Shape",
-						"type": "model",
-						"uuid": "878c14fa-c6ab-4b45-8b19-4b3bdf955e41",
-						"model": {
-							"class": "Model",
-							"type": "mesh",
-							"uuid": "26b8920d-3f79-4d2b-a16f-933cdcc1ffc6",
-							"resource": "res://models/shyguy.obj",
-							"object": "belt"
-						}
-					}
-				}
-			},
-			{
-				"class": "BlockProvider",
-				"type": "shape",
-				"uuid": "0a749730-fd6d-4ff2-baa5-2baff751acb8",
-				"block": {
-					"name": "minecraft:yellow_concrete",
-					"state": ""
-				},
-				"shape": {
-					"class": "Shape",
-					"type": "transform",
-					"uuid": "854bb259-8da9-4339-94fd-a86c9e4dbd41",
-					"transform": {
-						"class": "Transform",
-						"type": "reference",
-						"ref": "5dc6a841-a72b-4414-82e6-ff6e32e9b83b"
-					},
-					"shape": {
-						"class": "Shape",
-						"type": "model",
-						"uuid": "6c485879-688b-44ba-a750-50433d54be48",
-						"model": {
-							"class": "Model",
-							"type": "mesh",
-							"uuid": "2bf51321-9db3-4fd5-a768-ac840ba77b75",
-							"resource": "res://models/shyguy.obj",
-							"object": "buckle"
-						}
-					}
-				}
-			}
-		]
-	}
+	"root": "5872eb0b-daaf-4415-b561-821ca66f509a"
 }

@@ -1,0 +1,32 @@
+{
+	"nodes": [
+		{
+			"type": "blockProvider:mapper",
+			"uuid": "00000000-0000-0000-0000-000000000000",
+			"mapper": "00000000-0000-0000-0000-000000000001:mapper",
+			"blocks": "00000000-0000-0000-0000-000000000002:blocks"
+		},
+		{
+			"type": "blockMapper:simple",
+			"uuid": "00000000-0000-0000-0000-000000000001",
+			"map": [
+				{
+					"in": {
+						"name": "minecraft:stone"
+					},
+					"out": {
+						"name": "minecraft:dirt"
+					}
+				}
+			]
+		},
+		{
+			"type": "blockProvider:solid",
+			"uuid": "00000000-0000-0000-0000-000000000002",
+			"block": {
+				"name": "minecraft:stone"
+			}
+		}
+	],
+	"root": "00000000-0000-0000-0000-000000000000"
+}

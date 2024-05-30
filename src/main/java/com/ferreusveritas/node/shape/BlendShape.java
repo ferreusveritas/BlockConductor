@@ -1,12 +1,12 @@
 package com.ferreusveritas.node.shape;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ferreusveritas.math.AABBD;
 import com.ferreusveritas.math.MathHelper;
 import com.ferreusveritas.math.Vec3D;
-import com.ferreusveritas.node.Node;
-import com.ferreusveritas.node.NodeLoader;
-import com.ferreusveritas.scene.LoaderSystem;
-import com.ferreusveritas.support.json.JsonObj;
+import com.ferreusveritas.node.ports.*;
+import com.ferreusveritas.node.NodeRegistryData;
 
 import java.util.UUID;
 
@@ -15,10 +15,19 @@ import java.util.UUID;
  */
 public class BlendShape extends Shape {
 	
-	public static final String TYPE = "blend";
-	public static final String SHAPE_1 = "shape1";
-	public static final String SHAPE_2 = "shape2";
-	public static final String BLEND = "blend";
+	private static final String SHAPE_IN1 = "shape1";
+	private static final String SHAPE_IN2 = "shape2";
+	private static final String BLEND = "blend";
+	public static final NodeRegistryData REGISTRY_DATA = new NodeRegistryData.Builder()
+		.majorType(SHAPE)
+		.minorType(BLEND)
+		.loaderClass(Loader.class)
+		.sceneObjectClass(BlendShape.class)
+		.port(new PortDescription(SHAPE_IN1, PortDirection.IN, PortDataTypes.SHAPE))
+		.port(new PortDescription(SHAPE_IN2, PortDirection.IN, PortDataTypes.SHAPE))
+		.port(new PortDescription(BLEND, PortDirection.IN, PortDataTypes.SHAPE))
+		.port(new PortDescription(PortDirection.OUT, PortDataTypes.SHAPE))
+		.build();
 	
 	private final Shape shape1;
 	private final Shape shape2;
@@ -33,13 +42,13 @@ public class BlendShape extends Shape {
 		this.bounds = calculateBounds();
 	}
 	
-	private AABBD calculateBounds() {
-		return AABBD.union(shape1.bounds(), shape2.bounds());
+	@Override
+	public NodeRegistryData getRegistryData() {
+		return REGISTRY_DATA;
 	}
 	
-	@Override
-	public String getType() {
-		return TYPE;
+	private AABBD calculateBounds() {
+		return AABBD.union(shape1.bounds(), shape2.bounds());
 	}
 	
 	@Override
@@ -64,85 +73,37 @@ public class BlendShape extends Shape {
 		return MathHelper.lerp(blendVal, val1, val2);
 	}
 	
-	@Override
-	public JsonObj toJsonObj() {
-		return super.toJsonObj()
-			.set(SHAPE_1, shape1)
-			.set(SHAPE_2, shape2)
-			.set(BLEND, blend);
-	}
-	
-	
-	////////////////////////////////////////////////////////////////
-	// Builder
-	////////////////////////////////////////////////////////////////
-	
-	public static class Builder {
-		
-		private UUID uuid = null;
-		private Shape shape1 = null;
-		private Shape shape2 = null;
-		private Shape blend = null;
-		
-		public Builder uuid(UUID uuid) {
-			this.uuid = uuid;
-			return this;
-		}
-		
-		public Builder shape1(Shape shape1) {
-			this.shape1 = shape1;
-			return this;
-		}
-		
-		public Builder shape2(Shape shape2) {
-			this.shape2 = shape2;
-			return this;
-		}
-		
-		public Builder blend(Shape blend) {
-			this.blend = blend;
-			return this;
-		}
-		
-		public BlendShape build() {
-			if(shape1 == null) {
-				throw new IllegalStateException("shape1 cannot be null");
-			}
-			if(shape2 == null) {
-				throw new IllegalStateException("shape2 cannot be null");
-			}
-			if(blend == null) {
-				throw new IllegalStateException("blend cannot be null");
-			}
-			return new BlendShape(uuid, shape1, shape2, blend);
-		}
-		
-	}
-	
-	
 	////////////////////////////////////////////////////////////////
 	// Loader
 	////////////////////////////////////////////////////////////////
 	
-	public static class Loader extends NodeLoader {
+	public static class Loader extends ShapeLoaderNode {
 		
-		private final NodeLoader shape1;
-		private final NodeLoader shape2;
-		private final NodeLoader blend;
+		private final InputPort<Shape> shapeInput1;
+		private final InputPort<Shape> shapeInput2;
+		private final InputPort<Shape> blendInput;
 		
-		public Loader(LoaderSystem loaderSystem, JsonObj src) {
-			super(loaderSystem, src);
-			this.shape1 = loaderSystem.loader(src, SHAPE_1);
-			this.shape2 = loaderSystem.loader(src, SHAPE_2);
-			this.blend = loaderSystem.loader(src, BLEND);
+		@JsonCreator
+		public Loader(
+			@JsonProperty(UID) UUID uuid,
+			@JsonProperty(SHAPE_IN1) PortAddress shapeAddress1,
+			@JsonProperty(SHAPE_IN2) PortAddress shapeAddress2,
+			@JsonProperty(BLEND) PortAddress blendAddress
+		) {
+			super(uuid);
+			this.shapeInput1 = createInputAndRegisterConnection(SHAPE_IN1, PortDataTypes.SHAPE, shapeAddress1);
+			this.shapeInput2 = createInputAndRegisterConnection(SHAPE_IN2, PortDataTypes.SHAPE, shapeAddress2);
+			this.blendInput = createInputAndRegisterConnection(BLEND, PortDataTypes.SHAPE, blendAddress);
 		}
 		
 		@Override
-		public Node load(LoaderSystem loaderSystem) {
-			Shape s1 = shape1.load(loaderSystem, Shape.class).orElseThrow(wrongType(SHAPE_1));
-			Shape s2 = shape2.load(loaderSystem, Shape.class).orElseThrow(wrongType(SHAPE_2));
-			Shape b = blend.load(loaderSystem, Shape.class).orElseThrow(wrongType(BLEND));
-			return new BlendShape(getUuid(), s1, s2, b);
+		protected Shape create() {
+			return new BlendShape(
+				getUuid(),
+				get(shapeInput1),
+				get(shapeInput2),
+				get(blendInput)
+			);
 		}
 		
 	}

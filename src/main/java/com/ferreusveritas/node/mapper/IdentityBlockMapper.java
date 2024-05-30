@@ -1,9 +1,13 @@
 package com.ferreusveritas.node.mapper;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ferreusveritas.block.Block;
-import com.ferreusveritas.node.NodeLoader;
-import com.ferreusveritas.scene.LoaderSystem;
-import com.ferreusveritas.support.json.JsonObj;
+import com.ferreusveritas.node.LoaderNode;
+import com.ferreusveritas.node.NodeRegistryData;
+import com.ferreusveritas.node.ports.PortDataTypes;
+import com.ferreusveritas.node.ports.PortDescription;
+import com.ferreusveritas.node.ports.PortDirection;
 
 import java.util.UUID;
 
@@ -13,15 +17,21 @@ import java.util.UUID;
  */
 public class IdentityBlockMapper extends BlockMapper {
 	
-	public static final String TYPE = "identity";
+	public static final NodeRegistryData REGISTRY_DATA = new NodeRegistryData.Builder()
+		.majorType(BLOCK_MAPPER)
+		.minorType("identity")
+		.loaderClass(Loader.class)
+		.sceneObjectClass(IdentityBlockMapper.class)
+		.port(new PortDescription(PortDirection.OUT, PortDataTypes.MAPPER))
+		.build();
 	
 	private IdentityBlockMapper(UUID uuid) {
 		super(uuid);
 	}
 	
 	@Override
-	public String getType() {
-		return TYPE;
+	public NodeRegistryData getRegistryData() {
+		return REGISTRY_DATA;
 	}
 	
 	@Override
@@ -34,14 +44,17 @@ public class IdentityBlockMapper extends BlockMapper {
 	// Loader
 	////////////////////////////////////////////////////////////////
 	
-	public static class Loader extends NodeLoader {
+	public static class Loader extends LoaderNode {
 		
-		public Loader(LoaderSystem loaderSystem, JsonObj src) {
-			super(loaderSystem, src);
+		@JsonCreator
+		public Loader(
+			@JsonProperty(UID) UUID uuid
+		) {
+			super(uuid);
+			createOutputPort(PortDataTypes.MAPPER, this::create);
 		}
 		
-		@Override
-		public BlockMapper load(LoaderSystem loaderSystem) {
+		private BlockMapper create() {
 			return new IdentityBlockMapper(getUuid());
 		}
 		

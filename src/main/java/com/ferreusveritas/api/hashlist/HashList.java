@@ -37,7 +37,11 @@ public class HashList<T> {
 	}
 	
 	public Optional<T> get(int index) {
-		return Optional.ofNullable(list.get(index));
+		try {
+			return Optional.of(list.get(index));
+		} catch(IndexOutOfBoundsException e) {
+			return Optional.empty();
+		}
 	}
 	
 	public int size() {

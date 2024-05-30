@@ -1,15 +1,24 @@
 package com.ferreusveritas.node.transform;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ferreusveritas.math.Matrix4X4;
-import com.ferreusveritas.node.NodeLoader;
-import com.ferreusveritas.scene.LoaderSystem;
-import com.ferreusveritas.support.json.JsonObj;
+import com.ferreusveritas.node.NodeRegistryData;
+import com.ferreusveritas.node.ports.PortDataTypes;
+import com.ferreusveritas.node.ports.PortDescription;
+import com.ferreusveritas.node.ports.PortDirection;
 
 import java.util.UUID;
 
 public class Identity extends Transform {
-
-	public static final String TYPE = "identity";
+	
+	public static final NodeRegistryData REGISTRY_DATA = new NodeRegistryData.Builder()
+		.majorType(TRANSFORM)
+		.minorType("identity")
+		.loaderClass(Loader.class)
+		.sceneObjectClass(Identity.class)
+		.port(new PortDescription(PortDirection.OUT, PortDataTypes.TRANSFORM))
+		.build();
 	
 	private Identity(UUID uuid) {
 		super(uuid);
@@ -21,43 +30,24 @@ public class Identity extends Transform {
 	}
 	
 	@Override
-	public String getType() {
-		return TYPE;
+	public NodeRegistryData getRegistryData() {
+		return REGISTRY_DATA;
 	}
-	
-	
-	////////////////////////////////////////////////////////////////
-	// Builder
-	////////////////////////////////////////////////////////////////
-	
-	public static class Builder {
-		
-		private UUID uuid = null;
-		
-		public Builder uuid(UUID uuid) {
-			this.uuid = uuid;
-			return this;
-		}
-		
-		public Identity build() {
-			return new Identity(uuid);
-		}
-		
-	}
-	
-	
+
 	////////////////////////////////////////////////////////////////
 	// Loader
 	////////////////////////////////////////////////////////////////
 	
-	public static class Loader extends NodeLoader {
+	public static class Loader extends TransformProviderLoaderNode {
 		
-		public Loader(LoaderSystem loaderSystem, JsonObj src) {
-			super(loaderSystem, src);
+		@JsonCreator
+		public Loader(
+			@JsonProperty(UID) UUID uuid
+		) {
+			super(uuid);
 		}
 		
-		@Override
-		public Identity load(LoaderSystem loaderSystem) {
+		protected Transform create() {
 			return new Identity(getUuid());
 		}
 		

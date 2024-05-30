@@ -1,23 +1,27 @@
 package com.ferreusveritas.node.shape;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ferreusveritas.math.AABBD;
 import com.ferreusveritas.math.MathHelper;
 import com.ferreusveritas.math.Vec3D;
-import com.ferreusveritas.node.NodeLoader;
-import com.ferreusveritas.scene.LoaderSystem;
-import com.ferreusveritas.support.json.JsonObj;
-import com.ferreusveritas.support.json.Jsonable;
+import com.ferreusveritas.node.ports.*;
+import com.ferreusveritas.node.NodeRegistryData;
 import org.spongepowered.noise.exception.NoiseException;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
 public class CurveShape extends Shape {
 	
-	public static final String TYPE = "curve";
-	public static final String CONTROL_POINTS = "controlPoints";
+	public static final NodeRegistryData REGISTRY_DATA = new NodeRegistryData.Builder()
+		.majorType(SHAPE)
+		.minorType("curve")
+		.loaderClass(Loader.class)
+		.sceneObjectClass(CurveShape.class)
+		.port(new PortDescription(PortDirection.OUT, PortDataTypes.SHAPE))
+		.build();
 	
 	private final Shape shape;
 	private final List<ControlPoint> controlPoints;
@@ -29,6 +33,11 @@ public class CurveShape extends Shape {
 		this.controlPoints = sort(controlPoints);
 		this.bounds = calculateBounds();
 		validate();
+	}
+	
+	@Override
+	public NodeRegistryData getRegistryData() {
+		return REGISTRY_DATA;
 	}
 	
 	private AABBD calculateBounds() {
@@ -43,11 +52,6 @@ public class CurveShape extends Shape {
 		if (controlPoints.size() < 4) {
 			throw new NoiseException("Curve module must have at least 4 control points");
 		}
-	}
-	
-	@Override
-	public String getType() {
-		return TYPE;
 	}
 	
 	@Override
@@ -96,93 +100,37 @@ public class CurveShape extends Shape {
 			alpha);
 	}
 	
-	@Override
-	public JsonObj toJsonObj() {
-		return super.toJsonObj()
-			.set(CONTROL_POINTS, JsonObj.newList(controlPoints))
-			.set(SHAPE, shape);
-	}
-	
 	public record ControlPoint(
 		double in,
 		double out
-	) implements Jsonable {
-		
-		public ControlPoint(JsonObj src) {
-			this(
-				src.getDouble("in").orElse(0.0),
-				src.getDouble("out").orElse(0.0)
-			);
-		}
-		
-		@Override
-		public JsonObj toJsonObj() {
-			return JsonObj.newMap()
-				.set("in", in)
-				.set("out", out);
-		}
-		
-	}
-	
-	////////////////////////////////////////////////////////////////
-	// Builder
-	////////////////////////////////////////////////////////////////
-	
-	public static class Builder {
-		
-		private UUID uuid = null;
-		private Shape shape = null;
-		private final List<ControlPoint> controlPoints = new ArrayList<>();
-		
-		public Builder uuid(UUID uuid) {
-			this.uuid = uuid;
-			return this;
-		}
-		
-		public Builder shape(Shape shape) {
-			this.shape = shape;
-			return this;
-		}
-		
-		public Builder add(List<ControlPoint> controlPoints) {
-			this.controlPoints.addAll(controlPoints);
-			return this;
-		}
-		
-		public Builder add(ControlPoint... controlPoints) {
-			add(List.of(controlPoints));
-			return this;
-		}
-		
-		public CurveShape build() {
-			if(shape == null) {
-				throw new IllegalStateException("shape cannot be null");
-			}
-			return new CurveShape(uuid, shape, controlPoints);
-		}
-		
-	}
-	
+	) {}
 	
 	////////////////////////////////////////////////////////////////
 	// Loader
 	////////////////////////////////////////////////////////////////
 	
-	public static class Loader extends NodeLoader {
+	public static class Loader extends ShapeLoaderNode {
 		
-		private final NodeLoader shape;
 		private final List<ControlPoint> controlPoints;
+		private final InputPort<Shape> shapeInput;
 		
-		public Loader(LoaderSystem loaderSystem, JsonObj src) {
-			super(loaderSystem, src);
-			this.shape = loaderSystem.loader(src, SHAPE);
-			this.controlPoints = sort(src.getList(CONTROL_POINTS).toImmutableList(ControlPoint::new));
+		@JsonCreator
+		public Loader(
+			@JsonProperty(UID) UUID uuid,
+			@JsonProperty("controlPoints") List<ControlPoint> controlPoints,
+			@JsonProperty(SHAPE) PortAddress shapeAddress
+		) {
+			super(uuid);
+			this.shapeInput = createInputAndRegisterConnection(SHAPE, PortDataTypes.SHAPE, shapeAddress);
+			this.controlPoints = sort(controlPoints);
 		}
 		
-		@Override
-		public Shape load(LoaderSystem loaderSystem) {
-			Shape s = shape.load(loaderSystem, Shape.class).orElseThrow(wrongType(SHAPE));
-			return new CurveShape(getUuid(), s, controlPoints);
+		protected Shape create() {
+			return new CurveShape(
+				getUuid(),
+				get(shapeInput),
+				controlPoints
+			);
 		}
 		
 	}

@@ -1,23 +1,33 @@
 package com.ferreusveritas.node.transform;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ferreusveritas.math.Matrix4X4;
 import com.ferreusveritas.math.Vec3D;
-import com.ferreusveritas.node.NodeLoader;
-import com.ferreusveritas.scene.LoaderSystem;
-import com.ferreusveritas.support.json.JsonObj;
+import com.ferreusveritas.node.NodeRegistryData;
+import com.ferreusveritas.node.ports.PortDataTypes;
+import com.ferreusveritas.node.ports.PortDescription;
+import com.ferreusveritas.node.ports.PortDirection;
+import com.ferreusveritas.node.values.VecNodeValue;
 
 import java.util.UUID;
 
 public class Translate extends Transform {
 	
-	public static final String TYPE = "translate";
+	public static final String OFFSET = "offset";
+	public static final NodeRegistryData REGISTRY_DATA = new NodeRegistryData.Builder()
+		.majorType(TRANSFORM)
+		.minorType("translate")
+		.loaderClass(Loader.class)
+		.sceneObjectClass(Translate.class)
+		.value(new VecNodeValue.Builder(OFFSET).def(Vec3D.ZERO).build())
+		.port(new PortDescription(PortDirection.OUT, PortDataTypes.TRANSFORM))
+		.build();
 	
-	private final Vec3D offset;
 	private final Matrix4X4 matrix;
 	
 	private Translate(UUID uuid, Vec3D offset) {
 		super(uuid);
-		this.offset = offset;
 		this.matrix = Matrix4X4.IDENTITY.translate(offset);
 	}
 	
@@ -27,58 +37,28 @@ public class Translate extends Transform {
 	}
 	
 	@Override
-	public String getType() {
-		return TYPE;
+	public NodeRegistryData getRegistryData() {
+		return REGISTRY_DATA;
 	}
-	
-	@Override
-	public JsonObj toJsonObj() {
-		return super.toJsonObj()
-			.set("offset", offset);
-	}
-	
-	
-	////////////////////////////////////////////////////////////////
-	// Builder
-	////////////////////////////////////////////////////////////////
-	
-	public static class Builder {
-		
-		private UUID uuid = null;
-		private Vec3D offset = Vec3D.ZERO;
-		
-		public Builder uuid(UUID uuid) {
-			this.uuid = uuid;
-			return this;
-		}
-		
-		public Builder offset(Vec3D offset) {
-			this.offset = offset;
-			return this;
-		}
-		
-		public Translate build() {
-			return new Translate(uuid, offset);
-		}
-		
-	}
-	
-	
+
 	////////////////////////////////////////////////////////////////
 	// Loader
 	////////////////////////////////////////////////////////////////
 	
-	public static class Loader extends NodeLoader {
+	public static class Loader extends TransformProviderLoaderNode {
 		
 		private final Vec3D offset;
 		
-		public Loader(LoaderSystem loaderSystem, JsonObj src) {
-			super(loaderSystem, src);
-			this.offset = src.getObj("offset").map(Vec3D::new).orElse(Vec3D.ZERO);
+		@JsonCreator
+		public Loader(
+			@JsonProperty(UID) UUID uuid,
+			@JsonProperty(OFFSET) Vec3D offset
+		) {
+			super(uuid);
+			this.offset = offset == null ? Vec3D.ZERO : offset;
 		}
 		
-		@Override
-		public Translate load(LoaderSystem loaderSystem) {
+		protected Transform create() {
 			return new Translate(getUuid(), offset);
 		}
 		

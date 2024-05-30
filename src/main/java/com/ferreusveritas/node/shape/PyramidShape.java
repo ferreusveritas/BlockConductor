@@ -1,20 +1,32 @@
 package com.ferreusveritas.node.shape;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ferreusveritas.math.AABBD;
 import com.ferreusveritas.math.Vec3D;
-import com.ferreusveritas.node.NodeLoader;
-import com.ferreusveritas.scene.LoaderSystem;
-import com.ferreusveritas.support.json.JsonObj;
+import com.ferreusveritas.node.NodeRegistryData;
+import com.ferreusveritas.node.ports.PortDataTypes;
+import com.ferreusveritas.node.ports.PortDescription;
+import com.ferreusveritas.node.ports.PortDirection;
+import com.ferreusveritas.node.values.NumberNodeValue;
 
 import java.util.UUID;
 
 public class PyramidShape extends Shape {
-
-	public static final String TYPE = "pyramid";
-	public static final double DEFAULT_HEIGHT = 1.0;
-	public static final double DEFAULT_BASE = 2.0;
+	
 	public static final String HEIGHT = "height";
 	public static final String BASE = "base";
+	public static final double DEFAULT_HEIGHT = 1.0;
+	public static final double DEFAULT_BASE = 2.0;
+	public static final NodeRegistryData REGISTRY_DATA = new NodeRegistryData.Builder()
+		.majorType(SHAPE)
+		.minorType("pyramid")
+		.loaderClass(Loader.class)
+		.sceneObjectClass(PyramidShape.class)
+		.value(new NumberNodeValue.Builder(HEIGHT).def(DEFAULT_HEIGHT).min(0.0).build())
+		.value(new NumberNodeValue.Builder(BASE).def(DEFAULT_BASE).min(0.0).build())
+		.port(new PortDescription(PortDirection.OUT, PortDataTypes.SHAPE))
+		.build();
 	
 	private final double height;
 	private final double base;
@@ -27,17 +39,17 @@ public class PyramidShape extends Shape {
 		this.bounds = calculateBounds(height, base);
 	}
 	
+	@Override
+	public NodeRegistryData getRegistryData() {
+		return REGISTRY_DATA;
+	}
+	
 	private AABBD calculateBounds(double height, double base) {
 		double halfBase = base / 2.0;
 		return new AABBD(
 			new Vec3D(-halfBase, 0, -halfBase),
 			new Vec3D(halfBase, height, halfBase)
 		);
-	}
-	
-	@Override
-	public String getType() {
-		return TYPE;
 	}
 	
 	@Override
@@ -62,63 +74,27 @@ public class PyramidShape extends Shape {
 		return 0.0;
 	}
 	
-	@Override
-	public JsonObj toJsonObj() {
-		return super.toJsonObj()
-			.set(HEIGHT, height)
-			.set(BASE, base);
-	}
-	
-	
-	////////////////////////////////////////////////////////////////
-	// Builder
-	////////////////////////////////////////////////////////////////
-	
-	public static class Builder {
-		
-		private UUID uuid = null;
-		private double height = DEFAULT_HEIGHT;
-		private double base = DEFAULT_BASE;
-		
-		public Builder uuid(UUID uuid) {
-			this.uuid = uuid;
-			return this;
-		}
-		
-		public Builder height(double height) {
-			this.height = height;
-			return this;
-		}
-		
-		public Builder base(double base) {
-			this.base = base;
-			return this;
-		}
-		
-		public PyramidShape build() {
-			return new PyramidShape(uuid, height, base);
-		}
-		
-	}
-	
-	
 	////////////////////////////////////////////////////////////////
 	// Loader
 	////////////////////////////////////////////////////////////////
 	
-	public static class Loader extends NodeLoader {
+	public static class Loader extends ShapeLoaderNode {
 		
 		private final double height;
 		private final double base;
 		
-		public Loader(LoaderSystem loaderSystem, JsonObj src) {
-			super(loaderSystem, src);
-			this.height = src.getDouble(HEIGHT).orElse(DEFAULT_HEIGHT);
-			this.base = src.getDouble(BASE).orElse(DEFAULT_BASE);
+		@JsonCreator
+		public Loader(
+			@JsonProperty(UID) UUID uuid,
+			@JsonProperty(HEIGHT) Double height,
+			@JsonProperty(BASE) Double base
+		) {
+			super(uuid);
+			this.height = height;
+			this.base = base;
 		}
 		
-		@Override
-		public Shape load(LoaderSystem loaderSystem) {
+		protected Shape create() {
 			return new PyramidShape(getUuid(), height, base);
 		}
 		

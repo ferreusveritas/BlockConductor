@@ -1,16 +1,17 @@
 package com.ferreusveritas.node.provider;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ferreusveritas.api.Request;
 import com.ferreusveritas.block.Block;
 import com.ferreusveritas.block.BlockCache;
 import com.ferreusveritas.block.Blocks;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
-import com.ferreusveritas.node.NodeLoader;
-import com.ferreusveritas.scene.LoaderSystem;
-import com.ferreusveritas.support.json.JsonObj;
+import com.ferreusveritas.node.DataSpan;
+import com.ferreusveritas.node.ports.*;
+import com.ferreusveritas.node.NodeRegistryData;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -21,8 +22,14 @@ import java.util.UUID;
  */
 public class CombineBlockProvider extends BlockProvider {
 	
-	public static final String TYPE = "combine";
-	public static final String PROVIDERS = "providers";
+	public static final NodeRegistryData REGISTRY_DATA = new NodeRegistryData.Builder()
+		.majorType(BLOCK_PROVIDER)
+		.minorType("combine")
+		.loaderClass(Loader.class)
+		.sceneObjectClass(CombineBlockProvider.class)
+		.port(new PortDescription(PortDirection.IN, PortDataTypes.BLOCKS, DataSpan.MULTIPLE))
+		.port(new PortDescription(PortDirection.OUT, PortDataTypes.BLOCKS))
+		.build();
 	
 	private final List<BlockProvider> providers;
 	private final AABBI aabb;
@@ -34,8 +41,8 @@ public class CombineBlockProvider extends BlockProvider {
 	}
 	
 	@Override
-	public String getType() {
-		return TYPE;
+	public NodeRegistryData getRegistryData() {
+		return REGISTRY_DATA;
 	}
 	
 	@Override
@@ -89,61 +96,28 @@ public class CombineBlockProvider extends BlockProvider {
 		return aabb;
 	}
 	
-	@Override
-	public JsonObj toJsonObj() {
-		return super.toJsonObj()
-			.set(PROVIDERS, JsonObj.newList(providers));
-	}
-	
-	
-	////////////////////////////////////////////////////////////////
-	// Builder
-	////////////////////////////////////////////////////////////////
-	
-	public static class Builder {
-		
-		private UUID uuid = null;
-		private final List<BlockProvider> providers = new ArrayList<>();
-		
-		public Builder uuid(UUID uuid) {
-			this.uuid = uuid;
-			return this;
-		}
-		
-		public Builder add(List<BlockProvider> providers) {
-			this.providers.addAll(providers);
-			return this;
-		}
-		
-		public Builder add(BlockProvider ... providers) {
-			this.providers.addAll(List.of(providers));
-			return this;
-		}
-		
-		public CombineBlockProvider build() {
-			return new CombineBlockProvider(uuid, providers);
-		}
-		
-	}
-	
-	
 	////////////////////////////////////////////////////////////////
 	// Loader
 	////////////////////////////////////////////////////////////////
 	
-	public static class Loader extends NodeLoader {
+	public static class Loader extends BlockProviderLoaderNode {
 		
-		private final List<NodeLoader> providers;
+		private final List<InputPort<BlockProvider>> providers;
 		
-		public Loader(LoaderSystem loaderSystem, JsonObj src) {
-			super(loaderSystem, src);
-			this.providers = src.getList(PROVIDERS).toImmutableList(loaderSystem::createLoader);
+		@JsonCreator
+		public Loader(
+			@JsonProperty(UID) UUID uuid,
+			@JsonProperty(BLOCKS) List<PortAddress> providerAddresses
+		) {
+			super(uuid);
+			this.providers = createInputsAndRegisterConnections(PortDataTypes.BLOCKS, providerAddresses);
 		}
 		
-		@Override
-		public BlockProvider load(LoaderSystem loaderSystem) {
-			List<BlockProvider> b = providers.stream().map(l -> l.load(loaderSystem, BlockProvider.class).orElseThrow()).toList();
-			return new CombineBlockProvider(getUuid(), b);
+		protected BlockProvider create() {
+			return new CombineBlockProvider(
+				getUuid(),
+				providers.stream().map(InputPort::read).toList()
+			);
 		}
 		
 	}

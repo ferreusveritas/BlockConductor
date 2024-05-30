@@ -1,0 +1,91 @@
+{
+	"nodes": [
+		{
+			"type": "transform:scale",
+			"uuid": "00000000-0000-0000-0000-00000000000c",
+			"size": 1.0
+		},
+		{
+			"type": "transform:rotatex",
+			"uuid": "00000000-0000-0000-0000-00000000000d",
+			"angle": 0.0
+		},
+		{
+			"type": "transform:rotatey",
+			"uuid": "00000000-0000-0000-0000-00000000000e",
+			"angle": 0.0
+		},
+		{
+			"type": "transform:transforms",
+			"uuid": "00000000-0000-0000-0000-000000000007",
+			"transform": [
+				"00000000-0000-0000-0000-00000000000c:transform",
+				"00000000-0000-0000-0000-00000000000d:transform",
+				"00000000-0000-0000-0000-00000000000e:transform"
+			]
+		},
+		{
+			"type": "shape:model",
+			"uuid": "00000000-0000-0000-0000-00000000000b",
+			"model": "res://models/tree.obj",
+			"part": "tree"
+		},
+		{
+			"type": "shape:transform",
+			"uuid": "00000000-0000-0000-0000-000000000005",
+			"transform": "00000000-0000-0000-0000-000000000007:transform",
+			"shape": "00000000-0000-0000-0000-00000000000b:shape"
+		},
+		{
+			"type": "blockProvider:shape",
+			"uuid": "00000000-0000-0000-0000-000000000003",
+			"shape": "00000000-0000-0000-0000-000000000005:shape",
+			"block": {
+				"name": "minecraft:oak_wood"
+			}
+		},
+		{
+			"type": "shape:model",
+			"uuid": "00000000-0000-0000-0000-000000000008",
+			"model": "res://models/tree.obj",
+			"part": "canopy"
+		},
+		{
+			"type": "shape:transform",
+			"uuid": "00000000-0000-0000-0000-000000000006",
+			"transform": "00000000-0000-0000-0000-000000000007:transform",
+			"shape": "00000000-0000-0000-0000-000000000008:shape"
+		},
+		{
+			"type": "blockProvider:shape",
+			"uuid": "00000000-0000-0000-0000-000000000004",
+			"shape": "00000000-0000-0000-0000-000000000006:shape",
+			"block": {
+				"name": "minecraft:oak_leaves",
+				"properties": {
+					"distance": "7",
+					"persistent": "true"
+				}
+			}
+		},
+		{
+			"type": "blockProvider:combine",
+			"uuid": "00000000-0000-0000-0000-000000000001",
+			"blocks": [
+				"00000000-0000-0000-0000-000000000003:blocks",
+				"00000000-0000-0000-0000-000000000004:blocks"
+			]
+		},
+		{
+			"type": "blockProvider:translate",
+			"uuid": "00000000-0000-0000-0000-000000000002",
+			"blocks": "00000000-0000-0000-0000-000000000001:blocks",
+			"offset": {
+				"x": 0,
+				"y": 0,
+				"z": 0
+			}
+		}
+	],
+	"root": "00000000-0000-0000-0000-000000000002"
+}

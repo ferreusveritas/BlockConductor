@@ -1,10 +1,9 @@
 package com.ferreusveritas.block;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.ferreusveritas.api.hashlist.HashList;
 import com.ferreusveritas.math.AABBI;
 import com.ferreusveritas.math.Vec3I;
-import com.ferreusveritas.support.json.JsonObj;
-import com.ferreusveritas.support.json.Jsonable;
 import com.ferreusveritas.support.nbt.Nbtable;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.ListTag;
@@ -19,7 +18,7 @@ import java.util.stream.IntStream;
 /**
  * A 3D array of blocks
  */
-public class Blocks implements Nbtable, Jsonable {
+public class Blocks implements Nbtable {
 	
 	private final Vec3I size;
 	private final HashList<Block> blockMap;
@@ -119,17 +118,13 @@ public class Blocks implements Nbtable, Jsonable {
 		return main;
 	}
 	
-	@Override
-	public JsonObj toJsonObj() {
-		return JsonObj.newMap()
-			.set("size", size)
-			.set("blockMap", JsonObj.newList(blockMap.getList()))
-			.set("blockData", JsonObj.newList(IntStream.range(0, blockData.length).mapToObj(s -> blockData[s]).toList()));
-	}
-	
-	@Override
-	public String toString() {
-		return toJsonObj().toString();
+	@JsonValue
+	public BlocksResponse toJson() {
+		return new BlocksResponse(
+			size,
+			blockMap.getList(),
+			IntStream.range(0, blockData.length).mapToObj(s -> blockData[s]).toList()
+		);
 	}
 	
 }

@@ -1,19 +1,30 @@
 package com.ferreusveritas.node.shape;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ferreusveritas.math.AABBD;
 import com.ferreusveritas.math.Axis;
 import com.ferreusveritas.math.Vec3D;
 import com.ferreusveritas.math.Vec3I;
-import com.ferreusveritas.node.NodeLoader;
-import com.ferreusveritas.scene.LoaderSystem;
-import com.ferreusveritas.support.json.JsonObj;
+import com.ferreusveritas.node.NodeRegistryData;
+import com.ferreusveritas.node.ports.PortDataTypes;
+import com.ferreusveritas.node.ports.PortDescription;
+import com.ferreusveritas.node.ports.PortDirection;
+import com.ferreusveritas.node.values.EnumNodeValue;
 
 import java.util.UUID;
 
 public class CheckerShape extends Shape {
 	
-	public static final String TYPE = "checker";
 	public static final String AXIS = "axis";
+	public static final NodeRegistryData REGISTRY_DATA = new NodeRegistryData.Builder()
+		.majorType(SHAPE)
+		.minorType("checker")
+		.loaderClass(Loader.class)
+		.sceneObjectClass(CheckerShape.class)
+		.value(new EnumNodeValue.Builder(AXIS).values(Axis.class).def(Axis.X).nullable(true).build())
+		.port(new PortDescription(PortDirection.OUT, PortDataTypes.SHAPE))
+		.build();
 	
 	private final Axis axis; // null means all axes(3D checker block)
 	
@@ -23,8 +34,8 @@ public class CheckerShape extends Shape {
 	}
 	
 	@Override
-	public String getType() {
-		return TYPE;
+	public NodeRegistryData getRegistryData() {
+		return REGISTRY_DATA;
 	}
 	
 	@Override
@@ -48,56 +59,30 @@ public class CheckerShape extends Shape {
 			case Z -> pos.x() + pos.y() % 2 == 0;
 		};
 	}
-	
-	@Override
-	public JsonObj toJsonObj() {
-		return super.toJsonObj()
-			.set(AXIS, axis);
-	}
-	
-	
-	////////////////////////////////////////////////////////////////
-	// Builder
-	////////////////////////////////////////////////////////////////
-	
-	public static class Builder {
-		
-		private UUID uuid = null;
-		private Axis axis = null; // null means all axes(3D checker block)
-		
-		public Builder uuid(UUID uuid) {
-			this.uuid = uuid;
-			return this;
-		}
-		
-		public Builder axis(Axis axis) {
-			this.axis = axis;
-			return this;
-		}
-		
-		public CheckerShape build() {
-			return new CheckerShape(uuid, axis);
-		}
-		
-	}
-	
+
 	
 	////////////////////////////////////////////////////////////////
 	// Loader
 	////////////////////////////////////////////////////////////////
 	
-	public static class Loader extends NodeLoader {
+	public static class Loader extends ShapeLoaderNode {
 		
 		private final Axis axis; // null means all axes(3D checker block)
 		
-		public Loader(LoaderSystem loaderSystem, JsonObj src) {
-			super(loaderSystem, src);
-			this.axis = src.getString(AXIS).flatMap(Axis::of).orElse(null);
+		@JsonCreator
+		public Loader(
+			@JsonProperty(UID) UUID uuid,
+			@JsonProperty(AXIS) Axis axis
+		) {
+			super(uuid);
+			this.axis = axis;
 		}
 		
-		@Override
-		public Shape load(LoaderSystem loaderSystem) {
-			return new CheckerShape(getUuid(), axis);
+		protected Shape create() {
+			return new CheckerShape(
+				getUuid(),
+				axis
+			);
 		}
 		
 	}

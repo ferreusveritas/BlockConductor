@@ -12,7 +12,7 @@ import net.querz.nbt.tag.CompoundTag;
 public class CreateSchematicConvertor {
 	
 	public CompoundTag convert(Response response) {
-		Blocks blocks = response.blocks();
+		Blocks blocks = response.getBlocks().orElse(new Blocks(Vec3I.ZERO));
 		Vec3I size = blocks.getSize();
 		
 		CreateSchematic.Builder builder = new CreateSchematic.Builder();

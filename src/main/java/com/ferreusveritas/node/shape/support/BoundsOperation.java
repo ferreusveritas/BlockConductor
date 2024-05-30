@@ -19,6 +19,7 @@ public enum BoundsOperation {
 		return func.apply(a, b);
 	}
 	
+	@FunctionalInterface
 	private interface BoundsFunction {
 		AABBD apply(AABBD a, AABBD b);
 	}
